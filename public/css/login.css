@@ -1,0 +1,333 @@
+/* Login Page Styles */
+:root {
+    --primary-color: #1e88e5;
+    --primary-dark: #1565c0;
+    --primary-light: #64b5f6;
+    --secondary-color: #ff5252;
+    --text-color: #333;
+    --light-text: #757575;
+    --background-color: #f5f7fa;
+    --card-background: #ffffff;
+    --border-radius: 12px;
+    --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #ffffff;
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 85%; /* Diubah dari 75% */
+    max-width: 1000px; /* Diubah dari 1200px */
+    padding: 20px;
+    height: auto; /* Diubah dari 700px */
+    min-height: auto; /* Tambahkan ini */
+}
+
+.login-card {
+    display: flex;
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    max-height: 550px; /* Tambahkan batas maksimum tinggi */
+}
+
+.login-image {
+    flex: 1;
+    background-color: #e3f2fd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px; /* Diubah dari 40px */
+}
+
+.login-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+::placeholder {
+    color: #555; /* lebih gelap dari #757575 */
+    opacity: 1; /* pastikan tidak terlalu transparan */
+}
+
+.login-form {
+    flex: 1;
+    padding: 30px; /* Diubah dari 40px */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-header {
+    margin-bottom: 20px;
+    text-align: center;
+    margin-top: 20px;
+}
+.form-header img {
+    height: 70px;
+}
+.form-header h2 {
+    font-size: 25px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+.form-header p {
+    color: var(--light-text);
+    font-size: 16px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-control {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    outline: none;
+    font-family: "Poppins", sans-serif;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+}
+
+.form-control.is-invalid {
+    border-color: var(--secondary-color);
+}
+
+.invalid-feedback {
+    color: var(--secondary-color);
+    font-size: 14px;
+    margin-top: 5px;
+    display: block;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--light-text);
+}
+
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+}
+
+.remember-me input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: var(--primary-color);
+}
+
+.remember-me label {
+    color: var(--light-text);
+    font-size: 14px;
+}
+
+.forgot-password {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.btn-login {
+    width: 100%;
+    padding: 17px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: "Poppins", sans-serif;
+}
+
+.btn-login:hover {
+    background-color: var(--primary-dark);
+}
+
+.social-login {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.social-login p {
+    color: var(--light-text);
+    font-size: 14px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.social-login p::before,
+.social-login p::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background-color: #e0e0e0;
+}
+
+.social-login p::before {
+    left: 0;
+}
+
+.social-login p::after {
+    right: 0;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-icon {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #1e88e5;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.signin {
+    font-size: 14px;
+    margin-bottom: 15px;
+    position: relative;
+    text-align: center;
+    margin-top: 10px;
+}
+.signin a {
+    color: #555;
+}
+
+.form-control:focus,
+.btn-login:focus,
+.forgot-password:focus,
+.social-icon:focus {
+    outline: 2px solid var(--primary-light);
+    outline-offset: 2px;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .login-card {
+        flex-direction: column;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .login-image {
+        padding: 30px;
+    }
+
+    .login-form {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 900px) {
+    .login-card {
+        flex-direction: column;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .login-image {
+        display: none; /* sembunyikan gambar biar form full */
+    }
+
+    .login-form {
+        padding: 20px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-image {
+        display: none; /* Menyembunyikan gambar logo pada tampilan mobile */
+    }
+}
+@media (max-width: 576px) {
+    .login-image {
+        display: none; /* Menyembunyikan gambar logo pada tampilan mobile */
+    }
+
+    .login-form {
+        padding: 20px;
+    }
+
+    .form-header h2 {
+        font-size: 24px;
+    }
+
+    .form-header p {
+        font-size: 14px;
+    }
+
+    .form-control {
+        padding: 12px;
+    }
+
+    .btn-login {
+        padding: 12px;
+    }
+
+    .remember-forgot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .social-icon {
+        width: 40px;
+        height: 40px;
+    }
+}

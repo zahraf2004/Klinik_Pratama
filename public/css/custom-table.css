@@ -1,0 +1,95 @@
+.tenaga-table-wrapper {
+    overflow-x: auto;
+}
+
+.tenaga-table th,
+.tenaga-table td {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.tenaga-table td img {
+    display: block;
+    margin: 0 auto;
+}
+
+.tenaga-table td .btn {
+    margin-right: 4px;
+}
+
+.dropdown-menu {
+    min-width: 250px;
+    padding: 15px;
+    pointer-events: none;
+}
+.tenaga-table th {
+    cursor: pointer;
+}
+.dropdown-menu > * {
+    pointer-events: auto;
+}
+
+.sidebar-brandd {
+    margin-bottom: 5px;
+}
+
+.desc-col {
+    max-width: 200px;   /* lebar kolom */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* otomatis kasih ... */
+}
+
+.dosis-col {
+    max-width: 200px;   /* lebar kolom */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* otomatis kasih ... */
+}
+
+.foto-nakes {
+    width: 60px;
+    height: 60px;
+    object-fit: cover; /* crop otomatis biar ga gepeng */
+    border-radius: 50%; /* tetap bulat */
+    padding: 5px;
+}
+
+.obat-table-wrapper {
+    overflow-x: auto;
+}
+
+.obat-table th,
+.obat-table td {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.obat-table td img {
+    display: block;
+    margin: 0 auto;
+}
+
+.obat-table td .btn {
+    margin-right: 4px;
+}
+
+.obat-table th {
+    cursor: pointer;
+}
+
+.form-text {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    outline: none;
+    font-family: "Poppins", sans-serif;
+    color: #495057;
+    margin: 0px;
+}
+
+.badge-teal {
+  background-color: #FF894F; /* teal */
+  color: #fff;
+}

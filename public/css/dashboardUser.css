@@ -1,0 +1,188 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+/*dashboard bagian layanan*/
+.solution-section {
+    max-width: 1100px;
+    margin: auto;
+    font-family: "Nunito", sans-serif;
+}
+
+.solution-section h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-top: 50px;
+}
+
+.solution-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+.solution-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 15px 20px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.solution-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.solution-card img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+
+.solution-card h3 {
+    font-size: 16px;
+    margin-bottom: 3px;
+    color: #333;
+}
+
+.solution-card p {
+    font-size: 13px;
+    color: #777;
+}
+
+.solution-card .arrow {
+    margin-left: auto;
+    font-size: 20px;
+    color: #e91e63;
+    font-weight: bold;
+}
+
+/*dashboard bagian obat*/
+.product-section {
+    max-width: 1200px;
+    margin: auto;
+    font-family: "Nunito", sans-serif;
+}
+
+.product-section h2 {
+    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
+.categories {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.categories button {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.categories button.active {
+    border-color: #0069ab;
+    color: #0069ab;
+    background: #ecf4f8;
+}
+
+.categories button:hover {
+    background: #f7f7f7;
+}
+
+.categories .see-all {
+    margin-left: auto;
+    align-self: center;
+    color: #0069ab;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    background: #fff;
+    transition: 0.3s;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.product-card img {
+    max-width: 100%;
+    height: 150px;
+    object-fit: contain;
+    margin: 0 auto 10px; /* kiri-kanan auto = center */
+    display: block; /* penting biar auto jalan */
+}
+
+.product-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a3d7c;
+    margin: 10px 0;
+
+    /* Biar teks panjang jadi "..." */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    /* Batas lebar teks */
+    max-width: 100%;
+}
+
+.product-card .unit {
+    font-size: 16px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.product-card .price {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.product-card button {
+    background: #fff;
+    border: 1px solid #0069ab;
+    color: #0069ab;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.product-card button:hover {
+    background: #0069ab;
+    color: #fff;
+}
+
+.see-all.bottom {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #0069ab;
+    font-weight: bold;
+    text-decoration: none;
+}

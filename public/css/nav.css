@@ -1,0 +1,510 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+/* --- Aturan Dasar (Bisa Disesuaikan) --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Nunito", sans-serif;
+    line-height: 1.6;
+}
+
+/*navbar style*/
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px 5%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    font-family: "Nunito", sans-serif;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo img {
+    height: 40px;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #3d3d3d;
+    font-weight: 600;
+    font-size: 16px;
+    position: relative;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: #2d7bf4;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #2d7bf4;
+    border-radius: 2px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.user-profile i {
+    color: #2d7bf4;
+}
+
+.profile-name {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+/* Dropdown menu */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 240px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    z-index: 100;
+    top: 100%;
+    left: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    padding-top: 15px;
+}
+
+.dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 2;
+    background: white;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f5ff;
+    color: #2d7bf4;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dropdown::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: transparent;
+}
+
+/* dropdown profil user pada navbar*/
+.user-dropdown {
+    position: relative;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    border-radius: 6px;
+    display: none;
+    flex-direction: column;
+    z-index: 999;
+    min-width: 150px;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+    padding: 10px 20px;
+    text-align: left;
+    background: none;
+    border: none;
+    width: 100%;
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background-color: #f1f5ff;
+    color: #2d7bf4;
+}
+
+/* Hamburger Menu */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #333;
+    padding: 8px;
+}
+.btn {
+    display: inline-block;
+    background-image: linear-gradient(to left, #0069ab, #2cbeff);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.3s;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn:hover {
+    background: #1a66e0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-text {
+    font-family: "Nunito", sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Warna beda untuk atas & bawah */
+.logo-text .top {
+    display: block;
+    color: #00598d; /* biru tua */
+    font-size: 1rem;
+}
+
+.logo-text .bottom {
+    display: block;
+    color: #0084d4; /* biru cerah */
+    font-size: 1.2rem;
+}
+.hamburger {
+    display: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #333;
+    padding: 8px;
+    z-index: 1100; /* biar gak ketutup elemen lain */
+}
+
+/*header dan hero sytle*/
+.header {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    min-height: 600px; /* biar nggak terlalu pendek di HP */
+}
+
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* penuh layar */
+    overflow: hidden;
+}
+
+.bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* gambar penuh tanpa nyempil */
+}
+
+.hero_text {
+    position: absolute;
+    top: 50%;
+    left: 8%;
+    transform: translateY(-50%);
+    max-width: 500px;
+    z-index: 2;
+    margin-top: 50px;
+}
+
+.hero_text h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #3d3d3d;
+}
+.gradient-text {
+    background: linear-gradient(to right, #0179b4, #88d8ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+.hero_text p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: #4f4f4f;
+}
+.p_text {
+    color: #0084d4;
+}
+
+.hero_text .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(to right, #0069ab, #2cbeff);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.hero_text .btn:hover {
+    background: #1a66e0;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+    .navbar {
+        padding: 15px 3%;
+    }
+}
+/* Responsive styles */
+@media (max-width: 992px) {
+    .nav-links {
+        gap: 20px;
+    }
+    .profile-name {
+        display: none;
+    }
+    .filter2 {
+        gap: 15px 20px;
+    }
+    .hero {
+    background-position: center top; /* biar gak ketutup di layar kecil */
+    height: auto;
+    padding: 4rem 2rem;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .doctors-section {
+        position: static;
+    }
+
+    .doctors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    .about-content,
+    .vm-container {
+        flex-direction: column;
+    }
+
+    .hero {
+        padding: 70px 20px;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .bg-img {
+        object-fit: contain; /* biar nggak kepotong di HP */
+        background-color: #f0f4ff;
+    }
+    .hamburger {
+        display: block;
+    }
+    .logo-text {
+        display: inline;
+    }
+    .logo-text .top,
+    .logo-text .bottom {
+        display: inline;
+        margin-right: 0.3rem;
+        font-size: 1.1rem;
+    }
+    .navbar {
+        padding: 15px;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        background: white;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        gap: 15px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s;
+    }
+
+    .nav-links.active {
+        left: 0;
+    }
+
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-links a {
+        padding: 12px 0;
+        justify-content: center;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .user-profile .profile-name {
+        display: none;
+    }
+
+    .dropdown-content {
+        position: static;
+        box-shadow: none;
+        width: 100%;
+        border-radius: 0;
+        display: none;
+        padding-top: 0;
+        opacity: 1;
+        transform: none;
+    }
+
+    .dropdown-content::before {
+        display: none;
+    }
+
+    .dropdown.active .dropdown-content {
+        display: block;
+    }
+    .hero {
+        height: auto; /* biar gak terlalu tinggi di hp */
+    }
+
+    .hero_text {
+        top: auto;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        max-width: 90%;
+    }
+
+    .hero_text h1 {
+        font-size: 1.6rem;
+    }
+
+    .hero_text p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo img {
+        height: 35px;
+    }
+
+    .user-profile i {
+        font-size: 1.5rem;
+    }
+
+    .hamburger {
+        font-size: 20px;
+    }
+}
