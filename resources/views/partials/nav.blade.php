@@ -22,25 +22,32 @@
         </ul>
         
         @guest
-            <a href="{{ route('login') }}" class="btn ">Masuk</a>
+            <a href="{{ route('login') }}" class="btn">Masuk</a>
         @endguest
         @auth
-            <!-- Dropdown Profil -->
-            <div class="user-dropdown">
-                <div class="user-profile" id="profileDropdownBtn">
-                    <i class="fa-solid fa-circle-user fa-2xl"></i>
-                    <div class="profile-name">{{ Auth::user()->name }}</div>
-                    <i class="fas fa-caret-down"></i>
-                </div>
-                
-                <div class="dropdown-menu" id="profileDropdownMenu">
+            
+                <!-- Dropdown Profil -->
+                <div class="user-dropdown">
+                    <div class="user-profile" id="profileDropdownBtn">
+                        <i class="fa-solid fa-circle-user fa-2xl"></i>
+                        <div class="profile-name">{{ Auth::user()->name }}</div>
+                        <i class="fas fa-caret-down"></i>
+                    </div>
                     
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit">Logout</button>
-                    </form>
+                    <div class="dropdown-menu" id="profileDropdownMenu">
+                        @if(Auth::user()->role == 'pasien')
+                        <a href="/profil" class="dropdown-item">
+                            <i class="fa-regular fa-user"></i> Profil
+                        </a>
+                        @endif  
+                        <a href="#" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                    </div>
                 </div>
-            </div>
         @endauth
         
         <div class="hamburger" id="hamburger">

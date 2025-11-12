@@ -33,7 +33,7 @@
                     <option value="Menunggu">Menunggu</option>
                     <option value="Disetujui">Disetujui</option>
                     <option value="Selesai">Selesai</option>
-                    <option value="Jadwal_Ulang">Jadwal Ulang</option>
+                    <option value="Dibatalkan">Dibatalkan</option>
                   </select>
                 </div>
               </div>
@@ -60,38 +60,36 @@
               </thead>
 
               <tbody>
-                <tr>                     
-                  <td>1</td>
-                  <td class="nama-col">Ilham pratama</td>
-                  <td>2018-01-20</td>                                            
-                  <td>085381881683</td>
-                  <td>JL mawar</td>
-                  <td>Ada benjolan pada leher bagian kiri</td>
-                  <td>2025-08-20</td>
-                  <td>10:00</td>
-                  <td><div class="badge badge-success">Disetujui</div></td>
-                  <td></td>
-                  <td class="text-nowrap">
-                    <a href="#" class="btn btn-icon btn-primary me-1"><i class="far fa-edit"></i></a>
-                    <a href="#" class="btn btn-icon btn-danger"><i class="fas fa-times"></i></a>
+                @foreach ($appointments as $key => $a)
+                <tr>
+                  <td>{{ $key + 1 }}</td>
+                  <td>{{ $a->nama }}</td>
+                  <td>{{ $a->tanggal_lahir }}</td>
+                  <td>{{ $a->no_hp }}</td>
+                  <td class="desc-col">{{ $a->alamat }}</td>
+                  <td class="desc-col">{{ $a->keluhan }}</td>
+                  <td>{{ $a->tanggal }}</td>
+                  <td>{{ substr($a->jam, 0, 5) }}</td>
+                  <td>
+                    <span class="badge 
+                      @if($a->status == 'Disetujui') badge-success 
+                      @elseif($a->status == 'Menunggu') badge-secondary 
+                      @elseif($a->status == 'Dibatalkan') badge-danger 
+                      @else badge-info @endif">
+                      {{ $a->status }}
+                    </span>
                   </td>
-                </tr>  
-                <tr>                     
-                  <td>2</td>
-                  <td class="nama-col">Yulia</td>
-                  <td>2018-01-20</td>                                            
-                  <td>085381881683</td>
-                  <td>JL melati</td>
-                  <td>Demam sudah 3 hari</td>
-                  <td>2025-08-20</td>
-                  <td>11:00</td>
-                  <td><div class="badge badge-secondary">Menunggu</div></td>
-                  <td></td>
-                  <td class="text-nowrap">
-                    <a href="#" class="btn btn-icon btn-primary me-1"><i class="far fa-edit"></i></a>
-                    <a href="#" class="btn btn-icon btn-danger"><i class="fas fa-times"></i></a>
+                  <td class="desc-col">{{ $a->admin_notes ?? '-' }}</td>
+                  <td>
+                    <a href="#" class="btn btn-primary btn-sm btnEditJanji" data-id="{{ $a->id }}">
+                      <i class="far fa-edit"></i>
+                    </a>
+                    <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#editModal{{ $a->id }}">
+                      <i class="fas fa-trash"></i>
+                    </a>
                   </td>
-                </tr>  
+                </tr>
+                @endforeach
               </tbody>
             </table>
           </div>
@@ -121,13 +119,31 @@
 </section>
 
 <!-- Modal Popup -->
-  @include('adminDataNakes._modalForm')
+  @include('adminAppointment._modalformadmJanji')
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  <script>
+  $(document).ready(function() {
+    // Inisialisasi dropdown
+    $('.dropdown-toggle').dropdown();
+    
+    // Pastikan dropdown filter berfungsi
+    $('#filter-btn').on('click', function() {
+      $(this).next('.dropdown-menu').toggleClass('show');
+    });
+    
+    // Menerapkan filter saat nilai berubah
+    $('#filter-profesi').on('change', function() {
+      let profesi = $(this).val();
+      loadData(profesi);
+    });/
+  });
+</script>
+
 
 <script src="{{ asset('js/data_janjiAdmin.js') }}"></script>
-@endsection
+
 @endsection

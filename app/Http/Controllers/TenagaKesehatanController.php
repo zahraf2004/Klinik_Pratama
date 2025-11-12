@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\ImageManagerStatic as Image;
+use Carbon\Carbon;
 
 class TenagaKesehatanController extends Controller
 {
@@ -20,16 +21,28 @@ class TenagaKesehatanController extends Controller
             ->when($request->get('search'), function ($query, $s) {
                 $query->where(function ($q2) use ($s) {
                     $q2->where('nama', 'like', "%$s%")
-                       ->orWhere('email', 'like', "%$s%")
-                       ->orWhere('hp', 'like', "%$s%");
+                    ->orWhere('email', 'like', "%$s%")
+                    ->orWhere('hp', 'like', "%$s%");
                 });
             })
             ->latest();
-            
+
+        // === Bagian ini khusus untuk response AJAX (JSON) ===
         if ($request->ajax() || $request->wantsJson()) {
-            return response()->json($q->get());
+            $data = $q->get();
+
+            // ubah format tanggal lahir biar rapi
+            $data->transform(function ($item) {
+                if ($item->tanggal_lahir) {
+                    $item->tanggal_lahir = Carbon::parse($item->tanggal_lahir)->format('Y-m-d');
+                }
+                return $item;
+            });
+
+            return response()->json($data);
         }
-        
+
+        // === Kalau bukan AJAX, kirim ke view biasa ===
         $q = $q->paginate(10)->withQueryString();
         return view('tenaga_kesehatan.index', compact('q'));
     }
@@ -74,9 +87,14 @@ class TenagaKesehatanController extends Controller
         return redirect()->route('tenaga-kesehatan.index')->with('success', 'Data tenaga kesehatan berhasil ditambahkan.');
     }
 
-    public function show(TenagaKesehatan $tenaga_kesehatan)
+    public function show($id)
     {
-        return view('tenaga_kesehatan.show', ['tk' => $tenaga_kesehatan]);
+        $tk = TenagaKesehatan::findOrFail($id);
+        $tk->tanggal_lahir = $tk->tanggal_lahir
+            ? \Carbon\Carbon::parse($tk->tanggal_lahir)->format('Y-m-d')
+            : null;
+
+        return response()->json($tk);
     }
 
     public function edit(TenagaKesehatan $tenaga_kesehatan)

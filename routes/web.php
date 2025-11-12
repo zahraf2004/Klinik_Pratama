@@ -9,6 +9,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardAdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AppointmentAdminController;
+use App\Http\Controllers\ProfilPasienController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,9 +42,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('adminDataNakes.DataNakes');
     })->name('data-nakes.index');
 
-    // CRUD Tenaga Kesehatan
+    // CRUD Tenaga Kesehatan (lengkap termasuk show)
     Route::resource('tenaga-kesehatan', TenagaKesehatanController::class)
-        ->only(['index', 'store', 'update', 'destroy']);
+        ->only(['index', 'store', 'update', 'destroy', 'show']);
+
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -55,6 +58,47 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('obat', ObatController::class)
         ->only(['index', 'store', 'update', 'destroy', 'show']);
 });
+
+Route::get('/data-janji-berobat', [AppointmentAdminController::class, 'index'])
+    ->middleware('auth', 'role:admin')
+    ->name('appointment.admin');
+
+Route::get('/admin/appointments/{id}', [App\Http\Controllers\AppointmentAdminController::class, 'show'])->middleware('auth');
+Route::post('/admin/appointments/update/{id}', [App\Http\Controllers\AppointmentAdminController::class, 'updateStatus'])->middleware('auth');
+
+
+/*
+|--------------------------------------------------------------------------
+| Pasien Pages 
+|--------------------------------------------------------------------------
+*/
+// === ROUTE UNTUK Profil ===
+Route::get('/profil', function () {
+    return view('profilPasien.profil');
+});
+
+// === ROUTE UNTUK JANJI BEROBAT ===
+Route::middleware('auth')->group(function () {
+    Route::get('/janji-berobat', [AppointmentController::class, 'index'])->name('appointment.index');
+    Route::post('/janji-berobat', [AppointmentController::class, 'store'])->name('appointment.store');
+    Route::get('/janji-berobat/{id}', [AppointmentController::class, 'show'])->name('appointment.show');
+    Route::put('/janji-berobat/{id}', [AppointmentController::class, 'update'])->name('appointment.update');
+    Route::delete('/janji-berobat/{id}', [AppointmentController::class, 'destroy'])->name('appointment.destroy');
+});
+Route::get('/Janji-Berobat', function(){
+    return view('layanan.appointment');
+});
+Route::get('/Janji-Berobat/status', function(){
+    return view('layanan.status');
+});
+
+// Routes untuk profil pasien
+Route::middleware(['auth'])->prefix('pasien')->group(function () {
+    Route::get('/profil', [ProfilPasienController::class, 'show'])->name('pasien.profil');
+    Route::put('/profil/update', [ProfilPasienController::class, 'update'])->name('pasien.profil.update');
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | Other Pages akses harus login
@@ -66,14 +110,6 @@ Route::get('/obat-all', [ObatPublicController::class, 'all'])->name('obat.all');
 
 Route::get('/obat-details/{id}', [ObatPublicController::class, 'show'])->name('obat.show');
 
-// === ROUTE UNTUK JANJI BEROBAT ===
-Route::middleware('auth')->group(function () {
-    Route::get('/janji-berobat', [AppointmentController::class, 'index'])->name('appointment.index');
-    Route::post('/janji-berobat', [AppointmentController::class, 'store'])->name('appointment.store');
-    Route::get('/janji-berobat/{id}', [AppointmentController::class, 'show'])->name('appointment.show');
-    Route::put('/janji-berobat/{id}', [AppointmentController::class, 'update'])->name('appointment.update');
-    Route::delete('/janji-berobat/{id}', [AppointmentController::class, 'destroy'])->name('appointment.destroy');
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -94,20 +130,9 @@ Route::get('/layanan-kami', function(){
     return view('layanan.layanan_kami');
 });
 
-Route::get('/Janji-Berobat', function(){
-    return view('layanan.appointment');
-});
-Route::get('/Janji-Berobat/status', function(){
-    return view('layanan.status');
-});
-
 Route::get('/home', function () {
     return view('home.homepage');
 });
-
-Route::get('/data-janji-berobat', function () {
-    return view('adminAppointment.AppointmentAdmin');
-})->middleware('auth')->name('appointment.admin');
 
 Route::get('/data-pasien', function () {
     return view('adminDatapasien.DataPasien');

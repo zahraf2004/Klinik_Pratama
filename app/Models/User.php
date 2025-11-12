@@ -46,4 +46,22 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relasi ke Profil_Pasien (jika user adalah pasien)
+    public function profil_pasien()
+    {
+        return $this->hasOne(Profil_Pasien::class);
+    }
+
+    // Method untuk cek apakah user adalah pasien
+    public function isPasien()
+    {
+        return $this->role === 'pasien';
+    }
+
+    // Method untuk mendapatkan atau membuat patient profile
+    public function getProfilPasien()
+    {
+        return $this->profil_pasien ?? $this->profil_pasien()->create([]);
+    }
 }

@@ -35,7 +35,9 @@ $(document).ready(function () {
                 loadJanji();
                 Swal.fire({
                     icon: "success",
-                    title: id ? "Janji berhasil diupdate!" : "Janji berhasil ditambahkan!",
+                    title: id
+                        ? "Janji berhasil diupdate!"
+                        : "Janji berhasil ditambahkan!",
                     timer: 1500,
                     showConfirmButton: false,
                 });
@@ -78,37 +80,76 @@ $(document).ready(function () {
             res.forEach((item) => {
                 // Warna & ikon status
                 let statusMap = {
-                    menunggu: { text: "Menunggu", color: "#ff9800", icon: "fa-hourglass-half" },
-                    disetujui: { text: "Disetujui", color: "#4caf50", icon: "fa-check-circle" },
-                    selesai: { text: "Selesai", color: "#2196f3", icon: "fa-clipboard-check" },
-                    dibatalkan: { text: "Dibatalkan", color: "#f44336", icon: "fa-times-circle" },
+                    Menunggu: {
+                        text: "Menunggu",
+                        color: "#ff9800",
+                        icon: "fa-hourglass-half",
+                    },
+                    Disetujui: {
+                        text: "Disetujui",
+                        color: "#4caf50",
+                        icon: "fa-check-circle",
+                    },
+                    Selesai: {
+                        text: "Selesai",
+                        color: "#2196f3",
+                        icon: "fa-clipboard-check",
+                    },
+                    Dibatalkan: {
+                        text: "Dibatalkan",
+                        color: "#f44336",
+                        icon: "fa-times-circle",
+                    },
                 };
-                let status = statusMap[item.status] || statusMap["menunggu"];
+                let status = statusMap[item.status] || statusMap["Menunggu"];
 
                 html += `
                     <div class="appointment-item border rounded p-3 mb-3 shadow-sm">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="appointment-date text-muted">
-                                <i class="far fa-calendar-alt"></i> ${item.tanggal} - ${item.jam.slice(0, 5)}
+                                <i class="far fa-calendar-alt"></i> ${
+                                    item.tanggal
+                                } - ${item.jam.slice(0, 5)}
                             </span>
                             <span class="badge-status" 
-                                style="background:${status.color}; color:#fff; padding:5px 10px; border-radius:20px; font-size:12px;">
-                                <i class="fas ${status.icon}"></i> ${status.text}
+                                style="background:${
+                                    status.color
+                                }; color:#fff; padding:5px 10px; border-radius:20px; font-size:12px;">
+                                <i class="fas ${status.icon}"></i> ${
+                    status.text
+                }
                             </span>
                         </div>
 
                         <p><strong>${item.nama}</strong> - ${item.no_hp}</p>
-                        <p><i class="fas fa-map-marker-alt"></i> ${item.alamat}</p>
-                        <p><i class="fas fa-notes-medical"></i> ${item.keluhan}</p>
-                        ${item.admin_notes ? `<p><em>Catatan Admin: ${item.admin_notes}</em></p>` : ""}
+                        <p><i class="fa-regular fa-calendar"></i> Tanggal Lahir ${
+                            item.tanggal_lahir
+                        }</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Alamat ${
+                            item.alamat
+                        }</p>
+                        <p><i class="fas fa-notes-medical"></i> ${
+                            item.keluhan
+                        }</p>
+                        ${
+                            item.admin_notes
+                                ? `<p><em>Catatan Admin: ${item.admin_notes}</em></p>`
+                                : ""
+                        }
 
                         <div class="d-flex gap-2 mt-2">
-                            ${item.status === "menunggu" ? `
+                            ${
+                                item.status === "Menunggu"
+                                    ? `
                                 <button class="btn btn-sm btn-outline-primary btnEdit" data-id="${item.id}">
                                     <i class="far fa-edit"></i> Edit
                                 </button>
-                            ` : ""}
-                            <button class="btn btn-sm btn-outline-danger btnDelete" data-id="${item.id}">
+                            `
+                                    : ""
+                            }
+                            <button class="btn btn-sm btn-outline-danger btnDelete" data-id="${
+                                item.id
+                            }">
                                 <i class="fas fa-trash"></i> Hapus
                             </button>
                         </div>
@@ -128,6 +169,7 @@ $(document).ready(function () {
             $("#idJanji").val(data.id);
             $("input[name=nama]").val(data.nama);
             $("input[name=no_hp]").val(data.no_hp);
+            $("input[name=tanggal_lahir]").val(data.tanggal_lahir);
             $("textarea[name=alamat]").val(data.alamat);
             $("input[name=tanggal]").val(data.tanggal);
             $("input[name=jam]").val(data.jam);
@@ -145,7 +187,7 @@ $(document).ready(function () {
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus",
-            cancelButtonText: "Batal"
+            cancelButtonText: "Batal",
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
@@ -153,7 +195,7 @@ $(document).ready(function () {
                     type: "POST", // kirim via POST
                     data: {
                         _method: "DELETE", // Laravel bakal ngerti ini DELETE
-                        _token: $('meta[name="csrf-token"]').attr("content")
+                        _token: $('meta[name="csrf-token"]').attr("content"),
                     },
                     success: function () {
                         loadJanji();

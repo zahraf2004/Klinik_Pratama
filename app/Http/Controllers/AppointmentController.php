@@ -30,6 +30,7 @@ class AppointmentController extends Controller
         $request->validate([
             'nama' => 'required|string|max:100',
             'no_hp' => 'required|string|max:20',
+            'tanggal_lahir' => 'required|date',
             'alamat' => 'required|string',
             'tanggal' => 'required|date',
             'jam' => 'required',
@@ -40,11 +41,12 @@ class AppointmentController extends Controller
             'user_id' => Auth::id(), // ✅ otomatis ambil ID user yang login
             'nama' => $request->nama,
             'no_hp' => $request->no_hp,
+            'tanggal_lahir' => $request->tanggal_lahir,
             'alamat' => $request->alamat,
             'tanggal' => $request->tanggal,
             'jam' => $request->jam,
             'keluhan' => $request->keluhan,
-            'status' => 'menunggu',
+            'status' => 'Menunggu',
         ]);
 
         return response()->json($appointment);
@@ -73,7 +75,7 @@ class AppointmentController extends Controller
         }
 
         // hanya bisa ubah kalau masih menunggu
-        if ($appointment->status !== 'menunggu') {
+        if ($appointment->status !== 'Menunggu') {
             return response()->json(['message' => 'Janji tidak dapat diubah karena sudah divalidasi'], 400);
         }
 

@@ -1,0 +1,258 @@
+.pasien-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.pasien-main-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.pasien-content-area {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+}
+
+/* Cards */
+.pasien-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.pasien-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.pasien-card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.pasien-card-action {
+    color: #3498db;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Profile Section */
+.pasien-profile-info {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.pasien-profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #ecf0f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #3498db;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.pasien-profile-details {
+    flex: 1;
+}
+
+.pasien-profile-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.pasien-profile-id {
+    color: #95a5a6;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.pasien-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.pasien-info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.pasien-info-label {
+    font-size: 0.85rem;
+    color: #95a5a6;
+    margin-bottom: 5px;
+}
+
+.pasien-info-value {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* Appointments */
+.pasien-appointment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.pasien-appointment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: rgba(52, 152, 219, 0.05);
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+}
+
+.pasien-appointment-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.pasien-appointment-doctor {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.pasien-appointment-date {
+    color: #95a5a6;
+    font-size: 0.9rem;
+}
+
+.pasien-appointment-status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.pasien-status-confirmed {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #27ae60;
+}
+
+.pasien-status-pending {
+    background-color: rgba(243, 156, 18, 0.2);
+    color: #f39c12;
+}
+
+/* Stats */
+.pasien-profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.pasien-stat-item {
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgba(52, 152, 219, 0.05);
+    border: 1px solid rgba(52, 152, 219, 0.1);
+}
+
+.pasien-stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #3498db;
+}
+
+.pasien-stat-label {
+    font-size: 0.9rem;
+    color: #95a5a6;
+}
+
+/* Quick Actions */
+.pasien-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.pasien-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 15px;
+    background-color: rgba(52, 152, 219, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(52, 152, 219, 0.1);
+}
+
+.pasien-action-btn:hover {
+    background-color: rgba(52, 152, 219, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pasien-action-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #3498db;
+}
+
+.pasien-action-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .pasien-content-area {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .pasien-profile-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .pasien-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pasien-profile-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .pasien-quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .pasien-appointment-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

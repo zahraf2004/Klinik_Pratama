@@ -8,7 +8,7 @@
 
   <!-- Font & Icon -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
   <!-- CSS -->
@@ -19,6 +19,10 @@
   <link rel="stylesheet" href="{{ asset('css/appointment.css') }}">
   <link rel="stylesheet" href="{{ asset('css/custom-table.css') }}">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  
+  <link rel="stylesheet" href="{{asset('css/about.css')}}">    
+  <link rel="stylesheet" href="{{asset('css/contact.css')}}">
+  <link rel="stylesheet" href="{{asset('css/profil.css')}}">
 
   <!-- Tailwind (optional for extra styling) -->
   <script src="https://cdn.tailwindcss.com"></script>

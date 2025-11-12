@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class TenagaKesehatan extends Model
 {
@@ -40,5 +41,11 @@ class TenagaKesehatan extends Model
         return $this->foto_path
             ? Storage::disk('public')->url($this->foto_path)
             : null;
+    }
+
+    // 🔹 Tambahan: format tanggal_lahir otomatis ke Y-m-d saat diambil (JSON / Blade / AJAX)
+    public function getTanggalLahirAttribute($value)
+    {
+        return $value ? Carbon::parse($value)->format('Y-m-d') : null;
     }
 }
