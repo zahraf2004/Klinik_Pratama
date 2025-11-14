@@ -72,10 +72,6 @@ Route::post('/admin/appointments/update/{id}', [App\Http\Controllers\Appointment
 | Pasien Pages 
 |--------------------------------------------------------------------------
 */
-// === ROUTE UNTUK Profil ===
-Route::get('/profil', function () {
-    return view('profilPasien.profil');
-});
 
 // === ROUTE UNTUK JANJI BEROBAT ===
 Route::middleware('auth')->group(function () {
@@ -92,9 +88,12 @@ Route::get('/Janji-Berobat/status', function(){
     return view('layanan.status');
 });
 
-// Routes untuk profil pasien
-Route::middleware(['auth'])->prefix('pasien')->group(function () {
+// Route untuk profil pasien (dijalankan oleh controller) - pakai middleware auth
+Route::middleware(['auth'])->group(function () {
+    // URL: /profil  -> controller show()
     Route::get('/profil', [ProfilPasienController::class, 'show'])->name('pasien.profil');
+
+    // Update profil (PUT)
     Route::put('/profil/update', [ProfilPasienController::class, 'update'])->name('pasien.profil.update');
 });
 

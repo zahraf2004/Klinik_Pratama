@@ -1,6 +1,6 @@
 <div class="modal fade" id="modalProfil" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <form id="formProfil" method="POST" enctype="multipart/form-data">
+        <form id="formProfil" method="POST" enctype="multipart/form-data" data-action="{{ route('pasien.profil.update') }}">
             @csrf
             @method('PUT')
             <input type="hidden" id="idProfil" name="id">

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PatientProfile extends Model
+class ProfilPasien extends Model
 {
     use HasFactory;
+
+    protected $table = 'profil_pasien';
 
     protected $fillable = [
         'user_id',
@@ -24,16 +26,14 @@ class PatientProfile extends Model
     protected $casts = [
         'tanggal_lahir' => 'date',
         'berat_badan' => 'decimal:2',
-        'tinggi_badan' => 'decimal:2'
+        'tinggi_badan' => 'decimal:2',
     ];
 
-    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Accessor untuk BMI
     public function getBmiAttribute()
     {
         if ($this->tinggi_badan && $this->berat_badan) {
@@ -41,5 +41,15 @@ class PatientProfile extends Model
             return number_format($this->berat_badan / ($tinggi_meter * $tinggi_meter), 1);
         }
         return null;
+    }
+
+    public function getTanggalLahirFormattedAttribute()
+    {
+        return $this->tanggal_lahir ? $this->tanggal_lahir->format('d F Y') : null;
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'user_id', 'user_id');
     }
 }

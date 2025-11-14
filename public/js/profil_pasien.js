@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    // Gunakan variabel global yang sudah didefinisikan
+    const updateUrl = window.profilUpdateUrl || $("#formProfil").data('action') || "/pasien/profil/update";
+    const csrfToken = window.csrfToken || $('meta[name="csrf-token"]').attr('content');
+
     // Open modal when Edit Profil clicked
     $("#btnEditProfil").click(function () {
         $("#modalProfil").modal("show");
@@ -35,13 +39,13 @@ $(document).ready(function () {
         let formData = new FormData(this);
 
         $.ajax({
-            url: "{{ route('pasien.profil.update') }}",
+            url: updateUrl,
             type: "POST",
             data: formData,
             processData: false,
             contentType: false,
             headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                "X-CSRF-TOKEN": csrfToken,
             },
             success: function (response) {
                 $("#modalProfil").modal("hide");
