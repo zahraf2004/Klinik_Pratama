@@ -88,19 +88,26 @@ $(document).ready(function () {
 
     // Delete
     $(document).on("click", ".btnDelete", function () {
-        if (!confirm("Yakin hapus data ini?")) return;
-
         let id = $(this).data("id");
-        $.ajax({
-            url: "/tenaga-kesehatan/" + id,
-            type: "POST",
-            data: {
-                _method: "DELETE",
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: function () {
-                loadData();
-            },
+        Swal.fire({
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            title: "Konfirmasi",
+            text: "Yakin hapus data ini?",
+            icon: "warning", showCancelButton: true, confirmButtonText: "Ya, hapus!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/obat/" + id,
+                    type: "POST",
+                    data: { _method: "DELETE", _token: $('meta[name="csrf-token"]').attr("content") },
+                    success: function () {
+                        loadData();
+                        Swal.fire({ icon: "success", title: "Dihapus", timer: 1400, showConfirmButton: false });
+                    },
+                    error: function (xhr) { console.error(xhr); Swal.fire({icon:'error',title:'Gagal'}); }
+                });
+            }
         });
     });
 });

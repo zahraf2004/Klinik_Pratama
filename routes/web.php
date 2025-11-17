@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardAdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AppointmentAdminController;
+use App\Http\Controllers\AppointmentDokterController;
 use App\Http\Controllers\ProfilPasienController;
 
 /*
@@ -66,6 +67,19 @@ Route::get('/data-janji-berobat', [AppointmentAdminController::class, 'index'])
 Route::get('/admin/appointments/{id}', [App\Http\Controllers\AppointmentAdminController::class, 'show'])->middleware('auth');
 Route::post('/admin/appointments/update/{id}', [App\Http\Controllers\AppointmentAdminController::class, 'updateStatus'])->middleware('auth');
 
+/*
+|--------------------------------------------------------------------------
+| Dokter Pages 
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dokter/janji-temu', [AppointmentDokterController::class, 'index'])
+        ->name('doctor.appointment.index');
+
+    Route::get('/dokter/janji-temu/{id}', [AppointmentDokterController::class, 'show'])
+        ->name('doctor.appointment.show');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -80,12 +94,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/janji-berobat/{id}', [AppointmentController::class, 'show'])->name('appointment.show');
     Route::put('/janji-berobat/{id}', [AppointmentController::class, 'update'])->name('appointment.update');
     Route::delete('/janji-berobat/{id}', [AppointmentController::class, 'destroy'])->name('appointment.destroy');
-});
-Route::get('/Janji-Berobat', function(){
-    return view('layanan.appointment');
-});
-Route::get('/Janji-Berobat/status', function(){
-    return view('layanan.status');
 });
 
 // Route untuk profil pasien (dijalankan oleh controller) - pakai middleware auth
@@ -108,6 +116,13 @@ Route::get('/dashboard', [ObatPublicController::class, 'index'])->name('obat.ind
 Route::get('/obat-all', [ObatPublicController::class, 'all'])->name('obat.all');
 
 Route::get('/obat-details/{id}', [ObatPublicController::class, 'show'])->name('obat.show');
+
+Route::get('/Janji-Berobat', function(){
+    return view('layanan.appointment');
+});
+Route::get('/Janji-Berobat/status', function(){
+    return view('layanan.status');
+});
 
 
 /*

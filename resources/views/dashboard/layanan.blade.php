@@ -13,17 +13,17 @@
       </div>
 
       <!-- Card 2 -->
-      <div class="solution-card">
+      <div class="solution-card" onclick="window.location='/Janji-Berobat'">
         <img src="{{asset('img/ilustrasi_appoint1.jpeg')}}" alt="Janji Berobat">
         <div>
           <h3>Janji Berobat</h3>
-          <p>Atur jadwal konsultasi di rumah sakit</p>
+          <p>Atur jadwal konsultasi di klinik</p>
         </div>
         <span class="arrow">›</span>
       </div>
 
       <!-- Card 3 -->
-      <div class="solution-card">
+      <div class="solution-card" onclick="window.location='/obat-all'">
         <img src="{{asset('img/ilustrasi_obat1.jpeg')}}" alt="Informasi Obat">
         <div>
           <h3>Lihat Informasi Obat</h3>
