@@ -13,6 +13,8 @@ use App\Http\Controllers\AppointmentAdminController;
 use App\Http\Controllers\AppointmentDokterController;
 use App\Http\Controllers\ProfilPasienController;
 use App\Http\Controllers\DashboardDokterController;
+use Chatify\Chatify;
+use App\Http\Controllers\TelemedicineController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,23 +107,42 @@ Route::get('/nakes/dashboard', [DashboardDokterController::class, 'dokter'])
 |--------------------------------------------------------------------------
 */
 
-// === ROUTE UNTUK JANJI BEROBAT ===
-Route::middleware('auth')->group(function () {
-    Route::get('/janji-berobat', [AppointmentController::class, 'index'])->name('appointment.index');
-    Route::post('/janji-berobat', [AppointmentController::class, 'store'])->name('appointment.store');
-    Route::get('/janji-berobat/{id}', [AppointmentController::class, 'show'])->name('appointment.show');
-    Route::put('/janji-berobat/{id}', [AppointmentController::class, 'update'])->name('appointment.update');
-    Route::delete('/janji-berobat/{id}', [AppointmentController::class, 'destroy'])->name('appointment.destroy');
-});
-
-// Route untuk profil pasien (dijalankan oleh controller) - pakai middleware auth
 Route::middleware(['auth'])->group(function () {
-    // URL: /profil  -> controller show()
-    Route::get('/profil', [ProfilPasienController::class, 'show'])->name('pasien.profil');
 
-    // Update profil (PUT)
+    /*
+    |--------------------------------------------------------------------------
+    | Janji Berobat
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('janji-berobat')->name('appointment.')->group(function () {
+        Route::get('/', [AppointmentController::class, 'index'])->name('index');
+        Route::post('/', [AppointmentController::class, 'store'])->name('store');
+        Route::get('/{id}', [AppointmentController::class, 'show'])->name('show');
+        Route::put('/{id}', [AppointmentController::class, 'update'])->name('update');
+        Route::delete('/{id}', [AppointmentController::class, 'destroy'])->name('destroy');
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profil Pasien
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/profil', [ProfilPasienController::class, 'show'])->name('pasien.profil');
     Route::put('/profil/update', [ProfilPasienController::class, 'update'])->name('pasien.profil.update');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Konsultasi / Telemedicine
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/konsultasi', [TelemedicineController::class, 'index'])
+        ->name('konsultasi.index');
 });
+
+
+
 
 
 /*
@@ -140,6 +161,11 @@ Route::get('/Janji-Berobat', function(){
 });
 Route::get('/Janji-Berobat/status', function(){
     return view('layanan.status');
+});
+
+//route chatify
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/chatify', [\Chatify\Http\Controllers\MessagesController::class, 'index'])->name('chatify');
 });
 
 

@@ -12,7 +12,7 @@
             <li class="dropdown">
                 <a href="#">Layanan <i class="fas fa-caret-down"></i></a>
                 <div class="dropdown-content">
-                    <a href="/pilih-Dokter"><i class="fas fa-stethoscope"></i> Konsultasi Dokter Online</a>
+                    <a href="/konsultasi"><i class="fas fa-stethoscope"></i> Konsultasi Dokter Online</a>
                     <a href="/Janji-Berobat"><i class="fa-regular fa-calendar"></i> Janji berobat</a>
                     <a href="/layanan-kami"><i class="fas fa-capsules"></i> Layanan lainnya</a>
                 </div>

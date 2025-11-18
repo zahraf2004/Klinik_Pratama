@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{asset('css/contact.css')}}">
     <link rel="stylesheet" href="{{asset('css/obat_all.css')}}">
     <link rel="stylesheet" href="{{asset('css/profil.css')}}">
+    <link rel="stylesheet" href="{{asset('css/telemedicine.css')}}">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>

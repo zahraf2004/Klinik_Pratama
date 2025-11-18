@@ -4,7 +4,7 @@
     <div class="solution-grid">
       <!-- Card 1 -->
       <div class="solution-card">
-        <img src="{{asset('img/ilustrasi_r.png')}}" alt="Konsultasi Online">
+        <img src="{{asset('img/ilustrasi_r.png')}}" onclick="window.location='/konsultas'">
         <div>
           <h3>Konsultasi Online</h3>
           <p>Chat dengan dokter kapan saja</p>
