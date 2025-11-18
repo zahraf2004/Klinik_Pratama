@@ -12,6 +12,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AppointmentAdminController;
 use App\Http\Controllers\AppointmentDokterController;
 use App\Http\Controllers\ProfilPasienController;
+use App\Http\Controllers\DashboardDokterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,60 +28,77 @@ Route::post('/registrasi', [RegisController::class, 'register']);
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard (Admin)
+| Dashboard Admin
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard-admin', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
+Route::get('/dashboard-admin', [DashboardAdminController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.dashboard');
+
 
 /*
 |--------------------------------------------------------------------------
-| Admin Only Routes
+| Admin Only Routes (Group)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    // Halaman utama Data Nakes (Blade)
+
+    /*
+    |-----------------------------
+    | Data Nakes Admin
+    |-----------------------------
+    */
     Route::get('/admin/data-nakes', function () {
         return view('adminDataNakes.DataNakes');
     })->name('data-nakes.index');
 
-    // CRUD Tenaga Kesehatan (lengkap termasuk show)
     Route::resource('tenaga-kesehatan', TenagaKesehatanController::class)
         ->only(['index', 'store', 'update', 'destroy', 'show']);
 
-});
-
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    // Halaman utama Data Obat (Blade)
+    /*
+    |-----------------------------
+    | Data Obat Admin
+    |-----------------------------
+    */
     Route::get('/data-obat', function () {
         return view('adminDataObat.DataObat');
     })->name('data-obat.index');
 
-    // CRUD Tenaga Kesehatan
     Route::resource('obat', ObatController::class)
         ->only(['index', 'store', 'update', 'destroy', 'show']);
+
+    /*
+    |-----------------------------
+    | Janji Berobat (Appointment Admin)
+    |-----------------------------
+    */
+    Route::get('/data-janji-berobat', [AppointmentAdminController::class, 'index'])
+        ->name('appointment.admin');
+
+    Route::get('/admin/appointments/{id}', [AppointmentAdminController::class, 'show'])
+        ->name('appointment.admin.show');
+
+    Route::post('/admin/appointments/update/{id}', [AppointmentAdminController::class, 'updateStatus'])
+        ->name('appointment.admin.update');
 });
 
-Route::get('/data-janji-berobat', [AppointmentAdminController::class, 'index'])
-    ->middleware('auth', 'role:admin')
-    ->name('appointment.admin');
-
-Route::get('/admin/appointments/{id}', [App\Http\Controllers\AppointmentAdminController::class, 'show'])->middleware('auth');
-Route::post('/admin/appointments/update/{id}', [App\Http\Controllers\AppointmentAdminController::class, 'updateStatus'])->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
-| Dokter Pages 
+| Nakes Pages 
 |--------------------------------------------------------------------------
 */
+Route::middleware(['auth', 'role:dokter,bidan,perawat'])
+    ->prefix('nakes')
+    ->group(function () {
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dokter/janji-temu', [AppointmentDokterController::class, 'index'])
-        ->name('doctor.appointment.index');
-
-    Route::get('/dokter/janji-temu/{id}', [AppointmentDokterController::class, 'show'])
-        ->name('doctor.appointment.show');
-});
-
+        Route::get('/janji-temu', [AppointmentDokterController::class, 'index']);
+        Route::get('/janji-temu/{id}', [AppointmentDokterController::class, 'show']);
+    });
+Route::get('/nakes/dashboard', [DashboardDokterController::class, 'dokter'])
+    ->middleware(['auth', 'role:dokter,bidan,perawat'])
+    ->name('dokter.Dashboard');
+    
 /*
 |--------------------------------------------------------------------------
 | Pasien Pages 

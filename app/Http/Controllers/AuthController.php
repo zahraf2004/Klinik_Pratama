@@ -75,17 +75,16 @@ class AuthController extends Controller
      */
     private function redirectBasedOnRole($user)
     {
-        // Simpan pesan sukses di session
         session()->flash('login_success', 'Selamat datang, ' . $user->name);
-        
+
         if ($user->role === 'admin') {
             return redirect('/dashboard-admin');
-        } elseif ($user->role === 'dokter') {
-            return redirect('/dashboard');
-        } elseif ($user->role === 'bidan') {
-            return redirect('/dashboad');
-        } else {
-            return redirect('/dashboard');
         }
+
+        if (in_array($user->role, ['dokter', 'bidan', 'perawat'])) {
+            return redirect('/nakes/dashboard');
+        }
+
+        return redirect('/dashboard');
     }
 }

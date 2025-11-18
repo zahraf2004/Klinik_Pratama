@@ -2,11 +2,11 @@
     <div class="col-lg-4 col-md-6 col-sm-6 col-12">
   <div class="card card-statistic-1">
     <div class="card-icon bg-info">
-      <i class="fa-solid fa-users fa-2xl" style="color: #fbfcfe;"></i>
+      <i class="fa-solid fa-circle-check fa-2xl" style="color: #ffffff;"></i>
     </div>
     <div class="card-wrap">
       <div class="card-header">
-        <h4>Total Nakes</h4>
+        <h4>Janji Selesai</h4>
       </div>
       <div class="card-body">
         {{ $totalNakes }}
@@ -33,14 +33,14 @@
     <div class="col-lg-4 col-md-6 col-sm-6 col-12">
       <div class="card card-statistic-1">
         <div class="card-icon bg-success">
-          <i class="fa-solid fa-pills fa-2xl" style="color: #f7f7f8;"></i>
+          <i class="fa-regular fa-comment fa-2xl" style="color: #ffffff;"></i>
         </div>
         <div class="card-wrap">
           <div class="card-header">
-            <h4>Informasi Obat</h4>
+            <h4>Chat Terbaru</h4>
           </div>
           <div class="card-body">
-            {{ $totalObat }}
+            1
           </div>
         </div>
       </div>

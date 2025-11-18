@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Janji Temu - Nakes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #3498db;
@@ -40,7 +41,7 @@
         /* Sidebar Styles */
         .sidebar {
             width: 250px;
-            background-color: var(--primary);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             padding: 20px 0;
             box-shadow: var(--box-shadow);
@@ -74,6 +75,7 @@
             align-items: center;
             transition: background-color 0.3s;
             cursor: pointer;
+            position: relative;
         }
 
         .nav-item:hover {
@@ -88,6 +90,21 @@
         .nav-icon {
             margin-right: 10px;
             font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            margin-left: auto;
         }
 
         /* Main Content Styles */
@@ -102,11 +119,16 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
         }
 
         .greeting h2 {
             font-size: 1.8rem;
             color: var(--dark);
+            margin-bottom: 5px;
         }
 
         .date {
@@ -115,7 +137,8 @@
         }
 
         .stats {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -123,15 +146,19 @@
         .stat-card {
             background: white;
             border-radius: var(--border-radius);
-            padding: 15px;
+            padding: 20px;
             box-shadow: var(--box-shadow);
-            flex: 1;
             display: flex;
             align-items: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
 
         .stat-icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-right: 15px;
             color: var(--primary);
         }
@@ -270,6 +297,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
             position: relative;
+            background: white;
         }
 
         .appointment-card:hover {
@@ -309,7 +337,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -430,19 +458,6 @@
             opacity: 0.9;
         }
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--danger);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7rem;
-            margin-left: 5px;
-        }
-
         /* Detail Panel */
         .detail-panel {
             width: 300px;
@@ -472,7 +487,7 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -636,11 +651,39 @@
             }
             
             .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .appointment-header {
                 flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .search-box {
+                width: 100%;
             }
         }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -706,6 +749,13 @@
                     <div class="stat-info">
                         <h3>1</h3>
                         <p>Urgent</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="stat-info">
+                        <h3>5</h3>
+                        <p>Selesai</p>
                     </div>
                 </div>
             </div>
@@ -878,6 +928,38 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Appointment Card 4 - Completed -->
+                        <div class="appointment-card completed" onclick="selectAppointment(4)">
+                            <div class="card-header">
+                                <div class="patient-info">
+                                    <div class="patient-avatar">RD</div>
+                                    <div class="patient-details">
+                                        <h4>Rina Dwi Lestari</h4>
+                                        <p>38 Tahun • Perempuan</p>
+                                    </div>
+                                </div>
+                                <div class="appointment-time">
+                                    <div class="time">08:30 - 09:00</div>
+                                    <div class="date">Hari ini</div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="complaint">Kontrol kehamilan trimester 2</p>
+                                <span class="payment-status paid">Lunas</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="online-indicator">
+                                    <div class="online-dot" style="background-color: #ccc;"></div>
+                                    <span>Offline</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn btn-detail"><i class="fas fa-info-circle"></i> Detail</button>
+                                    <button class="btn btn-chat"><i class="fas fa-comment"></i> Chat</button>
+                                    <button class="btn btn-start" style="background-color: var(--gray);"><i class="fas fa-check"></i> Selesai</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -978,6 +1060,13 @@
                 alert('Memulai janji temu...');
                 // Dalam implementasi nyata, ini akan mengubah status janji temu
             });
+        });
+
+        // Menambahkan tanggal terkini secara otomatis
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.querySelector('.date').textContent = now.toLocaleDateString('id-ID', options);
         });
     </script>
 </body>

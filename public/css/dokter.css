@@ -1,0 +1,17 @@
+
+.schedule-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.schedule-list li {
+    display: flex;
+    justify-content: space-between;
+    background: #f8f9fa;
+    padding: 10px 13px;
+    border-radius: 7px;
+    margin-bottom: 8px;
+    border-left: 4px solid #4e9cff;
+}
+

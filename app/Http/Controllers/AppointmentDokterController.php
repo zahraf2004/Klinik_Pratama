@@ -14,11 +14,11 @@ class AppointmentDokterController extends Controller
     public function index()
     {
         // Jika belum ada relasi dokter -> tampilkan hanya status disetujui
-        $appointments = Appointment::where('status', 'disetujui')
+        $appointments = Appointment::where('status', 'Disetujui')
                                    ->latest()
                                    ->get();
 
-        return view('Dokter.JanjiTemuDokter', compact('appointments'));
+        return view('dokter.JanjiTemuDokter', compact('appointments'));
     }
 
     /**

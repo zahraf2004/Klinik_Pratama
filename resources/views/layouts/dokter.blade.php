@@ -21,11 +21,15 @@
 
   <link rel="stylesheet" href="{{ asset('css/custom-table.css') }}">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/dokter.css') }}">
 </head>
 
 <body>
   <div id="app">
     <div class="main-wrapper">
+
+    {{-- Sidebar --}}
+      @include('partials.navdokter')
 
       {{-- Sidebar --}}
       @include('partials.sidebardokter')
