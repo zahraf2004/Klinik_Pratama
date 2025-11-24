@@ -18,15 +18,18 @@ class TenagaKesehatan extends Model
         'user_id',
         'foto_path',
         'nama',
-        'tanggal_lahir',
         'email',
         'hp',
-        'alumnus',
-        'profesi',
+        'str',
+        'sip',
+        'tahun_mulai',
+        'role',
+        'jadwal_shift',
     ];
 
     protected $casts = [
-        'tanggal_lahir' => 'date',
+        'jadwal_shift' => 'array',
+        'tahun_mulai' => 'integer',
     ];
 
     // Relasi opsional ke users
@@ -43,9 +46,53 @@ class TenagaKesehatan extends Model
             : null;
     }
 
-    // 🔹 Tambahan: format tanggal_lahir otomatis ke Y-m-d saat diambil (JSON / Blade / AJAX)
-    public function getTanggalLahirAttribute($value)
+    // Helper untuk mendapatkan jadwal shift berdasarkan tanggal
+    public function getJadwalByTanggal($tanggal)
     {
-        return $value ? Carbon::parse($value)->format('Y-m-d') : null;
+        if (!$this->jadwal_shift) {
+            return null;
+        }
+        
+        $date = \Carbon\Carbon::parse($tanggal);
+        
+        return collect($this->jadwal_shift)->first(function ($jadwal) use ($date) {
+            $mulai = \Carbon\Carbon::parse($jadwal['tanggal_mulai']);
+            $selesai = \Carbon\Carbon::parse($jadwal['tanggal_selesai']);
+            
+            return $date->between($mulai, $selesai);
+        });
+    }
+    
+    // Helper untuk cek apakah tersedia di tanggal tertentu
+    public function isAvailableOnDate($tanggal)
+    {
+        return $this->getJadwalByTanggal($tanggal) !== null;
+    }
+    
+    // Helper untuk mendapatkan jadwal shift aktif saat ini
+    public function getCurrentShift()
+    {
+        return $this->getJadwalByTanggal(now());
+    }
+    
+    // Helper untuk menghitung pengalaman otomatis dari tahun mulai
+    public function getPengalamanAttribute()
+    {
+        if (!$this->tahun_mulai) {
+            return null;
+        }
+        
+        $tahunSekarang = date('Y');
+        $lamaKerja = $tahunSekarang - $this->tahun_mulai;
+        
+        if ($lamaKerja < 0) {
+            return 'Belum mulai';
+        } elseif ($lamaKerja == 0) {
+            return 'Kurang dari 1 tahun';
+        } elseif ($lamaKerja == 1) {
+            return '1 tahun';
+        } else {
+            return $lamaKerja . ' tahun';
+        }
     }
 }

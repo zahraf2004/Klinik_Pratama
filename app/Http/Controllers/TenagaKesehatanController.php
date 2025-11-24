@@ -17,12 +17,14 @@ class TenagaKesehatanController extends Controller
     public function index(Request $request)
     {
         $q = TenagaKesehatan::query()
-            ->when($request->get('profesi'), fn($query, $p) => $query->where('profesi', $p))
+            ->when($request->get('role'), fn($query, $r) => $query->where('role', $r))
             ->when($request->get('search'), function ($query, $s) {
                 $query->where(function ($q2) use ($s) {
                     $q2->where('nama', 'like', "%$s%")
                     ->orWhere('email', 'like', "%$s%")
-                    ->orWhere('hp', 'like', "%$s%");
+                    ->orWhere('hp', 'like', "%$s%")
+                    ->orWhere('str', 'like', "%$s%")
+                    ->orWhere('sip', 'like', "%$s%");
                 });
             })
             ->latest();
@@ -30,15 +32,6 @@ class TenagaKesehatanController extends Controller
         // === Bagian ini khusus untuk response AJAX (JSON) ===
         if ($request->ajax() || $request->wantsJson()) {
             $data = $q->get();
-
-            // ubah format tanggal lahir biar rapi
-            $data->transform(function ($item) {
-                if ($item->tanggal_lahir) {
-                    $item->tanggal_lahir = Carbon::parse($item->tanggal_lahir)->format('Y-m-d');
-                }
-                return $item;
-            });
-
             return response()->json($data);
         }
 
@@ -62,16 +55,26 @@ class TenagaKesehatanController extends Controller
             $data['foto_path'] = $request->file('foto')->store('tenaga_kesehatan', 'public');
         }
 
+        // Handle jadwal_shift dari JSON string
+        if ($request->has('jadwal_shift')) {
+            $data['jadwal_shift'] = is_string($request->jadwal_shift) 
+                ? json_decode($request->jadwal_shift, true) 
+                : $request->jadwal_shift;
+        }
+
         $tk = TenagaKesehatan::create($data);
 
         // Otomatis buat akun user
         $existingUser = User::where('email', $tk->email)->first();
         if (!$existingUser) {
+            // Map role tenaga kesehatan ke role user
+            $userRole = $tk->role === 'dokter_umum' ? 'dokter' : $tk->role;
+            
             $user = User::create([
                 'name'     => $tk->nama,
                 'email'    => $tk->email,
                 'password' => bcrypt($tk->hp), // nomor HP jadi password
-                'role'     => $tk->profesi,
+                'role'     => $userRole,
             ]);
 
             $tk->update(['user_id' => $user->id]);
@@ -90,10 +93,6 @@ class TenagaKesehatanController extends Controller
     public function show($id)
     {
         $tk = TenagaKesehatan::findOrFail($id);
-        $tk->tanggal_lahir = $tk->tanggal_lahir
-            ? \Carbon\Carbon::parse($tk->tanggal_lahir)->format('Y-m-d')
-            : null;
-
         return response()->json($tk);
     }
 
@@ -116,13 +115,23 @@ class TenagaKesehatanController extends Controller
             $data['foto_path'] = $request->file('foto')->store('tenaga_kesehatan', 'public');
         }
 
+        // Handle jadwal_shift dari JSON string
+        if ($request->has('jadwal_shift')) {
+            $data['jadwal_shift'] = is_string($request->jadwal_shift) 
+                ? json_decode($request->jadwal_shift, true) 
+                : $request->jadwal_shift;
+        }
+
         $tenaga_kesehatan->update($data);
 
         if ($tenaga_kesehatan->user) {
+            // Map role tenaga kesehatan ke role user
+            $userRole = $tenaga_kesehatan->role === 'dokter_umum' ? 'dokter' : $tenaga_kesehatan->role;
+            
             $tenaga_kesehatan->user->update([
                 'name'     => $tenaga_kesehatan->nama,
                 'email'    => $tenaga_kesehatan->email,
-                'role'     => $tenaga_kesehatan->profesi,
+                'role'     => $userRole,
                 'password' => bcrypt($tenaga_kesehatan->hp), // sync password dengan hp
             ]);
         }

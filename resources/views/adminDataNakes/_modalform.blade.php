@@ -1,5 +1,5 @@
 <div class="modal fade" id="modalTenaga" tabindex="-1">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-md">
     <form id="formTenaga" method="POST" enctype="multipart/form-data">
       @csrf
       <input type="hidden" id="idTenaga" name="idTenaga">
@@ -11,46 +11,93 @@
         </div>
         
         <div class="modal-body">
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label>Foto</label>
-              <input type="file" name="foto" class="form-control" accept="image/*">
-            </div>
-            <div class="form-group col-md-6">
-              <label>Nama</label>
-              <input type="text" name="nama" class="form-control" required>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label>Tanggal Lahir</label>
-              <input type="date" name="tanggal_lahir" class="form-control" required>
-            </div>
-            <div class="form-group col-md-6">
-              <label>Email</label>
-              <input type="email" name="email" class="form-control" required>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label>HP</label>
-              <input type="text" name="hp" class="form-control" required>
-            </div>
-            <div class="form-group col-md-6">
-              <label>Alumnus</label>
-              <input type="text" name="alumnus" class="form-control" required>
-            </div>
-          </div>
-
+          <!-- Foto -->
           <div class="form-group">
-            <label>Profesi</label>
-            <select name="profesi" class="form-control" required>
-              <option value="dokter">Dokter</option>
-              <option value="perawat">Perawat</option>
-              <option value="bidan">Bidan</option>
+            <label>Foto</label>
+            <input type="file" name="foto" id="foto" class="form-control" accept="image/*">
+            <small class="text-muted">Format: JPG, PNG (Max 2MB)</small>
+          </div>
+
+          <!-- Nama -->
+          <div class="form-group">
+            <label>Nama Lengkap <span class="text-danger">*</span></label>
+            <input type="text" name="nama" id="nama" class="form-control" required>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label>Email <span class="text-danger">*</span></label>
+            <input type="email" name="email" id="email" class="form-control" required>
+          </div>
+
+          <!-- HP -->
+          <div class="form-group">
+            <label>No. Handphone <span class="text-danger">*</span></label>
+            <input type="text" name="hp" id="hp" class="form-control" required placeholder="08xxxxxxxxxx">
+          </div>
+
+          <!-- STR -->
+          <div class="form-group">
+            <label>No. STR (Surat Tanda Registrasi)</label>
+            <input type="text" name="str" id="str" class="form-control" placeholder="Contoh: 123456789012345">
+          </div>
+
+          <!-- SIP -->
+          <div class="form-group">
+            <label>No. SIP (Surat Izin Praktik)</label>
+            <input type="text" name="sip" id="sip" class="form-control" placeholder="Contoh: 503/SIP/2024">
+          </div>
+
+          <!-- Role -->
+          <div class="form-group">
+            <label>Role <span class="text-danger">*</span></label>
+            <select name="role" id="role" class="form-control" required>
+              <option value="">-- Pilih Role --</option>
+              <option value="dokter_umum">Dokter Umum</option>
+              <option value="admin">Admin</option>
+              <option value="superadmin">Super Admin</option>
             </select>
+          </div>
+
+          <!-- Tahun Mulai -->
+          <div class="form-group">
+            <label>Tahun Mulai Praktik <span class="text-danger">*</span></label>
+            <input type="number" name="tahun_mulai" id="tahun_mulai" class="form-control" min="1980" max="2099" placeholder="Contoh: 2020" required>
+            <small class="text-muted">Pengalaman akan dihitung otomatis dari tahun ini</small>
+          </div>
+
+          <!-- Jadwal Shift -->
+          <div class="form-group">
+            <label>Jadwal Shift <span class="text-danger">*</span></label>
+            <small class="text-muted d-block mb-2">Tentukan periode shift dengan tanggal mulai dan selesai</small>
+            <div id="jadwal-container">
+              <div class="jadwal-item border p-3 mb-2 rounded">
+                <div class="row">
+                  <div class="col-6">
+                    <label class="small mb-1">Tanggal Mulai</label>
+                    <input type="date" name="jadwal[0][tanggal_mulai]" class="form-control form-control-sm jadwal-tanggal-mulai mb-2">
+                    <label class="small mb-1">Jam Mulai</label>
+                    <input type="time" name="jadwal[0][jam_mulai]" class="form-control form-control-sm">
+                  </div>
+                  <div class="col-6">
+                    <label class="small mb-1">Tanggal Selesai</label>
+                    <input type="date" name="jadwal[0][tanggal_selesai]" class="form-control form-control-sm jadwal-tanggal-selesai mb-2">
+                    <label class="small mb-1">Jam Selesai</label>
+                    <input type="time" name="jadwal[0][jam_selesai]" class="form-control form-control-sm">
+                  </div>
+                </div>
+                <div class="row mt-2">
+                  <div class="col-12">
+                    <button type="button" class="btn btn-danger btn-sm btn-remove-jadwal btn-block" style="display:none;">
+                      <i class="fas fa-trash"></i> Hapus
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-info" id="btn-add-jadwal">
+              <i class="fas fa-plus"></i> Tambah Periode Shift
+            </button>
           </div>
         </div>
         
@@ -62,3 +109,5 @@
     </form>
   </div>
 </div>
+
+

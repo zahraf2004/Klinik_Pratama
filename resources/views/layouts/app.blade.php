@@ -21,13 +21,15 @@
 
   <link rel="stylesheet" href="{{ asset('css/custom-table.css') }}">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  
+  @stack('styles')
 </head>
 
 <body>
   <div id="app">
     <div class="main-wrapper">
 
-      {{-- Navbar --}}
+    {{-- Navbar --}}
       @include('partials.navbar')
 
       {{-- Sidebar --}}
@@ -90,5 +92,6 @@
 
   <script src="{{ asset('js/table.js') }}"></script>
 
+  @stack('scripts')
 </body>
 </html>

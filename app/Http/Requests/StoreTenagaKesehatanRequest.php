@@ -17,12 +17,13 @@ class StoreTenagaKesehatanRequest extends FormRequest
         return [
             'foto'           => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'nama'           => ['required', 'string', 'max:100'],
-            'tanggal_lahir'  => ['nullable', 'date'],
             'email'          => ['required', 'email', 'unique:tenaga_kesehatan,email'],
-            'hp'             => ['nullable', 'string', 'max:25'],
-            'alumnus'        => ['nullable', 'string', 'max:150'],
-            'profesi'        => ['required', 'in:dokter,bidan,perawat'],
-            // opsional: 'buat_akun' => ['sometimes','boolean'],
+            'hp'             => ['required', 'string', 'max:25'],
+            'str'            => ['nullable', 'string', 'max:50'],
+            'sip'            => ['nullable', 'string', 'max:50'],
+            'tahun_mulai'    => ['required', 'integer', 'min:1980', 'max:2099'],
+            'role'           => ['required', 'in:dokter_umum,admin,superadmin'],
+            'jadwal_shift'   => ['nullable', 'json'],
         ];
     }
 }

@@ -1,4 +1,9 @@
 @extends('layouts.app')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/tenaga-kesehatan-detail.css') }}">
+@endpush
+
 @section('content')
 <section class="section">
   <div class="section-header">
@@ -31,13 +36,12 @@
                   <i class="fa-solid fa-filter" style="color:#6777ef;"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right p-2">
-                  <label class="mb-1">Filter Profesi</label>
-                  <select id="filter-profesi" class="form-control form-control-sm">
-                    <option value="">Semua Profesi</option>
-                    <option value="Dokter">Dokter</option>
-                    <option value="Perawat">Perawat</option>
-                    <option value="Bidan">Bidan</option>
-                    <option value="Apoteker">Apoteker</option>
+                  <label class="mb-1">Filter Role</label>
+                  <select id="filter-role" class="form-control form-control-sm">
+                    <option value="">Semua Role</option>
+                    <option value="dokter_umum">Dokter Umum</option>
+                    <option value="admin">Admin</option>
+                    <option value="superadmin">Super Admin</option>
                   </select>
                 </div>
               </div>
@@ -52,11 +56,12 @@
                   <th style="width: 50px;">No</th>
                   <th style="width: 70px;">Foto</th>
                   <th class="sort-nama" style="cursor: pointer;">Nama <i class="fas fa-sort"></i></th>
-                  <th style="min-width: 120px;">Tanggal Lahir</th>
                   <th style="min-width: 200px;">Email</th>   
                   <th style="min-width: 120px;">Handphone</th>
-                  <th style="min-width: 180px;">Alumnus</th>
-                  <th style="min-width: 100px;">Profesi</th>
+                  <th style="min-width: 150px;">STR</th>
+                  <th style="min-width: 150px;">SIP</th>
+                  <th style="min-width: 120px;">Role</th>
+                  <th style="min-width: 100px;">Tahun Mulai</th>
                   <th style="width: 120px;">Aksi</th>
                 </tr>
               </thead>
@@ -108,9 +113,9 @@
     });
     
     // Menerapkan filter saat nilai berubah
-    $('#filter-profesi').on('change', function() {
-      let profesi = $(this).val();
-      loadData(profesi);
+    $('#filter-role').on('change', function() {
+      let role = $(this).val();
+      loadData(role);
     });
   });
 </script>

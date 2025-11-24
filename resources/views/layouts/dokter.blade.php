@@ -28,7 +28,7 @@
   <div id="app">
     <div class="main-wrapper">
 
-    {{-- Sidebar --}}
+    {{-- nav --}}
       @include('partials.navdokter')
 
       {{-- Sidebar --}}

@@ -1,5 +1,4 @@
-<div class="main-wrapper">
-      <div class="navbar-bg"></div>
+<div class="navbar-bg"></div>
       <nav class="navbar navbar-expand-lg main-navbar">
         <form class="form-inline mr-auto">
           <ul class="navbar-nav mr-3">
@@ -84,14 +83,3 @@
           </li>
         </ul>
       </nav>
-      <div class="main-sidebar sidebar-style-2">
-        <aside id="sidebar-wrapper">
-          <div class="sidebar-brand">
-            <a href="/dashboard-admin"><img src="{{ asset('img/Logo1_copy.png') }}" alt="logo" height="40px" ></a>
-          </div>
-          <div class="sidebar-brand sidebar-brand-sm">
-            <a href="index.html">St</a>
-          </div>
-        </aside>
-      </div>
-    </div>
