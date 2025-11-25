@@ -115,7 +115,12 @@
     // Menerapkan filter saat nilai berubah
     $('#filter-role').on('change', function() {
       let role = $(this).val();
-      loadData(role);
+      console.log('Filter role:', role); // Debug
+      if (typeof loadData === 'function') {
+        loadData(role);
+      } else {
+        console.error('loadData function not found');
+      }
     });
   });
 </script>

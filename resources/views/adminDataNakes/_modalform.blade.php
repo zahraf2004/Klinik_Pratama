@@ -61,27 +61,36 @@
 
           <!-- Tahun Mulai -->
           <div class="form-group">
-            <label>Tahun Mulai Praktik <span class="text-danger">*</span></label>
-            <input type="number" name="tahun_mulai" id="tahun_mulai" class="form-control" min="1980" max="2099" placeholder="Contoh: 2020" required>
-            <small class="text-muted">Pengalaman akan dihitung otomatis dari tahun ini</small>
+            <label>Tahun Mulai Praktik</label>
+            <input type="number" name="tahun_mulai" id="tahun_mulai" class="form-control" min="1980" max="2099" placeholder="Contoh: 2020">
+            <small class="text-muted">Opsional - Pengalaman akan dihitung otomatis dari tahun ini</small>
           </div>
 
           <!-- Jadwal Shift -->
           <div class="form-group">
-            <label>Jadwal Shift <span class="text-danger">*</span></label>
-            <small class="text-muted d-block mb-2">Tentukan periode shift dengan tanggal mulai dan selesai</small>
+            <label>Jadwal Shift</label>
+            <small class="text-muted d-block mb-2">Opsional - Pilih hari dan jam kerja</small>
             <div id="jadwal-container">
               <div class="jadwal-item border p-3 mb-2 rounded">
                 <div class="row">
+                  <div class="col-12 mb-2">
+                    <label class="small mb-1">Hari</label>
+                    <select name="jadwal[0][hari]" class="form-control form-control-sm jadwal-hari">
+                      <option value="">-- Pilih Hari --</option>
+                      <option value="Senin">Senin</option>
+                      <option value="Selasa">Selasa</option>
+                      <option value="Rabu">Rabu</option>
+                      <option value="Kamis">Kamis</option>
+                      <option value="Jumat">Jumat</option>
+                      <option value="Sabtu">Sabtu</option>
+                      <option value="Minggu">Minggu</option>
+                    </select>
+                  </div>
                   <div class="col-6">
-                    <label class="small mb-1">Tanggal Mulai</label>
-                    <input type="date" name="jadwal[0][tanggal_mulai]" class="form-control form-control-sm jadwal-tanggal-mulai mb-2">
                     <label class="small mb-1">Jam Mulai</label>
                     <input type="time" name="jadwal[0][jam_mulai]" class="form-control form-control-sm">
                   </div>
                   <div class="col-6">
-                    <label class="small mb-1">Tanggal Selesai</label>
-                    <input type="date" name="jadwal[0][tanggal_selesai]" class="form-control form-control-sm jadwal-tanggal-selesai mb-2">
                     <label class="small mb-1">Jam Selesai</label>
                     <input type="time" name="jadwal[0][jam_selesai]" class="form-control form-control-sm">
                   </div>
@@ -96,7 +105,7 @@
               </div>
             </div>
             <button type="button" class="btn btn-sm btn-info" id="btn-add-jadwal">
-              <i class="fas fa-plus"></i> Tambah Periode Shift
+              <i class="fas fa-plus"></i> Tambah Hari
             </button>
           </div>
         </div>

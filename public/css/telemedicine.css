@@ -230,40 +230,86 @@
 
 .konsul-info-item {
     display: flex;
-    gap: 10px;
+    gap: 12px;
+    padding: 12px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--primary);
+    transition: all 0.3s ease;
+}
+
+.konsul-info-item:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .konsul-info-icon {
-    width: 25px;
-    color: var(--primary);
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.konsul-info-text {
+    flex: 1;
 }
 
 .konsul-info-text h4 {
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 700;
     margin-bottom: 4px;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .konsul-info-text p {
     font-size: 14px;
     color: var(--text-medium);
+    line-height: 1.5;
+    margin: 0;
 }
 
 /* BUTTON */
 .konsul-action-buttons {
-    margin-top: auto;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #f0f0f0;
 }
 
 .konsul-btnD {
-    padding: 12px;
-    border-radius: 8px;
+    padding: 14px 20px;
+    border-radius: 10px;
     text-align: center;
     text-decoration: none;
     display: block;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .konsul-btn-primary {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
+}
+
+.konsul-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    color: white;
+}
+
+.konsul-btn-primary i {
+    margin-right: 8px;
 }
 
 /* PAGINATION */

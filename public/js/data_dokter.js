@@ -1,4 +1,64 @@
+// Load data - Global function
+function loadData(role = '') {
+        let url = "/tenaga-kesehatan";
+        if (role) {
+            url += "?role=" + role;
+        }
+        
+        console.log('Loading data from:', url); // Debug
+        
+        $.get(url, function (res) {
+            console.log('Data received:', res.length, 'items'); // Debug
+            let rows = "";
+            res.forEach((item, i) => {
+                // Badge color untuk role
+                let roleBadge = '';
+                if (item.role === 'superadmin') {
+                    roleBadge = '<div class="badge badge-danger">Super Admin</div>';
+                } else if (item.role === 'admin') {
+                    roleBadge = '<div class="badge badge-warning">Admin</div>';
+                } else {
+                    roleBadge = '<div class="badge badge-success">Dokter Umum</div>';
+                }
+
+                rows += `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>
+                        ${
+                            item.foto_path
+                                ? `<img src="/storage/${item.foto_path}" width="50" class="rounded-circle" height="50" alt="${item.nama}">`
+                                : `<img src="/assets/img/avatar/avatar-1.png" width="50" class="rounded-circle" height="50" alt="Default Avatar">`
+                        }
+                    </td>
+                    <td>${item.nama || '-'}</td>
+                    <td>${item.email || '-'}</td>
+                    <td>${item.hp || '-'}</td>
+                    <td>${item.str || '-'}</td>
+                    <td>${item.sip || '-'}</td>
+                    <td>${roleBadge}</td>
+                    <td>${item.tahun_mulai || '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary btnEdit" data-id="${item.id}" title="Edit">
+                            <i class="far fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-info btnDetail" data-id="${item.id}" title="Detail">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger btnDelete" data-id="${item.id}" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            $(".tenaga-table tbody").html(rows);
+        });
+}
+
 $(document).ready(function () {
+    // Load data pertama kali
+    loadData();
+
     // Buka modal tambah
     $("#btnTambah").click(function () {
         $("#formTenaga")[0].reset();
@@ -20,15 +80,13 @@ $(document).ready(function () {
         // Collect jadwal shift data
         let jadwalShift = [];
         $('.jadwal-item').each(function() {
-            let tanggalMulai = $(this).find('.jadwal-tanggal-mulai').val();
-            let tanggalSelesai = $(this).find('.jadwal-tanggal-selesai').val();
+            let hari = $(this).find('.jadwal-hari').val();
             let jamMulai = $(this).find('input[type="time"]').eq(0).val();
             let jamSelesai = $(this).find('input[type="time"]').eq(1).val();
             
-            if (tanggalMulai && tanggalSelesai && jamMulai && jamSelesai) {
+            if (hari && jamMulai && jamSelesai) {
                 jadwalShift.push({
-                    tanggal_mulai: tanggalMulai,
-                    tanggal_selesai: tanggalSelesai,
+                    hari: hari,
                     jam_mulai: jamMulai,
                     jam_selesai: jamSelesai
                 });
@@ -64,57 +122,6 @@ $(document).ready(function () {
         });
     });
 
-    // Load data
-    function loadData() {
-        $.get("/tenaga-kesehatan", function (res) {
-            let rows = "";
-            res.forEach((item, i) => {
-                // Badge color untuk role
-                let roleBadge = '';
-                if (item.role === 'superadmin') {
-                    roleBadge = '<div class="badge badge-danger">Super Admin</div>';
-                } else if (item.role === 'admin') {
-                    roleBadge = '<div class="badge badge-warning">Admin</div>';
-                } else {
-                    roleBadge = '<div class="badge badge-success">Dokter Umum</div>';
-                }
-
-                rows += `
-                <tr>
-                    <td>${i + 1}</td>
-                    <td>
-                        ${
-                            item.foto_path
-                                ? `<img src="/storage/${item.foto_path}" width="50" class="rounded-circle" height="50">`
-                                : '<div class="avatar bg-secondary text-white" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:50%;">' + (item.nama ? item.nama.charAt(0).toUpperCase() : '?') + '</div>'
-                        }
-                    </td>
-                    <td>${item.nama || '-'}</td>
-                    <td>${item.email || '-'}</td>
-                    <td>${item.hp || '-'}</td>
-                    <td>${item.str || '-'}</td>
-                    <td>${item.sip || '-'}</td>
-                    <td>${roleBadge}</td>
-                    <td>${item.tahun_mulai || '-'}</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary btnEdit" data-id="${item.id}" title="Edit">
-                            <i class="far fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-info btnDetail" data-id="${item.id}" title="Detail">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger btnDelete" data-id="${item.id}" title="Hapus">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>`;
-            });
-            $(".tenaga-table tbody").html(rows);
-        });
-    }
-
-    loadData();
-
     // Edit
     $(document).on("click", ".btnEdit", function () {
         let id = $(this).data("id");
@@ -136,15 +143,24 @@ $(document).ready(function () {
                     let jadwalHtml = `
                         <div class="jadwal-item border p-3 mb-2 rounded">
                             <div class="row">
+                                <div class="col-12 mb-2">
+                                    <label class="small mb-1">Hari</label>
+                                    <select name="jadwal[${index}][hari]" class="form-control form-control-sm jadwal-hari">
+                                        <option value="">-- Pilih Hari --</option>
+                                        <option value="Senin" ${jadwal.hari === 'Senin' ? 'selected' : ''}>Senin</option>
+                                        <option value="Selasa" ${jadwal.hari === 'Selasa' ? 'selected' : ''}>Selasa</option>
+                                        <option value="Rabu" ${jadwal.hari === 'Rabu' ? 'selected' : ''}>Rabu</option>
+                                        <option value="Kamis" ${jadwal.hari === 'Kamis' ? 'selected' : ''}>Kamis</option>
+                                        <option value="Jumat" ${jadwal.hari === 'Jumat' ? 'selected' : ''}>Jumat</option>
+                                        <option value="Sabtu" ${jadwal.hari === 'Sabtu' ? 'selected' : ''}>Sabtu</option>
+                                        <option value="Minggu" ${jadwal.hari === 'Minggu' ? 'selected' : ''}>Minggu</option>
+                                    </select>
+                                </div>
                                 <div class="col-6">
-                                    <label class="small mb-1">Tanggal Mulai</label>
-                                    <input type="date" name="jadwal[${index}][tanggal_mulai]" class="form-control form-control-sm jadwal-tanggal-mulai mb-2" value="${jadwal.tanggal_mulai}">
                                     <label class="small mb-1">Jam Mulai</label>
                                     <input type="time" name="jadwal[${index}][jam_mulai]" class="form-control form-control-sm" value="${jadwal.jam_mulai}">
                                 </div>
                                 <div class="col-6">
-                                    <label class="small mb-1">Tanggal Selesai</label>
-                                    <input type="date" name="jadwal[${index}][tanggal_selesai]" class="form-control form-control-sm jadwal-tanggal-selesai mb-2" value="${jadwal.tanggal_selesai}">
                                     <label class="small mb-1">Jam Selesai</label>
                                     <input type="time" name="jadwal[${index}][jam_selesai]" class="form-control form-control-sm" value="${jadwal.jam_selesai}">
                                 </div>
@@ -165,15 +181,24 @@ $(document).ready(function () {
                 $('#jadwal-container').html(`
                     <div class="jadwal-item border p-3 mb-2 rounded">
                         <div class="row">
+                            <div class="col-12 mb-2">
+                                <label class="small mb-1">Hari</label>
+                                <select name="jadwal[0][hari]" class="form-control form-control-sm jadwal-hari">
+                                    <option value="">-- Pilih Hari --</option>
+                                    <option value="Senin">Senin</option>
+                                    <option value="Selasa">Selasa</option>
+                                    <option value="Rabu">Rabu</option>
+                                    <option value="Kamis">Kamis</option>
+                                    <option value="Jumat">Jumat</option>
+                                    <option value="Sabtu">Sabtu</option>
+                                    <option value="Minggu">Minggu</option>
+                                </select>
+                            </div>
                             <div class="col-6">
-                                <label class="small mb-1">Tanggal Mulai</label>
-                                <input type="date" name="jadwal[0][tanggal_mulai]" class="form-control form-control-sm jadwal-tanggal-mulai mb-2">
                                 <label class="small mb-1">Jam Mulai</label>
                                 <input type="time" name="jadwal[0][jam_mulai]" class="form-control form-control-sm">
                             </div>
                             <div class="col-6">
-                                <label class="small mb-1">Tanggal Selesai</label>
-                                <input type="date" name="jadwal[0][tanggal_selesai]" class="form-control form-control-sm jadwal-tanggal-selesai mb-2">
                                 <label class="small mb-1">Jam Selesai</label>
                                 <input type="time" name="jadwal[0][jam_selesai]" class="form-control form-control-sm">
                             </div>
@@ -252,8 +277,8 @@ $(document).ready(function () {
                     jadwalHtml += `
                         <li class="jadwal-item-detail">
                             <div class="jadwal-periode">
-                                <i class="fas fa-calendar-alt"></i>
-                                ${jadwal.tanggal_mulai} s/d ${jadwal.tanggal_selesai}
+                                <i class="fas fa-calendar-day"></i>
+                                ${jadwal.hari}
                             </div>
                             <div class="jadwal-waktu">
                                 <i class="fas fa-clock"></i>
@@ -267,9 +292,17 @@ $(document).ready(function () {
                 jadwalHtml = '<p class="detail-value empty">Belum ada jadwal shift</p>';
             }
 
+            // Foto profile
+            let fotoUrl = data.foto_path 
+                ? `/storage/${data.foto_path}` 
+                : '/assets/img/avatar/avatar-1.png';
+
             Swal.fire({
                 html: `
                     <div class="detail-nakes-header">
+                        <div class="mb-3">
+                            <img src="${fotoUrl}" alt="${data.nama}" class="rounded-circle" style="width: 80px; height: 80px; border: 4px solid rgba(255,255,255,0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        </div>
                         <h2>${data.nama || 'Nama Tidak Tersedia'}</h2>
                         <div class="subtitle">
                             <span class="badge-role ${roleBadgeClass}">${roleText}</span>
@@ -419,15 +452,24 @@ $(document).ready(function () {
         const newJadwal = `
           <div class="jadwal-item border p-3 mb-2 rounded">
             <div class="row">
+              <div class="col-12 mb-2">
+                <label class="small mb-1">Hari</label>
+                <select name="jadwal[${jadwalIndex}][hari]" class="form-control form-control-sm jadwal-hari">
+                  <option value="">-- Pilih Hari --</option>
+                  <option value="Senin">Senin</option>
+                  <option value="Selasa">Selasa</option>
+                  <option value="Rabu">Rabu</option>
+                  <option value="Kamis">Kamis</option>
+                  <option value="Jumat">Jumat</option>
+                  <option value="Sabtu">Sabtu</option>
+                  <option value="Minggu">Minggu</option>
+                </select>
+              </div>
               <div class="col-6">
-                <label class="small mb-1">Tanggal Mulai</label>
-                <input type="date" name="jadwal[${jadwalIndex}][tanggal_mulai]" class="form-control form-control-sm jadwal-tanggal-mulai mb-2">
                 <label class="small mb-1">Jam Mulai</label>
                 <input type="time" name="jadwal[${jadwalIndex}][jam_mulai]" class="form-control form-control-sm">
               </div>
               <div class="col-6">
-                <label class="small mb-1">Tanggal Selesai</label>
-                <input type="date" name="jadwal[${jadwalIndex}][tanggal_selesai]" class="form-control form-control-sm jadwal-tanggal-selesai mb-2">
                 <label class="small mb-1">Jam Selesai</label>
                 <input type="time" name="jadwal[${jadwalIndex}][jam_selesai]" class="form-control form-control-sm">
               </div>

@@ -21,18 +21,9 @@ class TenagaKesehatanSeeder extends Seeder
             'tahun_mulai' => 2014,
             'role' => 'dokter_umum',
             'jadwal_shift' => [
-                [
-                    'tanggal_mulai' => '2025-11-01',
-                    'tanggal_selesai' => '2025-11-15',
-                    'jam_mulai' => '08:00',
-                    'jam_selesai' => '14:00'
-                ],
-                [
-                    'tanggal_mulai' => '2025-11-16',
-                    'tanggal_selesai' => '2025-11-30',
-                    'jam_mulai' => '14:00',
-                    'jam_selesai' => '20:00'
-                ],
+                ['hari' => 'Senin', 'jam_mulai' => '08:00', 'jam_selesai' => '14:00'],
+                ['hari' => 'Rabu', 'jam_mulai' => '08:00', 'jam_selesai' => '14:00'],
+                ['hari' => 'Jumat', 'jam_mulai' => '13:00', 'jam_selesai' => '17:00'],
             ]
         ]);
 
@@ -45,12 +36,9 @@ class TenagaKesehatanSeeder extends Seeder
             'tahun_mulai' => 2017,
             'role' => 'admin',
             'jadwal_shift' => [
-                [
-                    'tanggal_mulai' => '2025-11-01',
-                    'tanggal_selesai' => '2025-11-30',
-                    'jam_mulai' => '08:00',
-                    'jam_selesai' => '16:00'
-                ],
+                ['hari' => 'Selasa', 'jam_mulai' => '08:00', 'jam_selesai' => '16:00'],
+                ['hari' => 'Kamis', 'jam_mulai' => '08:00', 'jam_selesai' => '16:00'],
+                ['hari' => 'Sabtu', 'jam_mulai' => '09:00', 'jam_selesai' => '13:00'],
             ]
         ]);
 
@@ -63,18 +51,9 @@ class TenagaKesehatanSeeder extends Seeder
             'tahun_mulai' => 2019,
             'role' => 'dokter_umum',
             'jadwal_shift' => [
-                [
-                    'tanggal_mulai' => '2025-11-01',
-                    'tanggal_selesai' => '2025-11-10',
-                    'jam_mulai' => '08:00',
-                    'jam_selesai' => '12:00'
-                ],
-                [
-                    'tanggal_mulai' => '2025-11-11',
-                    'tanggal_selesai' => '2025-11-20',
-                    'jam_mulai' => '13:00',
-                    'jam_selesai' => '17:00'
-                ],
+                ['hari' => 'Senin', 'jam_mulai' => '13:00', 'jam_selesai' => '17:00'],
+                ['hari' => 'Rabu', 'jam_mulai' => '13:00', 'jam_selesai' => '17:00'],
+                ['hari' => 'Jumat', 'jam_mulai' => '08:00', 'jam_selesai' => '12:00'],
             ]
         ]);
     }

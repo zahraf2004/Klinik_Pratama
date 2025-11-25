@@ -23,7 +23,7 @@ class UpdateTenagaKesehatanRequest extends FormRequest
             'hp'             => ['required', 'string', 'max:25'],
             'str'            => ['nullable', 'string', 'max:50'],
             'sip'            => ['nullable', 'string', 'max:50'],
-            'tahun_mulai'    => ['required', 'integer', 'min:1980', 'max:2099'],
+            'tahun_mulai'    => ['nullable', 'integer', 'min:1980', 'max:2099'],
             'role'           => ['required', 'in:dokter_umum,admin,superadmin'],
             'jadwal_shift'   => ['nullable', 'json'],
         ];

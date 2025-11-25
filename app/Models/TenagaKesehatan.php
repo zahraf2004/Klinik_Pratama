@@ -46,33 +46,41 @@ class TenagaKesehatan extends Model
             : null;
     }
 
-    // Helper untuk mendapatkan jadwal shift berdasarkan tanggal
-    public function getJadwalByTanggal($tanggal)
+    // Helper untuk mendapatkan jadwal shift berdasarkan hari
+    public function getJadwalByHari($hari)
     {
         if (!$this->jadwal_shift) {
             return null;
         }
         
-        $date = \Carbon\Carbon::parse($tanggal);
+        return collect($this->jadwal_shift)->firstWhere('hari', $hari);
+    }
+    
+    // Helper untuk cek apakah tersedia di hari tertentu
+    public function isAvailableOnDay($hari)
+    {
+        return $this->getJadwalByHari($hari) !== null;
+    }
+    
+    // Helper untuk mendapatkan jadwal shift hari ini
+    public function getTodayShift()
+    {
+        $hariIni = \Carbon\Carbon::now()->locale('id')->dayName;
         
-        return collect($this->jadwal_shift)->first(function ($jadwal) use ($date) {
-            $mulai = \Carbon\Carbon::parse($jadwal['tanggal_mulai']);
-            $selesai = \Carbon\Carbon::parse($jadwal['tanggal_selesai']);
-            
-            return $date->between($mulai, $selesai);
-        });
-    }
-    
-    // Helper untuk cek apakah tersedia di tanggal tertentu
-    public function isAvailableOnDate($tanggal)
-    {
-        return $this->getJadwalByTanggal($tanggal) !== null;
-    }
-    
-    // Helper untuk mendapatkan jadwal shift aktif saat ini
-    public function getCurrentShift()
-    {
-        return $this->getJadwalByTanggal(now());
+        // Map nama hari dari Carbon ke format Indonesia
+        $hariMap = [
+            'Monday' => 'Senin',
+            'Tuesday' => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday' => 'Kamis',
+            'Friday' => 'Jumat',
+            'Saturday' => 'Sabtu',
+            'Sunday' => 'Minggu'
+        ];
+        
+        $hariIndonesia = $hariMap[\Carbon\Carbon::now()->format('l')] ?? null;
+        
+        return $this->getJadwalByHari($hariIndonesia);
     }
     
     // Helper untuk menghitung pengalaman otomatis dari tahun mulai
