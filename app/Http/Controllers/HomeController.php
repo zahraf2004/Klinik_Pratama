@@ -8,7 +8,12 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $dokters = TenagaKesehatan::latest()->take(4)->get();
+        // Ambil hanya dokter_umum untuk ditampilkan di homepage
+        $dokters = TenagaKesehatan::where('role', 'dokter_umum')
+            ->latest()
+            ->take(4)
+            ->get();
+            
         return view('home.homepage2', compact('dokters'));
     }
 }

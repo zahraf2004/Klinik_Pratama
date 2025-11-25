@@ -35,13 +35,13 @@
 
             <div class="konsul-doctors-section">
                 <form method="GET" action="{{ route('konsultasi.index') }}" class="konsul-search-container">
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari berdasarkan nama atau profesi...">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari dokter berdasarkan nama, STR, atau SIP...">
                     <button><i class="fas fa-search"></i> Cari</button>
                 </form>
 
                 <div class="konsul-section-card">
                     <h2 class="konsul-sectiontitle">
-                        <i class="fas fa-user-md"></i> Tenaga Kesehatan
+                        <i class="fas fa-user-md"></i> Dokter Tersedia
                     </h2>
 
                     <div class="konsul-doctors-grid">

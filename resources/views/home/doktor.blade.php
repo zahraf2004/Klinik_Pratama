@@ -9,17 +9,17 @@
           @if($d->foto_path)
             <img src="{{ asset('storage/'.$d->foto_path) }}" alt="{{ $d->nama }}">
           @else
-            <img src="{{ asset('img/default-doctor.jpg') }}" alt="{{ $d->nama }}">
+            <img src="{{ asset('assets/img/avatar/avatar-1.png') }}" alt="{{ $d->nama }}">
           @endif
 
           <h3>{{ $d->nama }}</h3>
-          <span class="role">{{ $d->profesi ?? 'Dokter' }}</span>
-
-          <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-linkedin"></i></a>
-          </div>
+          <span class="role">
+            @if($d->role === 'dokter_umum')
+              Dokter Umum
+            @else
+              Dokter
+            @endif
+          </span>
         </div>
       @endforeach
     </div>

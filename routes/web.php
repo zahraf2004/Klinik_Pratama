@@ -188,10 +188,6 @@ Route::get('/layanan-kami', function(){
     return view('layanan.layanan_kami');
 });
 
-Route::get('/home', function () {
-    return view('home.homepage');
-});
-
 Route::get('/data-pasien', function () {
     return view('adminDatapasien.DataPasien');
 })->middleware('auth')->name('appointment.admin');
