@@ -1,0 +1,722 @@
+/* ========================================
+   CUSTOM CHATIFY STYLING
+   Modern & Clean Design
+   ======================================== */
+
+/* ========== VARIABLES ========== */
+:root {
+    --chatify-primary: #4a83d3;
+    --chatify-primary-dark: #3a6fb8;
+    --chatify-primary-light: #6b9fe3;
+    --chatify-secondary: #00b894;
+    --chatify-danger: #e74c3c;
+    --chatify-warning: #f39c12;
+    --chatify-info: #3498db;
+    --chatify-dark: #2c3e50;
+    --chatify-light: #ecf0f1;
+    --chatify-white: #ffffff;
+    --chatify-gray: #95a5a6;
+    --chatify-bg: #f8f9fa;
+    --chatify-border: #dee2e6;
+    --chatify-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --chatify-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12);
+    --chatify-radius: 8px;
+    --chatify-transition: all 0.3s ease;
+}
+
+/* ========== MAIN CONTAINER ========== */
+.messenger {
+    background: var(--chatify-white);
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+.messenger-listView {
+    background: var(--chatify-bg);
+    border-right: 1px solid var(--chatify-border);
+}
+
+/* ========== HEADER ========== */
+.m-header {
+    background: var(--chatify-white);
+    color: var(--chatify-dark);
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--chatify-border);
+    box-shadow: var(--chatify-shadow);
+}
+
+.m-header nav a {
+    color: var(--chatify-dark) !important;
+    transition: var(--chatify-transition);
+}
+
+.m-header nav a:hover {
+    color: var(--chatify-primary) !important;
+    transform: scale(1.05);
+}
+
+.messenger-headTitle {
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* ========== HEADER BUTTONS ========== */
+.m-header-right a {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-left: 8px;
+    background: var(--chatify-bg);
+    transition: var(--chatify-transition);
+}
+
+.m-header-right a:hover {
+    background: var(--chatify-primary);
+    color: var(--chatify-white) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--chatify-shadow-hover);
+}
+
+/* ========== SEARCH BAR ========== */
+.messenger-search {
+    background: var(--chatify-bg) !important;
+    border: 1px solid var(--chatify-border) !important;
+    color: var(--chatify-dark) !important;
+    border-radius: 20px !important;
+    padding: 10px 20px !important;
+    transition: var(--chatify-transition);
+}
+
+.messenger-search::placeholder {
+    color: var(--chatify-gray) !important;
+}
+
+.messenger-search:focus {
+    background: var(--chatify-white) !important;
+    border-color: var(--chatify-primary) !important;
+    box-shadow: 0 0 0 3px rgba(74, 131, 211, 0.1);
+}
+
+/* ========== CONTACT LIST ========== */
+.messenger-list-item {
+    border-radius: var(--chatify-radius);
+    margin-bottom: 6px;
+    transition: var(--chatify-transition);
+    background: var(--chatify-white);
+    border: 1px solid transparent;
+}
+
+.messenger-list-item:hover {
+    background: var(--chatify-bg);
+    border-color: var(--chatify-border);
+    transform: translateX(3px);
+}
+
+.messenger-list-item.m-list-active {
+    background: var(--chatify-bg);
+    border-color: var(--chatify-primary);
+    border-left: 3px solid var(--chatify-primary);
+}
+
+/* ========== AVATAR ========== */
+.avatar {
+    border: 3px solid var(--chatify-white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: var(--chatify-transition);
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ========== MESSAGING AREA ========== */
+.messenger-messagingView {
+    background: #ffffff !important;
+}
+
+.messages-container {
+    background: #ffffff !important;
+}
+
+.m-body.messages-container {
+    background: #ffffff !important;
+}
+
+.m-header-messaging {
+    background: var(--chatify-white);
+    border-bottom: 2px solid var(--chatify-light);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.m-header-messaging .user-name {
+    color: var(--chatify-dark) !important;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.m-header-messaging .m-header-right a {
+    background: var(--chatify-bg);
+    color: var(--chatify-dark) !important;
+}
+
+.m-header-messaging .m-header-right a:hover {
+    background: var(--chatify-primary);
+    color: var(--chatify-white) !important;
+}
+
+/* ========== MESSAGES ========== */
+.message-card {
+    border-radius: 16px;
+    padding: 10px 14px;
+    max-width: 70%;
+    box-shadow: var(--chatify-shadow);
+    transition: var(--chatify-transition);
+    font-size: 14px;
+}
+
+.message-card .message {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.message-card:hover {
+    box-shadow: var(--chatify-shadow-hover);
+}
+
+/* Pesan yang dikirim */
+.message-card.mc-sender {
+    background: var(--chatify-primary);
+    color: var(--chatify-white);
+    border-bottom-right-radius: 4px;
+}
+
+.message-card.mc-sender .message {
+    font-size: 14px;
+}
+
+/* Pesan yang diterima */
+.message-card:not(.mc-sender) {
+    background: var(--chatify-white);
+    color: var(--chatify-dark);
+    border: 1px solid var(--chatify-border);
+    border-bottom-left-radius: 4px;
+}
+
+.message-card:not(.mc-sender) .message {
+    font-size: 14px;
+}
+
+/* ========== SEND FORM ========== */
+.messenger-sendCard {
+    background: var(--chatify-white);
+    border-top: 1px solid var(--chatify-border);
+    padding: 15px 20px;
+}
+
+.messenger-sendCard input {
+    background: var(--chatify-bg) !important;
+    border: 1px solid var(--chatify-border) !important;
+    border-radius: 20px !important;
+    padding: 12px 20px !important;
+    transition: var(--chatify-transition);
+}
+
+.messenger-sendCard input:focus {
+    border-color: var(--chatify-primary) !important;
+    box-shadow: 0 0 0 3px rgba(74, 131, 211, 0.1);
+    background: var(--chatify-white) !important;
+}
+
+.messenger-sendCard button {
+    background: var(--chatify-primary) !important;
+    border-radius: 50% !important;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--chatify-transition);
+    box-shadow: var(--chatify-shadow);
+}
+
+.messenger-sendCard button:hover {
+    background: var(--chatify-primary-dark) !important;
+    transform: scale(1.05);
+    box-shadow: var(--chatify-shadow-hover);
+}
+
+/* ========== ATTACHMENT BUTTONS ========== */
+.attachment-btn {
+    background: var(--chatify-bg);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px;
+    transition: var(--chatify-transition);
+    color: var(--chatify-dark);
+}
+
+.attachment-btn:hover {
+    background: var(--chatify-primary);
+    color: var(--chatify-white);
+    transform: translateY(-2px);
+}
+
+/* ========== TYPING INDICATOR ========== */
+.typing-indicator {
+    padding: 10px 20px;
+}
+
+.typing-dots {
+    display: inline-flex;
+    gap: 5px;
+}
+
+.typing-dots .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--chatify-gray);
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-dots .dot-1 {
+    animation-delay: 0s;
+}
+
+.typing-dots .dot-2 {
+    animation-delay: 0.2s;
+}
+
+.typing-dots .dot-3 {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.5;
+    }
+    30% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+}
+
+/* ========== INFO SIDEBAR ========== */
+.messenger-infoView {
+    background: var(--chatify-white);
+    border-left: 1px solid var(--chatify-border);
+}
+
+.messenger-infoView nav {
+    background: var(--chatify-white);
+    color: var(--chatify-dark);
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--chatify-border);
+}
+
+/* ========== SCROLLBAR ========== */
+.app-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.app-scroll::-webkit-scrollbar-track {
+    background: var(--chatify-bg);
+}
+
+.app-scroll::-webkit-scrollbar-thumb {
+    background: var(--chatify-gray);
+    border-radius: 10px;
+}
+
+.app-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--chatify-primary);
+}
+
+/* ========== ONLINE STATUS ========== */
+.activeStatus {
+    width: 12px;
+    height: 12px;
+    background: var(--chatify-secondary);
+    border: 2px solid var(--chatify-white);
+    border-radius: 50%;
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(0, 184, 148, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(0, 184, 148, 0);
+    }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .message-card {
+        max-width: 85%;
+    }
+    
+    .m-header-right a {
+        width: 35px;
+        height: 35px;
+        margin-left: 5px;
+    }
+    
+    .messenger-sendCard button {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-card {
+    animation: slideIn 0.3s ease;
+}
+
+/* ========== DARK MODE SUPPORT ========== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --chatify-bg: #1e1e1e;
+        --chatify-white: #2d2d2d;
+        --chatify-dark: #ffffff;
+        --chatify-light: #3d3d3d;
+        --chatify-gray: #6d6d6d;
+    }
+}
+
+/* ========== UTILITIES ========== */
+.chatify-hidden {
+    display: none !important;
+}
+
+.chatify-fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ========== BACK BUTTON HIGHLIGHT ========== */
+.m-header-right a[href*="history.back"] {
+    background: var(--chatify-primary);
+    color: var(--chatify-white) !important;
+}
+
+.m-header-right a[href*="history.back"]:hover {
+    background: var(--chatify-primary-dark);
+    transform: translateY(-2px) scale(1.05);
+}
+
+
+/* ========== FORCE WHITE BACKGROUND ========== */
+.messenger-messagingView,
+.messenger-messagingView .m-body,
+.messenger-messagingView .messages-container,
+.m-body.messages-container,
+.messages-container.app-scroll,
+div.messages-container {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+}
+
+/* Override any dark/light mode */
+body .messenger-messagingView {
+    background: #ffffff !important;
+}
+
+body .messages-container {
+    background: #ffffff !important;
+}
+
+/* ========== SMALLER FONT SIZE FOR MESSAGES ========== */
+.message-card p,
+.message-card span,
+.message-card div {
+    font-size: 14px !important;
+}
+
+.message-card .message-time {
+    font-size: 11px !important;
+}
+
+/* Timestamp di bawah pesan */
+.message-card sub {
+    font-size: 11px !important;
+}
+
+
+/* ========== HEADER SIDEBAR LAYOUT ========== */
+.chatify-header-nav {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100%;
+    padding: 8px 10px;
+}
+
+/* ========== LOGO KLINIK DI HEADER ========== */
+.chatify-header-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+    padding: 2px 5px;
+    border-radius: 6px;
+    transition: var(--chatify-transition);
+    flex: 0 1 auto;
+}
+
+.chatify-header-link:hover {
+    background: rgba(74, 131, 211, 0.05);
+}
+
+.chatify-logo {
+    height: 24px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+    transition: var(--chatify-transition);
+}
+
+.chatify-header-link:hover .chatify-logo {
+    transform: scale(1.05);
+}
+
+.chatify-title-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    line-height: 1.1;
+}
+
+.chatify-title-main {
+    font-size: 13px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #4a83d3 0%, #2ecc71 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.chatify-title-sub {
+    font-size: 10px;
+    font-weight: 500;
+    color: #7f8c8d;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.chatify-header-link:hover .chatify-title-sub {
+    color: var(--chatify-primary);
+}
+
+/* ========== HEADER BUTTONS ========== */
+.m-header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    flex: 0 0 auto;
+}
+
+.m-header-right a {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--chatify-bg);
+    transition: var(--chatify-transition);
+    color: var(--chatify-dark);
+}
+
+.m-header-right a:hover {
+    background: var(--chatify-primary);
+    color: var(--chatify-white) !important;
+    transform: scale(1.05);
+}
+
+/* ========== SEARCH BOX SPACING ========== */
+.messenger-search[type="text"] {
+    margin: 0px 10px 20px 10px !important;
+}
+
+.m-header .messenger-search {
+    margin-bottom: 20px !important;
+}
+
+.messenger-listView .messenger-search {
+    margin-bottom: 20px !important;
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 480px) {
+    .chatify-logo {
+        height: 20px;
+    }
+    
+    .chatify-title-main {
+        font-size: 12px;
+    }
+    
+    .chatify-title-sub {
+        font-size: 9px;
+    }
+    
+    .m-header-right a {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+
+/* ========== CLICKABLE AVATAR & USERNAME ========== */
+.header-avatar.show-infoSide {
+    cursor: pointer !important;
+    transition: all 0.2s ease;
+}
+
+.header-avatar.show-infoSide:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.user-name.show-infoSide {
+    cursor: pointer !important;
+    transition: color 0.2s ease;
+}
+
+.user-name.show-infoSide:hover {
+    color: var(--chatify-primary) !important;
+}
+
+/* Info sidebar hidden by default */
+.messenger-infoView {
+    display: none;
+}
+
+/* Smooth transition for info sidebar */
+.messenger-infoView {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+
+/* ========== HEADER MESSAGING ALIGNMENT FIX ========== */
+.m-header-messaging nav.chatify-d-flex {
+    align-items: center !important;
+    padding: 10px 15px !important;
+    min-height: 60px;
+}
+
+/* Bagian kiri (arrow, avatar, nama) */
+.m-header-messaging nav > div.chatify-d-flex:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 40px;
+}
+
+/* Bagian kanan (home, info icons) */
+.m-header-messaging .m-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0 !important;
+}
+
+.m-header-messaging .m-header-right a {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--chatify-bg);
+    transition: var(--chatify-transition);
+    margin-top: 0 !important;
+}
+
+.m-header-messaging .m-header-right a:hover {
+    background: var(--chatify-primary);
+    color: var(--chatify-white) !important;
+    transform: scale(1.05);
+}
+
+/* Arrow back button */
+.m-header-messaging .show-listView {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50%;
+    background: var(--chatify-bg);
+    transition: var(--chatify-transition);
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0;
+}
+
+.m-header-messaging .show-listView:hover {
+    background: var(--chatify-primary);
+    color: var(--chatify-white) !important;
+}
+
+/* Avatar alignment */
+.m-header-messaging .header-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px;
+    min-height: 40px;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0;
+}
+
+/* User name alignment */
+.m-header-messaging .user-name {
+    display: flex !important;
+    align-items: center !important;
+    height: 40px;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 40px;
+}

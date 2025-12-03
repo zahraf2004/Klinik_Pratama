@@ -9,7 +9,7 @@ class TelemedicineController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $search = $request->input('search', '');
 
         // Ambil hanya tenaga kesehatan dengan role dokter_umum
         $nakes = TenagaKesehatan::where('role', 'dokter_umum')
@@ -17,11 +17,17 @@ class TelemedicineController extends Controller
                 $query->where(function($q) use ($search) {
                     $q->where('nama', 'like', "%{$search}%")
                       ->orWhere('str', 'like', "%{$search}%")
-                      ->orWhere('sip', 'like', "%{$search}%");
+                      ->orWhere('sip', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            ->paginate(6);
+            ->orderBy('nama', 'asc')
+            ->paginate(6)
+            ->withQueryString(); // Maintain search query in pagination
 
-        return view('konsultasi.konsultasiNakes', compact('nakes', 'search'));
+        // Hitung total hasil
+        $totalResults = $nakes->total();
+        
+        return view('konsultasi.konsultasiNakes', compact('nakes', 'search', 'totalResults'));
     }
 }

@@ -29,7 +29,11 @@
                 <!-- Dropdown Profil -->
                 <div class="user-dropdown">
                     <div class="user-profile" id="profileDropdownBtn">
-                        <i class="fa-solid fa-circle-user fa-2xl"></i>
+                        @if(Auth::user()->hasCustomAvatar())
+                            <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #4a83d3;">
+                        @else
+                            <i class="fa-solid fa-circle-user fa-2xl"></i>
+                        @endif
                         <div class="profile-name">{{ Auth::user()->name }}</div>
                         <i class="fas fa-caret-down"></i>
                     </div>

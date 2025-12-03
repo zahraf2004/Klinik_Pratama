@@ -1,0 +1,187 @@
+/* ========================================
+   CHATIFY DOCTORS LIST STYLING
+   ======================================== */
+
+/* Doctors Section */
+.doctors-section {
+    padding: 10px 15px;
+    background: #fff;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.messenger-doctors {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #f5f5f5;
+}
+
+.messenger-doctors::-webkit-scrollbar {
+    height: 6px;
+}
+
+.messenger-doctors::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.messenger-doctors::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+.messenger-doctors::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Doctor Avatar Item */
+.doctor-avatar-item {
+    text-align: center;
+    min-width: 55px;
+    max-width: 55px;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.doctor-avatar-item:hover {
+    transform: translateY(-3px);
+}
+
+.doctor-avatar-item .avatar {
+    margin: 0 auto;
+    position: relative;
+    border: 2px solid #4a83d3;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.doctor-avatar-item:hover .avatar {
+    border-color: #3a6fb8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.doctor-avatar-item p {
+    font-size: 10px;
+    margin-top: 4px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 55px;
+    font-weight: 500;
+}
+
+.doctor-avatar-item:hover p {
+    color: #4a83d3;
+}
+
+/* Active Status Badge */
+.doctor-avatar-item .activeStatus {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 10px;
+    height: 10px;
+    background: #00b894;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 184, 148, 0.3);
+}
+
+/* Messenger Title for Doctors */
+.doctors-section .messenger-title {
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.doctors-section .messenger-title span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.doctors-section .messenger-title span::before {
+    content: "👨‍⚕️";
+    font-size: 16px;
+}
+
+/* Adjust Contact List Height */
+.users-tab .listOfContacts {
+    height: calc(100% - 200px) !important;
+    margin-top: 15px;
+}
+
+/* Empty State */
+.messenger-doctors:empty::after {
+    content: "Tidak ada dokter tersedia";
+    display: block;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    padding: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .doctor-avatar-item {
+        min-width: 50px;
+        max-width: 50px;
+    }
+    
+    .doctor-avatar-item .avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .doctor-avatar-item p {
+        font-size: 9px;
+        max-width: 50px;
+    }
+    
+    .doctor-avatar-item .activeStatus {
+        width: 8px;
+        height: 8px;
+        border: 1px solid #fff;
+    }
+}
+
+/* Loading State */
+.messenger-doctors.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.messenger-doctors.loading::before {
+    content: "Loading...";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #999;
+    font-size: 12px;
+}
+
+/* Animation */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.doctor-avatar-item {
+    animation: slideInLeft 0.3s ease;
+}
+
+.doctor-avatar-item:nth-child(1) { animation-delay: 0.05s; }
+.doctor-avatar-item:nth-child(2) { animation-delay: 0.1s; }
+.doctor-avatar-item:nth-child(3) { animation-delay: 0.15s; }
+.doctor-avatar-item:nth-child(4) { animation-delay: 0.2s; }
+.doctor-avatar-item:nth-child(5) { animation-delay: 0.25s; }

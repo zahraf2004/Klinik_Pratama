@@ -163,9 +163,15 @@ Route::get('/Janji-Berobat/status', function(){
     return view('layanan.status');
 });
 
-//route chatify
-Route::group(['middleware' => ['auth']], function () {
+//route chatify - hanya untuk dokter dan pasien
+Route::group(['middleware' => ['auth', 'role:dokter,pasien']], function () {
+    // Custom routes untuk override Chatify behavior
+    Route::get('/chatify/getContacts', [\App\Http\Controllers\CustomChatifyController::class, 'getContacts']);
+    Route::post('/chatify/updateContacts', [\App\Http\Controllers\CustomChatifyController::class, 'updateContacts']);
+    
+    // Default Chatify routes
     Route::get('/chatify', [\Chatify\Http\Controllers\MessagesController::class, 'index'])->name('chatify');
+    Route::get('/chatify/{id}', [\Chatify\Http\Controllers\MessagesController::class, 'index'])->name('chatify.user');
 });
 
 

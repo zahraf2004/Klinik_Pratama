@@ -17,6 +17,7 @@
 .messenger-search[type="text"] {
     background: var(--secondary-bg-color);
     color: #333;
+    margin-bottom: 50px;
 }
 .messenger-listView {
     background: var(--primary-bg-color);
@@ -68,6 +69,7 @@
     background: var(--message-card-color);
     color: #656b75;
     box-shadow: 0px 6px 11px rgba(18, 67, 105, 0.03);
+    font-size: small;
 }
 .m-li-divider {
     border-bottom: 1px solid var(--border-color);
@@ -78,6 +80,37 @@
     text-decoration: none;
     color: #202020;
 }
+.chatify-header-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;            /* jarak antara logo & teks */
+    text-decoration: none;
+}
+
+.chatify-logo {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+
+.chatify-title-wrapper {
+    display: flex;
+    flex-direction: column;  /* biar tulisan atas-bawah */
+    line-height: 1.2;
+}
+
+.chatify-title-main {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2A5C99;
+}
+
+.chatify-title-sub {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6f8ba4;
+}
+
 .messenger-list-item td p {
     color: #3c3c3c;
 }

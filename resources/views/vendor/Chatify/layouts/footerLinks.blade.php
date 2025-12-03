@@ -15,3 +15,25 @@
 </script>
 <script src="{{ asset('js/chatify/utils.js') }}"></script>
 <script src="{{ asset('js/chatify/code.js') }}"></script>
+<script src="{{ asset('js/chatify/custom-contacts.js') }}"></script>
+<script src="{{ asset('js/chatify/custom-info-sidebar.js') }}"></script>
+<script>
+// Auto-refresh contact list every 10 seconds
+// This ensures new messages appear in the list even if Pusher fails
+setInterval(function() {
+    // Only refresh if we're on the main chatify page (not in a conversation)
+    const currentUrl = window.location.pathname;
+    
+    // Refresh contact list
+    if (typeof getContacts === 'function') {
+        getContacts();
+    }
+}, 10000); // 10 seconds
+
+// Force refresh contact list when page becomes visible
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && typeof getContacts === 'function') {
+        getContacts();
+    }
+});
+</script>

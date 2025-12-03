@@ -52,4 +52,13 @@ class ProfilPasien extends Model
     {
         return $this->hasMany(Appointment::class, 'user_id', 'user_id');
     }
+
+    // Accessor untuk mendapatkan URL foto
+    public function getFotoUrlAttribute()
+    {
+        if ($this->foto) {
+            return \Storage::disk('public')->url($this->foto);
+        }
+        return null;
+    }
 }

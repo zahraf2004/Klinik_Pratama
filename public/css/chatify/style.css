@@ -136,6 +136,7 @@ body {
   padding: var(--headers-padding);
 }
 .messenger-messagingView .m-body {
+  background: #ffff;
   position: relative;
   padding-top: 15px;
   overflow-x: hidden;
@@ -517,6 +518,7 @@ body {
   direction: ltr;
   color: #fff !important;
   background: var(--primary-color) !important;
+  font-size: small;
 }
 .message-card.mc-sender .message .message-time {
   color: rgba(255, 255, 255, 0.67);

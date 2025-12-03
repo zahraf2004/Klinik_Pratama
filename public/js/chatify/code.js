@@ -1096,7 +1096,7 @@ function deleteConversation(id) {
       IDinfo(id);
 
       if (!data.deleted)
-        return alert("Error occurred, messages can not be deleted!");
+        return alert("Terjadi kesalahan, pesan tidak dapat dihapus!");
 
       // Hide waiting alert modal
       app_modal({
@@ -1405,13 +1405,13 @@ $(document).ready(function () {
         fileExtension.toString().toLowerCase()
       )
     ) {
-      alert("file type not allowed");
+      alert("Tipe file tidak diizinkan");
       fileElement.val("");
       return false;
     }
     // Validate file size.
     if (fileSize > chatify.maxUploadSize) {
-      alert("File is too large!");
+      alert("Ukuran file terlalu besar!");
       return false;
     }
     return true;

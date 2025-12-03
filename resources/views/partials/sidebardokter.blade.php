@@ -11,5 +11,5 @@
       <li><a class="nav-link" href="/nakes/dashboard"><i class="fa-solid fa-house"></i> <span>Dashboard</span></a></li>
       <li class="menu-header">Layanan</li>
       <li><a class="nav-link" href="/nakes/janji-temu"><i class="fa-regular fa-calendar-days"></i> <span>Data Janji Berobat</span></a></li>
-      <li><a class="nav-link" href="#"><i class="fa-regular fa-comment"></i> <span>Konsultasi Online</span></a></li>
+      <li><a class="nav-link" href="/chatify"><i class="fa-regular fa-comment"></i> <span>Konsultasi Online</span></a></li>
 </div> 

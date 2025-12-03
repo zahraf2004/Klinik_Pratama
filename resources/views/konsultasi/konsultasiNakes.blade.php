@@ -34,27 +34,52 @@
         <div class="konsul-right-column">
 
             <div class="konsul-doctors-section">
-                <form method="GET" action="{{ route('konsultasi.index') }}" class="konsul-search-container">
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari dokter berdasarkan nama, STR, atau SIP...">
-                    <button><i class="fas fa-search"></i> Cari</button>
+                <form method="GET" action="{{ route('konsultasi.index') }}" class="konsul-search-container" id="searchForm">
+                    <input type="text" name="search" id="searchInput" value="{{ $search }}" placeholder="Cari dokter berdasarkan nama, STR, SIP, atau email..." autocomplete="off">
+                    <button type="submit"><i class="fas fa-search"></i> Cari</button>
+                    @if($search)
+                        <a href="{{ route('konsultasi.index') }}" class="konsul-btn-clear" title="Clear search">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    @endif
                 </form>
+
+                <!-- Search Results Info -->
+                @if($search)
+                    <div class="konsul-search-info">
+                        <p>
+                            <i class="fas fa-info-circle"></i> 
+                            Menampilkan <strong>{{ $totalResults }}</strong> hasil untuk "<strong>{{ $search }}</strong>"
+                            @if($totalResults == 0)
+                                <span style="color: #e74c3c;">- Tidak ada dokter yang ditemukan</span>
+                            @endif
+                        </p>
+                    </div>
+                @endif
 
                 <div class="konsul-section-card">
                     <h2 class="konsul-sectiontitle">
                         <i class="fas fa-user-md"></i> Dokter Tersedia
+                        @if(!$search)
+                            <span style="font-size: 14px; font-weight: normal; color: #666;">({{ $totalResults }} dokter)</span>
+                        @endif
                     </h2>
 
+                    @if($nakes->count() > 0)
                     <div class="konsul-doctors-grid">
 
                         @foreach($nakes as $nakesItem)
                         <div class="konsul-doctor-card">
 
                             <div class="konsul-doctor-header">
-                                <div class="konsul-doctor-avatar-sm">
+                                <div class="konsul-doctor-avatar-sm" style="position: relative;">
                                     @if($nakesItem->foto_url)
                                         <img src="{{ $nakesItem->foto_url }}" alt="{{ $nakesItem->nama }}">
                                     @else
                                         <img src="{{ asset('assets/img/avatar/avatar-1.png') }}" alt="Default Avatar">
+                                    @endif
+                                    @if($nakesItem->user_id)
+                                        <span class="online-indicator" style="position: absolute; bottom: 5px; right: 5px; width: 12px; height: 12px; background: #4CAF50; border: 2px solid white; border-radius: 50%;" title="Tersedia untuk chat"></span>
                                     @endif
                                 </div>
 
@@ -149,9 +174,15 @@
                                 </div>
 
                                 <div class="konsul-action-buttons">
-                                    <a href="/chatify" class="konsul-btnD konsul-btn-primary">
-                                        <i class="fas fa-comments"></i> Chat Sekarang
-                                    </a>
+                                    @if($nakesItem->user_id)
+                                        <a href="{{ route('chatify.user', ['id' => $nakesItem->user_id]) }}" class="konsul-btnD konsul-btn-primary">
+                                            <i class="fas fa-comments"></i> Chat Sekarang
+                                        </a>
+                                    @else
+                                        <button class="konsul-btnD konsul-btn-primary" disabled title="Dokter belum terhubung ke sistem chat">
+                                            <i class="fas fa-comments"></i> Chat Tidak Tersedia
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -159,9 +190,25 @@
 
                     </div>
 
+                    @if($nakes->hasPages())
                     <div class="konsul-pagination">
                         {{ $nakes->links() }}
                     </div>
+                    @endif
+
+                    @else
+                    <!-- No Results -->
+                    <div class="konsul-no-results">
+                        <div class="konsul-no-results-icon">
+                            <i class="fas fa-user-md-slash fa-3x"></i>
+                        </div>
+                        <h3>Tidak Ada Dokter Ditemukan</h3>
+                        <p>Maaf, tidak ada dokter yang sesuai dengan pencarian "<strong>{{ $search }}</strong>"</p>
+                        <a href="{{ route('konsultasi.index') }}" class="konsul-btnD konsul-btn-primary">
+                            <i class="fas fa-arrow-left"></i> Lihat Semua Dokter
+                        </a>
+                    </div>
+                    @endif
 
                 </div>
             </div>

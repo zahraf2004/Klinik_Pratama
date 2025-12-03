@@ -12,7 +12,16 @@ class TenagaKesehatanSeeder extends Seeder
      */
     public function run(): void
     {
+        // Dokter 1: Dr. Ahmad Fauzi
+        $user1 = \App\Models\User::create([
+            'name' => 'Dr. Ahmad Fauzi',
+            'email' => 'ahmad.fauzi@klinik.com',
+            'password' => bcrypt('password123'),
+            'role' => 'dokter',
+        ]);
+
         \App\Models\TenagaKesehatan::create([
+            'user_id' => $user1->id,
             'nama' => 'Dr. Ahmad Fauzi',
             'email' => 'ahmad.fauzi@klinik.com',
             'hp' => '081234567890',
@@ -27,7 +36,16 @@ class TenagaKesehatanSeeder extends Seeder
             ]
         ]);
 
+        // Dokter 2: Dr. Siti Nurhaliza
+        $user2 = \App\Models\User::create([
+            'name' => 'Dr. Siti Nurhaliza',
+            'email' => 'siti.nurhaliza@klinik.com',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+        ]);
+
         \App\Models\TenagaKesehatan::create([
+            'user_id' => $user2->id,
             'nama' => 'Dr. Siti Nurhaliza',
             'email' => 'siti.nurhaliza@klinik.com',
             'hp' => '081234567891',
@@ -42,7 +60,16 @@ class TenagaKesehatanSeeder extends Seeder
             ]
         ]);
 
+        // Dokter 3: Bidan Rina Wati
+        $user3 = \App\Models\User::create([
+            'name' => 'Bidan Rina Wati',
+            'email' => 'rina.wati@klinik.com',
+            'password' => bcrypt('password123'),
+            'role' => 'dokter',
+        ]);
+
         \App\Models\TenagaKesehatan::create([
+            'user_id' => $user3->id,
             'nama' => 'Bidan Rina Wati',
             'email' => 'rina.wati@klinik.com',
             'hp' => '081234567892',
