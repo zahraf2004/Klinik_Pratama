@@ -72,19 +72,8 @@
                             Daftar
                         </button>
                     </div>
-                    <div class="social-login">
-                        <p>Atau masuk dengan</p>
-                        <div class="social-icons">
-                            <a href="#" class="social-icon google" style="background-color: #E43636">
-                                <i class="fa-brands fa-google"></i>
-                            </a>
-                            <a href="#" class="social-icon facebook">
-                                <i class="fa-brands fa-facebook-f"></i>
-                            </a>
-                        </div>
-                    </div>
                     <div class="signin">                            
-                        <a href="/login">Sudah punya akun?</a>
+                        <p><a href="/login">sudah punya akun?</a></p>
                     </div>
                 </form>
             </div>

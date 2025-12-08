@@ -28,6 +28,20 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/registrasi', [RegisController::class, 'showRegisterForm'])->name('register');
 Route::post('/registrasi', [RegisController::class, 'register']);
 
+Route::get('/reset-password', function () {
+    return view('auth.resetpw');
+})->name('password.request');
+
+Route::post('/reset-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+
+Route::get('/otp-reset', function () {
+    return view('auth.otpreset');
+})->name('otp.reset');
+
+Route::post('/verify-otp', [AuthController::class, 'verifyOtpAndResetPassword'])->name('otp.verify');
+
+Route::get('/resend-otp', [AuthController::class, 'resendOtp'])->name('otp.resend');
+
 /*
 |--------------------------------------------------------------------------
 | Dashboard Admin
@@ -168,6 +182,12 @@ Route::group(['middleware' => ['auth', 'role:dokter,pasien']], function () {
     // Custom routes untuk override Chatify behavior
     Route::get('/chatify/getContacts', [\App\Http\Controllers\CustomChatifyController::class, 'getContacts']);
     Route::post('/chatify/updateContacts', [\App\Http\Controllers\CustomChatifyController::class, 'updateContacts']);
+    Route::post('/chatify/getUserDetails', [\App\Http\Controllers\CustomChatifyController::class, 'getUserDetails']);
+    
+    // Chat session management (premium feature)
+    Route::post('/chatify/getOrCreateSession', [\App\Http\Controllers\CustomChatifyController::class, 'getOrCreateSession']);
+    Route::post('/chatify/incrementMessageCount', [\App\Http\Controllers\CustomChatifyController::class, 'incrementMessageCount']);
+    Route::post('/chatify/endSession', [\App\Http\Controllers\CustomChatifyController::class, 'endSession']);
     
     // Default Chatify routes
     Route::get('/chatify', [\Chatify\Http\Controllers\MessagesController::class, 'index'])->name('chatify');

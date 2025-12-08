@@ -130,28 +130,37 @@
                                 </div>
                                 @endif
 
-                                <!-- Jadwal Praktik -->
+                                <!-- Jadwal Praktik dengan Jam -->
                                 @if($nakesItem->jadwal_shift && count($nakesItem->jadwal_shift) > 0)
                                 <div class="konsul-info-item">
                                     <div class="konsul-info-icon"><i class="fas fa-calendar-check"></i></div>
                                     <div class="konsul-info-text">
                                         <h4>Jadwal Praktik</h4>
-                                        <p>
+                                        <div style="line-height: 1.8;">
                                             @php
-                                                $hariList = [];
+                                                $jadwalList = [];
                                                 foreach($nakesItem->jadwal_shift as $jadwal) {
-                                                    // Cek apakah format baru (hari) atau lama (tanggal_mulai)
                                                     if (isset($jadwal['hari'])) {
-                                                        $hariList[] = $jadwal['hari'];
+                                                        $hari = $jadwal['hari'];
+                                                        $jamMulai = $jadwal['jam_mulai'] ?? '';
+                                                        $jamSelesai = $jadwal['jam_selesai'] ?? '';
+                                                        
+                                                        if ($jamMulai && $jamSelesai) {
+                                                            $jadwalList[] = "$hari ($jamMulai - $jamSelesai)";
+                                                        } else {
+                                                            $jadwalList[] = $hari;
+                                                        }
                                                     }
                                                 }
                                             @endphp
-                                            @if(count($hariList) > 0)
-                                                {{ implode(', ', $hariList) }}
+                                            @if(count($jadwalList) > 0)
+                                                @foreach($jadwalList as $jadwal)
+                                                    <div style="margin-bottom: 4px;">• {{ $jadwal }}</div>
+                                                @endforeach
                                             @else
                                                 <span class="text-muted">Jadwal belum diatur</span>
                                             @endif
-                                        </p>
+                                        </div>
                                     </div>
                                 </div>
                                 @endif

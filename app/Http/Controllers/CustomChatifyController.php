@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\ChatSession;
 use Chatify\Facades\ChatifyMessenger as Chatify;
 use Illuminate\Support\Facades\DB;
 
@@ -260,5 +261,175 @@ class CustomChatifyController extends Controller
         return response()->json([
             'contactItem' => $this->renderContactItem($contact, $user)
         ]);
+    }
+    
+    /**
+     * Get user details untuk profile modal (dokter atau pasien)
+     */
+    public function getUserDetails(Request $request)
+    {
+        $userId = $request->user_id;
+        $user = User::with(['tenagaKesehatan', 'profil_pasien'])->find($userId);
+        
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        
+        $userData = [
+            'name' => $user->name,
+            'avatar' => $user->avatar,
+            'role' => $user->role,
+            'email' => $user->email,
+            'user_type' => $user->role === 'pasien' ? 'patient' : 'doctor'
+        ];
+        
+        // Jika user adalah dokter, ambil data dari tenaga_kesehatan
+        if ($user->role === 'dokter' && $user->tenagaKesehatan) {
+            $nakes = $user->tenagaKesehatan;
+            $userData = array_merge($userData, [
+                'str' => $nakes->str,
+                'sip' => $nakes->sip,
+                'tahun_mulai' => $nakes->tahun_mulai,
+                'pengalaman' => $nakes->pengalaman,
+                'jadwal_shift' => $nakes->jadwal_shift,
+                'foto_url' => $nakes->foto_url,
+                'spesialisasi' => $nakes->role === 'dokter_umum' ? 'Dokter Umum' : ucfirst($nakes->role),
+            ]);
+        }
+        
+        // Jika user adalah pasien, ambil data dari profil_pasien
+        if ($user->role === 'pasien' && $user->profil_pasien) {
+            $profil = $user->profil_pasien;
+            $userData = array_merge($userData, [
+                'tanggal_lahir' => $profil->tanggal_lahir,
+                'jenis_kelamin' => $profil->jenis_kelamin,
+                'alamat' => $profil->alamat,
+                'no_hp' => $profil->no_hp,
+                'pekerjaan' => $profil->pekerjaan,
+                'status_pernikahan' => $profil->status_pernikahan,
+                'golongan_darah' => $profil->golongan_darah,
+                'tinggi_badan' => $profil->tinggi_badan,
+                'berat_badan' => $profil->berat_badan,
+                'riwayat_penyakit' => $profil->riwayat_penyakit,
+                'alergi' => $profil->alergi,
+                'foto' => $profil->foto,
+                'umur' => $profil->tanggal_lahir ? \Carbon\Carbon::parse($profil->tanggal_lahir)->age : null,
+            ]);
+        }
+        
+        return response()->json([
+            'user' => $userData
+        ]);
+    }
+    
+    /**
+     * Get atau create chat session
+     */
+    public function getOrCreateSession(Request $request)
+    {
+        $currentUser = Auth::user();
+        $targetUserId = $request->target_user_id;
+        
+        // Tentukan siapa pasien dan siapa dokter
+        $patientId = $currentUser->role === 'pasien' ? $currentUser->id : $targetUserId;
+        $doctorId = $currentUser->role === 'dokter' ? $currentUser->id : $targetUserId;
+        
+        // Cari session yang aktif
+        $session = ChatSession::where('patient_id', $patientId)
+            ->where('doctor_id', $doctorId)
+            ->where('is_active', true)
+            ->first();
+        
+        // Jika tidak ada, buat session baru
+        if (!$session) {
+            $session = ChatSession::create([
+                'patient_id' => $patientId,
+                'doctor_id' => $doctorId,
+                'message_count' => 0,
+                'is_premium' => false,
+                'is_active' => true,
+                'started_at' => now(),
+            ]);
+        }
+        
+        return response()->json([
+            'session' => [
+                'id' => $session->id,
+                'message_count' => $session->message_count,
+                'is_premium' => $session->is_premium,
+                'is_active' => $session->is_active,
+                'has_reached_limit' => $session->hasReachedLimit(),
+                'remaining_messages' => max(0, 3 - $session->message_count),
+            ]
+        ]);
+    }
+    
+    /**
+     * Increment message count saat pasien kirim pesan
+     */
+    public function incrementMessageCount(Request $request)
+    {
+        $currentUser = Auth::user();
+        $targetUserId = $request->target_user_id;
+        
+        // Hanya pasien yang di-track message count-nya
+        if ($currentUser->role !== 'pasien') {
+            return response()->json(['success' => true, 'message' => 'Doctor messages are not counted']);
+        }
+        
+        $patientId = $currentUser->id;
+        $doctorId = $targetUserId;
+        
+        $session = ChatSession::where('patient_id', $patientId)
+            ->where('doctor_id', $doctorId)
+            ->where('is_active', true)
+            ->first();
+        
+        if ($session) {
+            $session->incrementMessageCount();
+            
+            return response()->json([
+                'success' => true,
+                'session' => [
+                    'message_count' => $session->message_count,
+                    'has_reached_limit' => $session->hasReachedLimit(),
+                    'remaining_messages' => max(0, 3 - $session->message_count),
+                ]
+            ]);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Session not found'], 404);
+    }
+    
+    /**
+     * End session (hanya dokter yang bisa)
+     */
+    public function endSession(Request $request)
+    {
+        $currentUser = Auth::user();
+        
+        // Hanya dokter yang bisa end session
+        if ($currentUser->role !== 'dokter') {
+            return response()->json(['success' => false, 'message' => 'Only doctors can end sessions'], 403);
+        }
+        
+        $patientId = $request->patient_id;
+        $doctorId = $currentUser->id;
+        
+        $session = ChatSession::where('patient_id', $patientId)
+            ->where('doctor_id', $doctorId)
+            ->where('is_active', true)
+            ->first();
+        
+        if ($session) {
+            $session->endSession();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Session ended successfully'
+            ]);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Active session not found'], 404);
     }
 }

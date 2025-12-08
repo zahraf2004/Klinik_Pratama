@@ -15,8 +15,7 @@
 </script>
 <script src="{{ asset('js/chatify/utils.js') }}"></script>
 <script src="{{ asset('js/chatify/code.js') }}"></script>
-<script src="{{ asset('js/chatify/custom-contacts.js') }}"></script>
-<script src="{{ asset('js/chatify/custom-info-sidebar.js') }}"></script>
+<script src="{{ asset('js/chatify/custom-chatify.js') }}"></script>
 <script>
 // Auto-refresh contact list every 10 seconds
 // This ensures new messages appear in the list even if Pusher fails

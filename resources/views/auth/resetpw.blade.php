@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Klinik Dokter Yanti</title>
+    <title>Reset Password - Klinik Dokter Yanti</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
@@ -17,36 +17,37 @@
             </div>
             <div class="login-form">
                 <div class="form-header">
-                    <h2>Klinik Pratama Dokter Yanti</h2>
-                    <p>Murah, Nyaman, Sehat</p>
+                    <h2>Reset Password</h2>
+                    <p>Masukkan email Anda untuk reset password</p>
                 </div>
-                <form action="{{ route('login') }}" method="POST">
+
+                <div class="reset-info">
+                    <div class="info-box">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <p>Kami akan mengirimkan kode OTP reset password ke email Anda. Silakan periksa email anda.</p>
+                    </div>
+                </div>
+
+                <form action="/reset-password" method="POST">
                     @csrf
                     <div class="form-group">
-                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="" required autocomplete="email" autofocus placeholder="Email">
+                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Email">
+                        @error('email')
                             <span class="invalid-feedback" role="alert">
-                                <strong></strong>
+                                <strong>{{ $message }}</strong>
                             </span>
+                        @enderror
                     </div>
 
-                    <div class="form-group">
-                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Password">
-                        <span class="password-toggle" onclick="togglePassword()">
-                            <i class="fa-solid fa-eye-slash" id="toggleIcon"></i>
-                        </span>
-                            <span class="invalid-feedback" role="alert">
-                                <strong></strong>
-                            </span>
-                    </div>
                     @if ($errors->any())
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
                                 @foreach ($errors->all() as $error)
                                     Swal.fire({
                                         icon: 'error',
-                                        title: 'Gagal Login',
+                                        title: 'Gagal',
                                         text: '{{ $error }}',
-                                        confirmButtonText: 'Coba Lagi'
+                                        confirmButtonText: 'OK'
                                     });
                                 @endforeach
                             });
@@ -66,24 +67,14 @@
                         </script>
                     @endif
 
-                    <div class="form-group remember-forgot">
-                        <div class="remember-me">
-                            <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                            <label for="remember">Ingat Saya?</label>
-                        </div>
-                        <a class="forgot-password" href="/reset-password">
-                            Lupa Password?
-                        </a>
-                    </div>
-
                     <div class="form-group">
                         <button type="submit" class="btn-login">
-                            Masuk
+                            Kirim Link Reset Password
                         </button>
                     </div>
 
                     <div class="signin">                            
-                        <p><a href="/registrasi">belum punya akun?</a></p>
+                        <p><a href="/login">Kembali ke Login</a></p>
                     </div>
                 </form>
             </div>

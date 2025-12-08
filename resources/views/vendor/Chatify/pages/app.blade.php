@@ -1,4 +1,5 @@
 @include('Chatify::layouts.headLinks')
+<meta name="user-role" content="{{ Auth::user()->role }}">
 <div class="messenger">
     {{-- ----------------------Users/Groups lists side---------------------- --}}
     <div class="messenger-listView {{ !!$id ? 'conversation-active' : '' }}">
@@ -14,8 +15,9 @@
                 </a>
                 {{-- header buttons --}}
                 <div class="m-header-right">
-                    <a href="#" onclick="if(typeof getContacts === 'function') getContacts(); return false;" title="Refresh daftar pesan"><i class="fas fa-sync-alt"></i></a>
-                    <a href="#"><i class="fas fa-cog settings-btn"></i></a>
+                    <a href="{{ Auth::user()->role === 'dokter' ? '/nakes/dashboard' : '/konsultasi' }}" title="Kembali ke {{ Auth::user()->role === 'dokter' ? 'Dashboard Dokter' : 'Halaman Konsultasi' }}">
+                        <i class="fas fa-home"></i>
+                    </a>
                     <a href="#" class="listView-x"><i class="fas fa-times"></i></a>
                 </div>
             </nav>
@@ -57,17 +59,13 @@
         <div class="m-header m-header-messaging">
             <nav class="chatify-d-flex chatify-justify-content-between chatify-align-items-center">
                 {{-- header back button, avatar and user name --}}
-                <div class="chatify-d-flex chatify-justify-content-between chatify-align-items-center">
-                    <a href="#" class="show-listView"><i class="fas fa-arrow-left"></i></a>
+                <div class="header-left-section">
+                    <a href="#" class="back-btn show-listView"><i class="fas fa-arrow-left"></i></a>
                     <div class="avatar av-s header-avatar show-infoSide" style="cursor: pointer;" title="Lihat detail pengguna">
                     </div>
                     <a href="#" class="user-name show-infoSide" title="Lihat detail pengguna">{{ config('chatify.name') }}</a>
                 </div>
-                {{-- header buttons --}}
-                <nav class="m-header-right">            
-                    <a href="/dashboard" title="Kembali ke Dashboard"><i class="fas fa-home"></i></a>
-                    <a href="#" class="show-infoSide" title="Info User"><i class="fas fa-info-circle"></i></a>
-                </nav>
+                {{-- header buttons - kosong karena sudah ada di sidebar kiri --}}
             </nav>
             {{-- Internet connection --}}
             <div class="internet-connection">

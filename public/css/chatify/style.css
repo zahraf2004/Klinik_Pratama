@@ -152,6 +152,12 @@ body {
   align-items: center;
   gap: 1rem;
   float: right;
+  margin-top: -35px;
+}
+.user-name {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 10px;
 }
 .m-header-messaging {
   position: relative;
@@ -291,6 +297,8 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
+  display: inline-block;
+  vertical-align: middle;
 }
 .av-l {
   width: 100px;
