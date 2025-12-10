@@ -21,6 +21,7 @@
 
   <link rel="stylesheet" href="{{ asset('css/custom-table.css') }}">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/payment-modal.css') }}">
   
   @stack('styles')
 </head>
@@ -43,6 +44,13 @@
     </div>
   </div>
 
+  {{-- Payment Modal Component --}}
+  @auth
+    @if(Auth::user()->role === 'pasien')
+      @include('components.payment-modal')
+    @endif
+  @endauth
+
   <!-- General JS Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -51,6 +59,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
   <script src="{{asset('assets/js/stisla.js')}}"></script>
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <script src="{{ asset('js/payment-modal.js') }}"></script>
    
    @if(session('login_success'))
    <script>

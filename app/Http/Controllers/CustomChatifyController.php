@@ -334,6 +334,11 @@ class CustomChatifyController extends Controller
         $patientId = $currentUser->role === 'pasien' ? $currentUser->id : $targetUserId;
         $doctorId = $currentUser->role === 'dokter' ? $currentUser->id : $targetUserId;
         
+        // Cek apakah pasien punya subscription aktif
+        $patient = User::find($patientId);
+        $hasActiveSubscription = $patient->hasActiveSubscription();
+        $activeSubscription = $patient->activeSubscription();
+        
         // Cari session yang aktif
         $session = ChatSession::where('patient_id', $patientId)
             ->where('doctor_id', $doctorId)
@@ -346,10 +351,26 @@ class CustomChatifyController extends Controller
                 'patient_id' => $patientId,
                 'doctor_id' => $doctorId,
                 'message_count' => 0,
-                'is_premium' => false,
+                'is_premium' => $hasActiveSubscription,
                 'is_active' => true,
                 'started_at' => now(),
             ]);
+        } else {
+            // Update status premium jika subscription berubah
+            if ($session->is_premium !== $hasActiveSubscription) {
+                $session->update(['is_premium' => $hasActiveSubscription]);
+            }
+        }
+        
+        // Prepare subscription info
+        $subscriptionInfo = null;
+        if ($hasActiveSubscription && $activeSubscription) {
+            $subscriptionInfo = [
+                'plan_name' => $activeSubscription->plan_name,
+                'expires_at' => $activeSubscription->expires_at->format('d/m/Y'),
+                'days_remaining' => $activeSubscription->daysRemaining(),
+                'is_expiring_soon' => $activeSubscription->daysRemaining() <= 7
+            ];
         }
         
         return response()->json([
@@ -359,7 +380,12 @@ class CustomChatifyController extends Controller
                 'is_premium' => $session->is_premium,
                 'is_active' => $session->is_active,
                 'has_reached_limit' => $session->hasReachedLimit(),
-                'remaining_messages' => max(0, 3 - $session->message_count),
+                'remaining_messages' => $session->is_premium ? -1 : max(0, 3 - $session->message_count),
+            ],
+            'subscription' => $subscriptionInfo,
+            'user_premium_status' => [
+                'has_active_subscription' => $hasActiveSubscription,
+                'remaining_free_chats' => $patient->getRemainingFreeChats()
             ]
         ]);
     }

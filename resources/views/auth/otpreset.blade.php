@@ -108,7 +108,11 @@
 
                     <div class="otp-resend">
                         <p>Tidak menerima kode OTP?</p>
-                        <a href="/resend-otp" class="resend-link">Kirim Ulang Kode</a>
+                        <form action="/resend-otp" method="POST" style="display: inline;">
+                            @csrf
+                            <input type="hidden" name="email" value="{{ session('reset_email') }}">
+                            <button type="submit" class="resend-link" style="background: none; border: none; color: #007bff; text-decoration: underline; cursor: pointer;">Kirim Ulang Kode</button>
+                        </form>
                     </div>
 
                     <div class="signin">                            

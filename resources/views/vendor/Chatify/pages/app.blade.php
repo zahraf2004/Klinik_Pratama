@@ -109,4 +109,20 @@
 </div>
 
 @include('Chatify::layouts.modals')
+
+{{-- Payment Modal for Premium Subscription --}}
+@if(Auth::user()->role === 'pasien')
+    @include('components.payment-modal')
+@endif
+
 @include('Chatify::layouts.footerLinks')
+
+{{-- Add user role meta tag --}}
+<meta name="user-role" content="{{ Auth::user()->role }}">
+
+{{-- Add Bootstrap 5 for modal --}}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+{{-- Add SweetAlert2 for notifications --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

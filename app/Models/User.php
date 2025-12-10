@@ -95,4 +95,60 @@ class User extends Authenticatable
         return false;
     }
 
+    // Relasi untuk chat sessions sebagai pasien
+    public function chatSessionsAsPatient()
+    {
+        return $this->hasMany(ChatSession::class, 'patient_id');
+    }
+
+    // Relasi untuk chat sessions sebagai dokter
+    public function chatSessionsAsDoctor()
+    {
+        return $this->hasMany(ChatSession::class, 'doctor_id');
+    }
+
+    // Relasi untuk subscriptions
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    // Relasi untuk transactions
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    // Method untuk cek apakah user punya subscription aktif
+    public function hasActiveSubscription(): bool
+    {
+        return Subscription::userHasActiveSubscription($this->id);
+    }
+
+    // Method untuk mendapatkan subscription aktif
+    public function activeSubscription()
+    {
+        return $this->subscriptions()->active()->first();
+    }
+
+    // Method untuk cek sisa chat gratis
+    public function getRemainingFreeChats(): int
+    {
+        if ($this->hasActiveSubscription()) {
+            return -1; // Unlimited untuk subscriber
+        }
+
+        $totalUsedChats = $this->chatSessionsAsPatient()
+            ->where('is_premium', false)
+            ->sum('message_count');
+
+        return max(0, 3 - $totalUsedChats);
+    }
+
+    // Method untuk cek apakah bisa chat
+    public function canChat(): bool
+    {
+        return $this->hasActiveSubscription() || $this->getRemainingFreeChats() > 0;
+    }
+
 }

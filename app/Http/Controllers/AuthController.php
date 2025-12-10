@@ -4,12 +4,42 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ResetPassword;
+use Illuminate\Support\Facades\Log;
+
 
 class AuthController extends Controller
 {
     public function showLoginForm()
     {
         return view('auth.login'); 
+    }
+
+    /**
+     * Show reset password form
+     */
+    public function showResetForm()
+    {
+        return view('auth.resetpw');
+    }
+
+    /**
+     * Show OTP verification form
+     */
+    public function showOtpForm(Request $request)
+    {
+        // Get email from request parameter or session
+        $email = $request->get('email', session('reset_email'));
+        
+        if (!$email) {
+            return redirect('/reset-password')->with('error', 'Sesi telah berakhir. Silakan mulai dari awal.');
+        }
+        
+        // Store email in session for form
+        session(['reset_email' => $email]);
+        
+        return view('auth.otpreset');
     }
     public function login(Request $request)
     {
@@ -86,16 +116,32 @@ class AuthController extends Controller
         // Generate 6 digit OTP
         $otp = rand(100000, 999999);
         
-        // Store OTP in session (in production, store in database with expiry)
-        session([
+        // Get user data
+        $user = \App\Models\User::where('email', $request->email)->first();
+        
+        // Store OTP in database with expiry
+        $result = \App\Models\ResetPasswordToken::create([
             'reset_email' => $request->email,
             'reset_otp' => $otp,
-            'otp_created_at' => now()
+            'expires_at' => now()->addMinutes(15), // 15 menit sesuai template email
         ]);
 
-        // TODO: Send OTP via email
-        // For now, just redirect to OTP page
-        return redirect('/otp-reset')->with('status', 'Kode OTP telah dikirim ke email Anda. (Untuk testing, kode OTP: ' . $otp . ')');
+        // Store email in session
+        session(['reset_email' => $request->email]);
+
+        // Send OTP via email
+        // try {
+            Log::info($otp);
+            Mail::to($request->email)->send(new ResetPassword($user, $otp));
+            
+            return redirect('/otp-reset')->with('status', 'Kode OTP telah dikirim ke email Anda. Silakan periksa inbox atau folder spam.');
+        // } catch (\Exception $e) {
+        //     // Log error untuk debugging
+        //     \Log::error('Failed to send reset password email: ' . $e->getMessage());
+            
+        //     // Fallback untuk development/testing
+        //     return redirect('/otp-reset')->with('status', 'Kode OTP telah dikirim ke email Anda. (Untuk testing, kode OTP: ' . $otp . ')');
+        // }
     }
 
     /**
@@ -114,25 +160,23 @@ class AuthController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        // Check if OTP matches
-        if ($request->otp != session('reset_otp')) {
-            return back()->withErrors(['otp' => 'Kode OTP tidak valid.'])->withInput();
-        }
+        // Find valid OTP token
+        $resetToken = \App\Models\ResetPasswordToken::where('reset_otp', $request->otp)
+            ->where('expires_at', '>', now())
+            ->first();
 
-        // Check if OTP expired (10 minutes)
-        $otpCreatedAt = session('otp_created_at');
-        if ($otpCreatedAt && now()->diffInMinutes($otpCreatedAt) > 10) {
-            return back()->withErrors(['otp' => 'Kode OTP telah kadaluarsa. Silakan kirim ulang.'])->withInput();
+        if (!$resetToken) {
+            return back()->withErrors(['otp' => 'Kode OTP tidak valid atau telah kadaluarsa.'])->withInput();
         }
 
         // Update password
-        $user = \App\Models\User::where('email', session('reset_email'))->first();
+        $user = \App\Models\User::where('email', $resetToken->reset_email)->first();
         if ($user) {
             $user->password = Hash::make($request->password);
             $user->save();
 
-            // Clear session
-            session()->forget(['reset_email', 'reset_otp', 'otp_created_at']);
+            // Delete used token
+            $resetToken->delete();
 
             return redirect('/login')->with('status', 'Password berhasil direset. Silakan login dengan password baru Anda.');
         }
@@ -143,22 +187,66 @@ class AuthController extends Controller
     /**
      * Resend OTP
      */
-    public function resendOtp()
+    public function resendOtp(Request $request)
     {
-        if (!session('reset_email')) {
-            return redirect('/reset-password')->with('error', 'Sesi telah berakhir. Silakan mulai dari awal.');
-        }
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        // Delete old tokens for this email
+        \App\Models\ResetPasswordToken::where('reset_email', $request->email)->delete();
 
         // Generate new OTP
         $otp = rand(100000, 999999);
         
-        session([
+        // Get user data
+        $user = \App\Models\User::where('email', $request->email)->first();
+        
+        // Store new OTP in database
+        \App\Models\ResetPasswordToken::create([
+            'reset_email' => $request->email,
             'reset_otp' => $otp,
-            'otp_created_at' => now()
+            'expires_at' => now()->addMinutes(15),
         ]);
 
-        // TODO: Send OTP via email
-        return redirect('/otp-reset')->with('status', 'Kode OTP baru telah dikirim. (Untuk testing, kode OTP: ' . $otp . ')');
+        // Send OTP via email
+        try {
+            Mail::to($request->email)->send(new ResetPassword($user, $otp));
+            
+            return redirect('/otp-reset')->with('status', 'Kode OTP baru telah dikirim ke email Anda.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to resend reset password email: ' . $e->getMessage());
+            
+            return redirect('/otp-reset')->with('status', 'Kode OTP baru telah dikirim. (Untuk testing, kode OTP: ' . $otp . ')');
+        }
+    }
+
+    /**
+     * Test email sending (for development only)
+     */
+    public function testEmail()
+    {
+        if (app()->environment('production')) {
+            abort(404);
+        }
+
+        $user = \App\Models\User::first();
+        $otp = '123456';
+
+        try {
+            Mail::to('test@example.com')->send(new ResetPassword($user, $otp));
+            return response()->json(['status' => 'Email sent successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Clean up expired reset tokens
+     */
+    public function cleanupExpiredTokens()
+    {
+        \App\Models\ResetPasswordToken::where('expires_at', '<', now())->delete();
     }
 
     /**

@@ -537,13 +537,47 @@ setTimeout(function() {
     
     // Handle delete conversation
     $(document).on('click', '.delete-conversation-btn', function() {
-        if (confirm('Yakin ingin menghapus percakapan ini?')) {
-            const userId = typeof getMessengerId === 'function' ? getMessengerId() : null;
-            if (userId && typeof deleteConversation === 'function') {
-                deleteConversation(userId);
-                closeProfileModal();
-            }
+        const userId = typeof getMessengerId === 'function' ? getMessengerId() : null;
+        
+        if (!userId) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan',
+                text: 'Tidak ada percakapan yang dipilih',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4a83d3'
+            });
+            return;
         }
+        
+        Swal.fire({
+            title: 'Hapus Percakapan?',
+            text: 'Apakah Anda yakin ingin menghapus seluruh percakapan ini? Tindakan ini tidak dapat dibatalkan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74c3c',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="fas fa-trash"></i> Ya, Hapus',
+            cancelButtonText: '<i class="fas fa-times"></i> Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (typeof deleteConversation === 'function') {
+                    deleteConversation(userId);
+                    closeProfileModal();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Percakapan Dihapus!',
+                        text: 'Percakapan berhasil dihapus',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#28a745',
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                }
+            }
+        });
     });
     
     // Override any function that tries to show info sidebar
@@ -575,6 +609,8 @@ setTimeout(function() {
     
     console.log('Custom chatify loaded successfully - All in one!');
     
+}, 1000); // Wait 1 second for all scripts to load
+    
     // ========== PREMIUM CHAT SYSTEM ==========
     
     // Get current user role from meta tag or body class
@@ -603,7 +639,7 @@ setTimeout(function() {
                 align-items: center;
                 gap: 8px;
             ">
-                <i class="fas fa-stop-circle"></i> End Session
+                <i class="fas fa-stop-circle"></i> Sesi Selesai
             </button>
         `);
         
@@ -611,13 +647,31 @@ setTimeout(function() {
             const patientId = typeof getMessengerId === 'function' ? getMessengerId() : null;
             
             if (!patientId) {
-                alert('Pilih pasien terlebih dahulu');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Pilih pasien terlebih dahulu',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4a83d3'
+                });
                 return;
             }
             
-            if (confirm('Yakin ingin mengakhiri session chat dengan pasien ini?')) {
-                endChatSession(patientId);
-            }
+            Swal.fire({
+                title: 'Akhiri Sesi Chat?',
+                text: 'Apakah Anda yakin ingin mengakhiri sesi chat dengan pasien ini? Sesi yang sudah diakhiri tidak dapat dikembalikan.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-stop-circle"></i> Ya, Akhiri Sesi',
+                cancelButtonText: '<i class="fas fa-times"></i> Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    endChatSession(patientId);
+                }
+            });
         });
         
         console.log('End Session button added for doctor');
@@ -663,11 +717,19 @@ setTimeout(function() {
                 console.log('Session loaded:', data);
                 
                 if (data.session && currentUserRole === 'pasien') {
-                    updateMessageCounter(data.session);
+                    updateMessageCounter(data.session, data.subscription);
                     
-                    // Block input jika sudah limit
-                    if (data.session.has_reached_limit) {
-                        blockMessageInput();
+                    // Handle premium vs free users
+                    if (data.session.is_premium) {
+                        showPremiumStatus(data.subscription);
+                        enableUnlimitedChat();
+                    } else {
+                        // Block input jika sudah limit untuk free users
+                        if (data.session.has_reached_limit) {
+                            blockMessageInput();
+                        } else {
+                            enableLimitedChat();
+                        }
                     }
                 }
             },
@@ -677,43 +739,147 @@ setTimeout(function() {
         });
     }
     
-    function updateMessageCounter(session) {
-        // Show counter
-        $('#messageCounter').show();
-        
-        if (session.has_reached_limit) {
-            $('#remainingMessages').html(`
-                <strong style="color: #e74c3c;">
-                    <i class="fas fa-lock"></i> Limit pesan gratis tercapai! 
-                    Upgrade ke premium untuk melanjutkan.
-                </strong>
-            `);
-            $('#messageCounter').css({
-                'background': '#f8d7da',
-                'border-color': '#e74c3c',
-                'color': '#721c24',
-                'display': 'block'
-            });
+    function updateMessageCounter(session, subscription) {
+        if (session.is_premium) {
+            // Premium user - show premium status
+            showPremiumStatus(subscription);
         } else {
-            $('#remainingMessages').html(`
-                Sisa pesan gratis: <strong>${session.remaining_messages}/3</strong>
-            `);
-            $('#messageCounter').css({
-                'background': '#d1ecf1',
-                'border-color': '#17a2b8',
-                'color': '#0c5460',
-                'display': 'block'
-            });
+            // Free user - show message counter
+            $('#messageCounter').show();
+            
+            if (session.has_reached_limit) {
+                $('#remainingMessages').html(`
+                    <strong style="color: #e74c3c;">
+                        <i class="fas fa-lock"></i> Limit pesan gratis tercapai! 
+                        Upgrade ke premium untuk melanjutkan.
+                    </strong>
+                `);
+                $('#messageCounter').css({
+                    'background': '#f8d7da',
+                    'border-color': '#e74c3c',
+                    'color': '#721c24',
+                    'display': 'block'
+                });
+            } else {
+                $('#remainingMessages').html(`
+                    Sisa pesan gratis: <strong>${session.remaining_messages}/3</strong>
+                `);
+                $('#messageCounter').css({
+                    'background': '#d1ecf1',
+                    'border-color': '#17a2b8',
+                    'color': '#0c5460',
+                    'display': 'block'
+                });
+            }
         }
     }
     
+    function showPremiumStatus(subscription) {
+        // Hide free message counter
+        $('#messageCounter').hide();
+        
+        // Show premium status if not already shown
+        if ($('#premiumStatus').length === 0) {
+            $('.messenger-sendCard').prepend(`
+                <div id="premiumStatus" style="
+                    padding: 8px 15px;
+                    background: linear-gradient(135deg, #28a745, #20c997);
+                    border: 1px solid #28a745;
+                    border-radius: 8px;
+                    margin-bottom: 10px;
+                    text-align: center;
+                    font-size: 13px;
+                    color: white;
+                    display: block;
+                ">
+                    <i class="fas fa-crown"></i> 
+                    <strong>Status Premium Aktif</strong>
+                    ${subscription ? ` - ${subscription.plan_name === 'monthly' ? 'Bulanan' : 'Tahunan'} (${subscription.days_remaining} hari tersisa)` : ''}
+                    ${subscription && subscription.is_expiring_soon ? ' <span style="color: #ffc107;"><i class="fas fa-exclamation-triangle"></i> Segera berakhir!</span>' : ''}
+                </div>
+            `);
+        } else {
+            // Update existing premium status
+            $('#premiumStatus').html(`
+                <i class="fas fa-crown"></i> 
+                <strong>Status Premium Aktif</strong>
+                ${subscription ? ` - ${subscription.plan_name === 'monthly' ? 'Bulanan' : 'Tahunan'} (${subscription.days_remaining} hari tersisa)` : ''}
+                ${subscription && subscription.is_expiring_soon ? ' <span style="color: #ffc107;"><i class="fas fa-exclamation-triangle"></i> Segera berakhir!</span>' : ''}
+            `);
+        }
+    }
+    
+    function enableUnlimitedChat() {
+        // Enable input untuk premium users
+        $('#message-form .m-send').removeAttr('disabled').attr('placeholder', 'Ketik pesan Anda...');
+        $('#message-form button[type="submit"]').removeAttr('disabled');
+        $('.upload-attachment').removeAttr('disabled');
+        
+        // Remove premium click handler
+        $('#message-form .m-send').off('click.premium');
+        
+        console.log('Unlimited chat enabled for premium user');
+    }
+    
+    function enableLimitedChat() {
+        // Enable input untuk free users (belum limit)
+        $('#message-form .m-send').removeAttr('disabled').attr('placeholder', 'Ketik pesan Anda...');
+        $('#message-form button[type="submit"]').removeAttr('disabled');
+        $('.upload-attachment').removeAttr('disabled');
+        
+        // Remove premium click handler
+        $('#message-form .m-send').off('click.premium');
+        
+        console.log('Limited chat enabled for free user');
+    }
+    
     function blockMessageInput() {
-        $('#message-form .m-send').attr('disabled', 'disabled').attr('placeholder', 'Limit pesan tercapai. Upgrade ke premium.');
+        $('#message-form .m-send').attr('disabled', 'disabled').attr('placeholder', 'Limit pesan tercapai. Klik untuk upgrade premium.');
         $('#message-form button[type="submit"]').attr('disabled', 'disabled');
         $('.upload-attachment').attr('disabled', 'disabled');
+        
+        // Add click handler to show payment modal
+        $('#message-form .m-send').off('click.premium').on('click.premium', function() {
+            showPaymentModal();
+        });
+        
+        // Show upgrade button in message counter
+        $('#messageCounter').html(`
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span>
+                    <i class="fas fa-lock"></i> 
+                    <strong>Limit pesan gratis tercapai!</strong>
+                </span>
+                <button onclick="showPaymentModal()" style="
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    padding: 5px 12px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    margin-left: 10px;
+                ">
+                    <i class="fas fa-crown"></i> Upgrade Premium
+                </button>
+            </div>
+        `);
     }
     
     function endChatSession(patientId) {
+        // Show loading popup
+        Swal.fire({
+            title: 'Mengakhiri Sesi...',
+            text: 'Mohon tunggu sebentar',
+            icon: 'info',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
         $.ajax({
             url: url + "/endSession",
             method: "POST",
@@ -726,14 +892,37 @@ setTimeout(function() {
                 console.log('Session ended:', data);
                 
                 if (data.success) {
-                    alert('Session berhasil diakhiri!');
-                    // Refresh atau redirect
-                    window.location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sesi Berhasil Diakhiri!',
+                        text: 'Sesi chat dengan pasien telah berakhir. Halaman akan dimuat ulang.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#28a745',
+                        timer: 3000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Mengakhiri Sesi',
+                        text: data.message || 'Terjadi kesalahan saat mengakhiri sesi',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#e74c3c'
+                    });
                 }
             },
             error: (error) => {
                 console.error('Error ending session:', error);
-                alert('Gagal mengakhiri session');
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    text: 'Tidak dapat terhubung ke server. Silakan coba lagi.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#e74c3c'
+                });
             }
         });
     }
@@ -745,9 +934,9 @@ setTimeout(function() {
             const targetUserId = typeof getMessengerId === 'function' ? getMessengerId() : null;
             
             if (targetUserId) {
-                // Increment message count
+                // Check current session first
                 $.ajax({
-                    url: url + "/incrementMessageCount",
+                    url: url + "/getOrCreateSession",
                     method: "POST",
                     data: { 
                         _token: csrfToken, 
@@ -755,21 +944,52 @@ setTimeout(function() {
                     },
                     dataType: "JSON",
                     success: (data) => {
-                        console.log('Message count incremented:', data);
-                        
-                        if (data.session) {
-                            updateMessageCounter(data.session);
-                            
-                            if (data.session.has_reached_limit) {
-                                blockMessageInput();
-                            }
+                        // Jika user premium, langsung kirim pesan tanpa cek limit
+                        if (data.session && data.session.is_premium) {
+                            console.log('Premium user - sending message without limit check');
+                            return originalSendMessage.apply(this, arguments);
                         }
+                        
+                        // Jika free user dan sudah limit, show payment modal
+                        if (data.session && data.session.has_reached_limit) {
+                            showPaymentModal();
+                            return false;
+                        }
+                        
+                        // Jika free user dan belum limit, increment counter dan kirim pesan
+                        $.ajax({
+                            url: url + "/incrementMessageCount",
+                            method: "POST",
+                            data: { 
+                                _token: csrfToken, 
+                                target_user_id: targetUserId 
+                            },
+                            dataType: "JSON",
+                            success: (incrementData) => {
+                                console.log('Message count incremented:', incrementData);
+                                
+                                if (incrementData.session) {
+                                    updateMessageCounter(incrementData.session, data.subscription);
+                                    
+                                    if (incrementData.session.has_reached_limit) {
+                                        blockMessageInput();
+                                        // Show payment modal after reaching limit
+                                        setTimeout(() => {
+                                            showPaymentModal();
+                                        }, 1000);
+                                    }
+                                }
+                            }
+                        });
+                        
+                        // Call original function
+                        return originalSendMessage.apply(this, arguments);
                     }
                 });
+            } else {
+                // Call original function if no target user
+                return originalSendMessage.apply(this, arguments);
             }
-            
-            // Call original function
-            return originalSendMessage.apply(this, arguments);
         };
     }
     
@@ -782,5 +1002,3 @@ setTimeout(function() {
     console.log('Avatar elements:', $('.header-avatar.show-infoSide').length);
     console.log('User name elements:', $('.user-name.show-infoSide').length);
     console.log('Info button elements:', $('.info-btn.show-infoSide').length);
-    
-}, 1000); // Wait 1 second for all scripts to load

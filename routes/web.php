@@ -28,19 +28,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/registrasi', [RegisController::class, 'showRegisterForm'])->name('register');
 Route::post('/registrasi', [RegisController::class, 'register']);
 
-Route::get('/reset-password', function () {
-    return view('auth.resetpw');
-})->name('password.request');
-
+Route::get('/reset-password', [AuthController::class, 'showResetForm'])->name('password.request');
 Route::post('/reset-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
 
-Route::get('/otp-reset', function () {
-    return view('auth.otpreset');
-})->name('otp.reset');
-
+Route::get('/otp-reset', [AuthController::class, 'showOtpForm'])->name('otp.reset');
 Route::post('/verify-otp', [AuthController::class, 'verifyOtpAndResetPassword'])->name('otp.verify');
 
-Route::get('/resend-otp', [AuthController::class, 'resendOtp'])->name('otp.resend');
+Route::post('/resend-otp', [AuthController::class, 'resendOtp'])->name('otp.resend');
+
+// Test email route (development only)
+Route::get('/test-email', [AuthController::class, 'testEmail'])->name('test.email');
 
 /*
 |--------------------------------------------------------------------------
@@ -220,5 +217,82 @@ Route::get('/data-pasien', function () {
 
 Route::get('/coba', function () {
     return view('ujicoba');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Payment Routes (Midtrans)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->prefix('payment')->name('payment.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\PaymentController::class, 'index'])->name('index');
+    Route::post('/process', [\App\Http\Controllers\PaymentController::class, 'process'])->name('process');
+    Route::get('/success/{orderId}', [\App\Http\Controllers\PaymentController::class, 'success'])->name('success');
+    Route::get('/failed/{orderId}', [\App\Http\Controllers\PaymentController::class, 'failed'])->name('failed');
+    Route::get('/history', [\App\Http\Controllers\PaymentController::class, 'history'])->name('history');
+});
+
+// Midtrans webhook (tidak perlu auth dan CSRF)
+Route::post('/payment/webhook', [\App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
+
+/*
+|--------------------------------------------------------------------------
+| Subscription Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->prefix('subscription')->name('subscription.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\SubscriptionController::class, 'index'])->name('index');
+    Route::get('/plans', [\App\Http\Controllers\SubscriptionController::class, 'plans'])->name('plans');
+    Route::post('/subscribe', [\App\Http\Controllers\SubscriptionController::class, 'subscribe'])->name('subscribe');
+    Route::post('/activate', [\App\Http\Controllers\SubscriptionController::class, 'activate'])->name('activate');
+    Route::post('/cancel', [\App\Http\Controllers\SubscriptionController::class, 'cancel'])->name('cancel');
+    Route::get('/history', [\App\Http\Controllers\SubscriptionController::class, 'history'])->name('history');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Demo Routes (untuk testing)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+    Route::get('/demo/payment-modal', function () {
+        return view('demo.payment-modal-demo');
+    })->name('demo.payment-modal');
+    
+    Route::get('/demo/chat-payment', function () {
+        return view('examples.chat-with-payment');
+    })->name('demo.chat-payment');
+    
+    // Test webhook (development only)
+    Route::get('/test-webhook/{orderId}', function($orderId) {
+        if (!app()->environment('local')) {
+            abort(404);
+        }
+        
+        $serverKey = config('midtrans.server_key');
+        $statusCode = '200';
+        $grossAmount = '50000.00';
+        $signature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+        
+        $webhookData = [
+            'order_id' => $orderId,
+            'status_code' => $statusCode,
+            'gross_amount' => $grossAmount,
+            'signature_key' => $signature,
+            'transaction_status' => 'settlement',
+            'transaction_id' => 'test-' . time(),
+            'payment_type' => 'credit_card',
+            'fraud_status' => 'accept'
+        ];
+        
+        $response = \Illuminate\Support\Facades\Http::post(url('/payment/webhook'), $webhookData);
+        
+        return response()->json([
+            'message' => 'Webhook test sent',
+            'webhook_data' => $webhookData,
+            'response_status' => $response->status(),
+            'response_body' => $response->json()
+        ]);
+    })->name('test.webhook');
 });
 

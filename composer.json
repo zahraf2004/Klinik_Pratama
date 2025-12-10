@@ -10,6 +10,7 @@
         "intervention/image": "^3.11",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "midtrans/midtrans-php": "^2.6",
         "munafio/chatify": "^1.6"
     },
     "require-dev": {
