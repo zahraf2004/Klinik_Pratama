@@ -1,7 +1,7 @@
 <!-- Navbar -->
     <nav class="navbar">
         <div class="logo">
-            <a href="/dashboard"><img src="{{ asset('img/Logo.png') }}" alt="logo" height="40px" ></a>
+            <a href="/dashboard"><img src="/img/logo.png" alt="logo" height="40px" ></a>
             <div class="logo-text">
                 <span class="top">Klinik Pratama</span>
                 <span class="bottom">Dokter Yanti</span>
