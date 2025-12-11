@@ -1,0 +1,20 @@
+/* CSS minimal untuk memperbaiki dropdown navbar tanpa mengganggu tampilan */
+
+/* Hanya perbaiki z-index untuk dropdown */
+.navbar .dropdown-menu {
+    z-index: 1050;
+}
+
+/* Pastikan dropdown show berfungsi */
+.navbar .dropdown.show .dropdown-menu {
+    display: block;
+}
+
+/* Override template jika ada konflik */
+.main-navbar .dropdown-menu {
+    z-index: 1050;
+}
+
+.main-navbar .dropdown.show .dropdown-menu {
+    display: block;
+}

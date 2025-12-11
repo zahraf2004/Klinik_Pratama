@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="{{ asset('css/custom-table.css') }}">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('css/payment-modal.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/navbar-fix.css') }}">
   
   @stack('styles')
 </head>
@@ -100,6 +101,7 @@
   <script src="{{ asset('assets/js/page/components-table.js') }}"></script>
 
   <script src="{{ asset('js/table.js') }}"></script>
+  <script src="{{ asset('js/navbar-dropdown.js') }}"></script>
 
   @stack('scripts')
 </body>

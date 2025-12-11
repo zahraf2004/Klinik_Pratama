@@ -70,14 +70,14 @@
             <img alt="image" src="{{ Auth::user()->avatar }}" class="rounded-circle mr-1" style="width: 30px; height: 30px; object-fit: cover;">
             <div class="d-sm-none d-lg-inline-block">Hi, {{ Auth::user()->name }}</div></a>
             <div class="dropdown-menu dropdown-menu-right">
-              <div class="dropdown-title">Logged in 5 min ago</div>
+              
               <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                   @csrf
               </form>
 
               <a href="#" class="dropdown-item has-icon text-danger"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                  <i class="fas fa-sign-out-alt"></i> Logout
+                  <i class="fas fa-sign-out-alt"></i> Keluar
               </a>
             </div>
           </li>

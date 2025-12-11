@@ -55,7 +55,6 @@
               <option value="">-- Pilih Role --</option>
               <option value="dokter_umum">Dokter Umum</option>
               <option value="admin">Admin</option>
-              <option value="superadmin">Super Admin</option>
             </select>
           </div>
 

@@ -10,39 +10,51 @@
         </div>
 
         <div class="modal-body">
+          <h6 class="text-muted mb-3">Informasi Pasien</h6>
+          
           <div class="form-group">
             <label>Nama Pasien</label>
             <input type="text" name="nama" id="nama" class="form-control" readonly>
           </div>
+          
           <div class="form-group">
             <label>No. Telepon</label>
             <input type="tel" name="no_hp" id="no_hp" class="form-control" readonly>
           </div>
+          
           <div class="form-group">
             <label>Tanggal Lahir</label>
             <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control" readonly>
           </div>
+          
           <div class="form-group">
             <label>Alamat Rumah</label>
-            <textarea name="alamat" id="alamat" class="form-control" readonly></textarea>
+            <textarea name="alamat" id="alamat" class="form-control" readonly rows="2"></textarea>
           </div>
+
+          <h6 class="text-muted mb-3 mt-4">Detail Janji</h6>
+          
           <div class="form-group">
             <label>Tanggal Janji</label>
             <input type="date" name="tanggal" id="tanggal" class="form-control" readonly>
           </div>
+          
           <div class="form-group">
             <label>Waktu Janji</label>
             <input type="time" name="jam" id="jam" class="form-control" readonly>
           </div>
+          
           <div class="form-group">
             <label>Keluhan</label>
             <textarea name="keluhan" id="keluhan" class="form-control" rows="3" readonly></textarea>
           </div>
 
-          <hr>
+          <hr class="my-4">
 
+          <h6 class="text-muted mb-3">Tindakan Admin</h6>
+          
           <div class="form-group">
-            <label>Status Janji</label>
+            <label>Status Janji <span class="text-danger">*</span></label>
             <select name="status" id="status" class="form-control" required>
               <option value="Menunggu">Menunggu</option>
               <option value="Disetujui">Disetujui</option>
@@ -53,7 +65,7 @@
 
           <div class="form-group" id="catatan-group" style="display: none;">
             <label>Catatan Admin (Alasan Pembatalan)</label>
-            <textarea name="admin_notes" id="admin_notes" class="form-control" rows="3"></textarea>
+            <textarea name="admin_notes" id="admin_notes" class="form-control" rows="3" placeholder="Masukkan alasan pembatalan..."></textarea>
           </div>
         </div>
 

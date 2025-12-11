@@ -1,0 +1,162 @@
+/* CSS khusus hanya untuk memperbaiki spacing modal form yang mepet */
+/* Berlaku untuk modal Tenaga Kesehatan, Obat, dan Janji Berobat */
+
+#modalTenaga .modal-dialog,
+#modalObat .modal-dialog,
+#modalJanji .modal-dialog {
+    max-width: 580px;
+    margin: 1.75rem auto;
+}
+
+#modalTenaga .modal-body,
+#modalObat .modal-body,
+#modalJanji .modal-body {
+    padding: 1.75rem 2rem;
+}
+
+#modalTenaga .form-group,
+#modalObat .form-group,
+#modalJanji .form-group {
+    margin-bottom: 1.5rem;
+}
+
+#modalTenaga .form-control,
+#modalObat .form-control,
+#modalJanji .form-control {
+    padding: 0.75rem 1rem;
+}
+
+/* Khusus untuk form-row di modal obat */
+#modalObat .form-row {
+    margin-bottom: 1rem;
+}
+
+#modalObat .form-row .form-group {
+    margin-bottom: 1rem;
+}
+
+/* Textarea styling */
+#modalObat .form-text,
+#modalJanji textarea {
+    width: 100%;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem !important;
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    resize: vertical;
+    min-height: 80px;
+}
+
+#modalObat .form-text:focus,
+#modalJanji textarea:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Jadwal item khusus untuk modal tenaga kesehatan */
+#modalTenaga .jadwal-item {
+    padding: 1.5rem !important;
+    margin-bottom: 1.25rem !important;
+}
+
+#modalTenaga .jadwal-item .row {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+}
+
+#modalTenaga .jadwal-item .col-12,
+#modalTenaga .jadwal-item .col-6 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+#modalTenaga .jadwal-item .mb-2 {
+    margin-bottom: 1rem !important;
+}
+
+/* Label styling */
+#modalTenaga label,
+#modalObat label,
+#modalJanji label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+#modalTenaga .small {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Modal footer */
+#modalTenaga .modal-footer,
+#modalObat .modal-footer,
+#modalJanji .modal-footer {
+    padding: 1.25rem 2rem 1.75rem 2rem;
+}
+
+/* Modal header title spacing */
+#modalObat .modal-title {
+    margin-bottom: 0 !important;
+}
+
+/* Section headers dalam modal */
+#modalJanji h6.text-muted {
+    font-weight: 600;
+    color: #6c757d !important;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.5rem;
+}
+
+/* HR styling */
+#modalJanji hr {
+    border-top: 2px solid #e9ecef;
+    margin: 1.5rem 0;
+}
+
+/* Readonly input styling */
+#modalJanji input[readonly],
+#modalJanji textarea[readonly] {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #6c757d;
+}
+
+/* Small text styling */
+#modalObat .text-muted,
+#modalJanji .text-muted {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Required field indicator */
+.text-danger {
+    color: #dc3545 !important;
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 768px) {
+    #modalTenaga .modal-dialog,
+    #modalObat .modal-dialog,
+    #modalJanji .modal-dialog {
+        margin: 1rem;
+        max-width: calc(100% - 2rem);
+    }
+    
+    #modalTenaga .modal-body,
+    #modalObat .modal-body,
+    #modalJanji .modal-body {
+        padding: 1.5rem;
+    }
+    
+    #modalTenaga .jadwal-item {
+        padding: 1.25rem !important;
+    }
+    
+    #modalTenaga .modal-footer,
+    #modalObat .modal-footer,
+    #modalJanji .modal-footer {
+        padding: 1rem 1.5rem 1.25rem 1.5rem;
+    }
+}

@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="{{ asset('css/custom-table.css') }}">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('css/dokter.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/navbar-fix.css') }}">
 </head>
 
 <body>
@@ -90,6 +91,7 @@
   <script src="{{ asset('assets/js/page/components-table.js') }}"></script>
 
   <script src="{{ asset('js/table.js') }}"></script>
+  <script src="{{ asset('js/navbar-dropdown.js') }}"></script>
 
 </body>
 </html>

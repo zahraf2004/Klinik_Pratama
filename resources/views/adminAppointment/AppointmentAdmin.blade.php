@@ -1,4 +1,9 @@
 @extends('layouts.app')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/modal-form-fix.css') }}">
+@endpush
+
 @section('content')
 <section class="section">
   <div class="section-header">
@@ -12,24 +17,23 @@
           <h4>Data Janji Berobat Pasien</h4>
 
           <div class="card-header-form d-flex align-items-center">
-              <form class="me-2">
-                <div class="input-group">
-                  <input type="text" class="form-control" placeholder="Search">
-                  <div class="input-group-btn">
-                    <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                  </div>
+              <div class="input-group me-2">
+                <input type="text" id="search-pasien" class="form-control" placeholder="Cari nama pasien...">
+                <div class="input-group-btn">
+                  <button class="btn btn-primary" type="button" id="btn-search-pasien">
+                    <i class="fas fa-search"></i>
+                  </button>
                 </div>
-              </form>
+              </div>
 
-              <!-- Di file blade Anda (bagian dropdown) -->
               <div class="dropdown" style="margin-left: 10px;">
                 <button class="btn btn-light" type="button" id="filter-btn" data-toggle="dropdown" data-display="static">
                   <i class="fa-solid fa-filter" style="color:#6777ef;"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right p-2">
-                  <label class="mb-1">Filter Data</label>
-                  <select id="filter-appointment" class="form-control form-control-sm">
-                    <option value="">Semua Janji</option>
+                  <label class="mb-1">Filter Status</label>
+                  <select id="filter-status" class="form-control form-control-sm">
+                    <option value="">Semua Status</option>
                     <option value="Menunggu">Menunggu</option>
                     <option value="Disetujui">Disetujui</option>
                     <option value="Selesai">Selesai</option>
@@ -135,15 +139,100 @@
       $(this).next('.dropdown-menu').toggleClass('show');
     });
     
-    // Menerapkan filter saat nilai berubah
-    $('#filter-profesi').on('change', function() {
-      let profesi = $(this).val();
-      loadData(profesi);
-    });/
+    // Search functionality
+    $('#search-pasien').on('keyup', function() {
+      performSearch();
+    });
+    
+    $('#btn-search-pasien').on('click', function() {
+      performSearch();
+    });
+    
+    // Filter functionality
+    $('#filter-status').on('change', function() {
+      performSearch();
+    });
+    
+    // Function to perform search and filter
+    function performSearch() {
+      let searchTerm = $('#search-pasien').val().toLowerCase();
+      let filterStatus = $('#filter-status').val();
+      
+      $('.tenaga-table tbody tr').each(function() {
+        let row = $(this);
+        let namaPasien = row.find('td:nth-child(2)').text().toLowerCase(); // Kolom nama pasien
+        let statusBadge = row.find('td:nth-child(9) .badge').text().trim(); // Kolom status
+        
+        let matchSearch = namaPasien.includes(searchTerm);
+        let matchFilter = filterStatus === '' || statusBadge === filterStatus;
+        
+        if (matchSearch && matchFilter) {
+          row.show();
+        } else {
+          row.hide();
+        }
+      });
+      
+      // Update nomor urut setelah filter
+      updateRowNumbers();
+    }
+    
+    // Function to update row numbers
+    function updateRowNumbers() {
+      let visibleRows = $('.tenaga-table tbody tr:visible');
+      visibleRows.each(function(index) {
+        $(this).find('td:first-child').text(index + 1);
+      });
+    }
+    
+    // Reset search when input is cleared
+    $('#search-pasien').on('input', function() {
+      if ($(this).val() === '') {
+        performSearch();
+      }
+    });
+    
+    // Sort functionality for nama column
+    $('.sort-nama').on('click', function() {
+      let table = $('.tenaga-table tbody');
+      let rows = table.find('tr:visible').toArray();
+      let isAscending = $(this).hasClass('asc');
+      
+      rows.sort(function(a, b) {
+        let nameA = $(a).find('td:nth-child(2)').text().toLowerCase();
+        let nameB = $(b).find('td:nth-child(2)').text().toLowerCase();
+        
+        if (isAscending) {
+          return nameB.localeCompare(nameA);
+        } else {
+          return nameA.localeCompare(nameB);
+        }
+      });
+      
+      // Toggle sort direction
+      $(this).toggleClass('asc');
+      
+      // Update sort icon
+      let icon = $(this).find('i');
+      if ($(this).hasClass('asc')) {
+        icon.removeClass('fa-sort').addClass('fa-sort-up');
+      } else {
+        icon.removeClass('fa-sort fa-sort-up').addClass('fa-sort-down');
+      }
+      
+      // Reorder rows
+      $.each(rows, function(index, row) {
+        table.append(row);
+      });
+      
+      // Update row numbers
+      updateRowNumbers();
+    });
   });
 </script>
 
 
+<script src="{{ asset('js/search-filter-appointment.js') }}"></script>
 <script src="{{ asset('js/data_janjiAdmin.js') }}"></script>
 
 @endsection
