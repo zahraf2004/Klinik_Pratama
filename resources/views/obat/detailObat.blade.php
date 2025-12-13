@@ -31,10 +31,10 @@
             case 'obat bebas': $img = 'bebas.png'; break;
             case 'obat bebas terbatas': $img = 'bebas_terbatas.png'; break;
             case 'obat herbal': $img = 'herbal.png'; break;
-            case 'jamu': $img = 'jamu.png'; break;
-            case 'fitofarmaka': $img = 'fitofarmaka.png'; break;
-            case 'obat keras': $img = 'keras.png'; break;
-            case 'narkotika': $img = 'narkotika.png'; break;
+            case 'jamu': $img = 'Jamu.png'; break;
+            case 'fitofarmaka': $img = 'Fitofarmaka.png'; break;
+            case 'obat keras': $img = 'Keras.png'; break;
+            case 'narkotika': $img = 'Narkotika.png'; break;
         }
     @endphp
 

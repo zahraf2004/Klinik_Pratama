@@ -1,10 +1,10 @@
 <div class="main-sidebar">
   <aside id="sidebar-wrapper">
     <div class="sidebar-brand">
-      <a href="/dashboard-admin"><img src="{{ asset('img/Logo1_copy.png') }}" alt="logo" height="60px" style="margin-bottom=:5px;" ></a>
+      <a href="/dashboard-admin"><img src="{{ asset('img/logo1_copy.png') }}" alt="logo" height="60px" style="margin-bottom=:5px;" ></a>
     </div>
     <div class="sidebar-brand sidebar-brand-sm">
-      <a href="/dashboard-admin"><img src="{{ asset('img/Logo.png') }}" alt="logo" height="30px"  ></a>
+      <a href="/dashboard-admin"><img src="{{ asset('img/logo.png') }}" alt="logo" height="30px"  ></a>
     </div>
     <ul class="sidebar-menu">
       @if(Auth::user()->role === 'admin')

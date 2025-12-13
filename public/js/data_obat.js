@@ -28,7 +28,9 @@ $(document).ready(function () {
                 Swal.fire({
                     icon: "success",
                     title: "Berhasil!",
-                    text: id ? "Data berhasil diperbarui" : "Data berhasil disimpan",
+                    text: id
+                        ? "Data berhasil diperbarui"
+                        : "Data berhasil disimpan",
                     timer: 1600,
                     showConfirmButton: false,
                 });
@@ -36,7 +38,8 @@ $(document).ready(function () {
             error: function (xhr) {
                 console.error(xhr);
                 let msg = "Terjadi kesalahan";
-                if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                if (xhr.responseJSON && xhr.responseJSON.message)
+                    msg = xhr.responseJSON.message;
                 Swal.fire({ icon: "error", title: "Gagal!", text: msg });
             },
         });
@@ -45,7 +48,8 @@ $(document).ready(function () {
     // Load data (tangani response array atau paginate)
     function loadData(filterKategori = "") {
         let url = "/obat";
-        if (filterKategori) url += "?kategori=" + encodeURIComponent(filterKategori);
+        if (filterKategori)
+            url += "?kategori=" + encodeURIComponent(filterKategori);
 
         $.get(url, function (res) {
             // jika server mengembalikan paginate object -> ambil res.data
@@ -54,7 +58,9 @@ $(document).ready(function () {
                     res = res.data;
                 } else {
                     console.error("Unexpected response from /obat:", res);
-                    $(".obat-table tbody").html(`<tr><td colspan="10" class="text-center">Tidak ada data</td></tr>`);
+                    $(".obat-table tbody").html(
+                        `<tr><td colspan="10" class="text-center">Tidak ada data</td></tr>`
+                    );
                     return;
                 }
             }
@@ -68,17 +74,20 @@ $(document).ready(function () {
                     const nama = item.nama_obat || "";
                     const foto = item.foto || item.foto_path || null;
                     const kategori = item.kategori || "";
-                    const bentuk = item.bentuk || "";                     
+                    const bentuk = item.bentuk || "";
                     const klasifikasi = item.klasifikasi || "";
-                    const deskripsi = item.deskripsi || item.deskripsi_obat || "";
-                    const dosis = item.dosis || ""; 
+                    const deskripsi =
+                        item.deskripsi || item.deskripsi_obat || "";
+                    const dosis = item.dosis || "";
 
                     // badge warna menurut kategori
                     let badgeClass = "badge-secondary";
                     const key = kategori.toLowerCase();
                     if (key === "obat bebas") badgeClass = "badge-success";
-                    else if (key === "obat bebas terbatas") badgeClass = "badge-primary";
-                    else if (key === "obat herbal") badgeClass = "badge-teal";   // custom css
+                    else if (key === "obat bebas terbatas")
+                        badgeClass = "badge-primary";
+                    else if (key === "obat herbal")
+                        badgeClass = "badge-teal"; // custom css
                     else if (key === "jamu") badgeClass = "badge-warning";
                     else if (key === "fitofarmaka") badgeClass = "badge-info";
                     else if (key === "obat keras") badgeClass = "badge-danger";
@@ -97,16 +106,16 @@ $(document).ready(function () {
                             kodeImg = `<img src="/img/herbal.png" width="30">`;
                             break;
                         case "jamu":
-                            kodeImg = `<img src="/img/jamu.png" width="30">`;
+                            kodeImg = `<img src="/img/Jamu.png" width="30">`;
                             break;
                         case "fitofarmaka":
-                            kodeImg = `<img src="/img/fitofarmaka.png" width="30">`;
+                            kodeImg = `<img src="/img/Fitofarmaka.png" width="30">`;
                             break;
                         case "obat keras":
-                            kodeImg = `<img src="/img/keras.png" width="30">`;
+                            kodeImg = `<img src="/img/Keras.png" width="30">`;
                             break;
                         case "narkotika":
-                            kodeImg = `<img src="/img/narkotika.png" width="30">`;
+                            kodeImg = `<img src="/img/Narkotika.png" width="30">`;
                             break;
                         default:
                             kodeImg = `<img src="/img/default.png" width="30">`;
@@ -115,7 +124,9 @@ $(document).ready(function () {
                     // foto
                     let fotoHtml = item.foto
                         ? `<img src="/storage/${item.foto}" class="rounded-circle foto-obat" width="40" height="40">`
-                        : `<div class="avatar-sm"><span class="avatar-title rounded-circle">${item.nama_obat.charAt(0)}</span></div>`;
+                        : `<div class="avatar-sm"><span class="avatar-title rounded-circle">${item.nama_obat.charAt(
+                              0
+                          )}</span></div>`;
 
                     // ✅ Tambahin kolom dosis setelah bentuk
                     rows += `
@@ -128,13 +139,19 @@ $(document).ready(function () {
                         <td>${kodeImg}</td>
                         <td>${klasifikasi}</td>
                         <td class="desc-col">${deskripsi}</td>
-                        <td class="dosis-col" title="${escapeHtml(dosis)}">${escapeHtml(dosis)}</td>
+                        <td class="dosis-col" title="${escapeHtml(
+                            dosis
+                        )}">${escapeHtml(dosis)}</td>
                         <td>
                             <div class="d-flex gap-1">
-                                <button class="btn btn-sm btn-primary btnEdit" data-id="${item.id}">
+                                <button class="btn btn-sm btn-primary btnEdit" data-id="${
+                                    item.id
+                                }">
                                     <i class="far fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger btnDelete" data-id="${item.id}">
+                                <button class="btn btn-sm btn-danger btnDelete" data-id="${
+                                    item.id
+                                }">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -145,7 +162,9 @@ $(document).ready(function () {
             $(".obat-table tbody").html(rows);
         }).fail(function (xhr) {
             console.error("GET /obat failed:", xhr);
-            $(".obat-table tbody").html(`<tr><td colspan="10" class="text-center">Gagal mengambil data</td></tr>`);
+            $(".obat-table tbody").html(
+                `<tr><td colspan="10" class="text-center">Gagal mengambil data</td></tr>`
+            );
         });
     }
 
@@ -160,7 +179,7 @@ $(document).ready(function () {
             $("#idObat").val(data.id);
             $("input[name=nama_obat]").val(data.nama_obat);
             $("select[name=kategori]").val(data.kategori);
-            $("select[name=bentuk]").val(data.bentuk);               
+            $("select[name=bentuk]").val(data.bentuk);
             $("input[name=klasifikasi]").val(data.klasifikasi);
             $("#deskripsi").val(data.deskripsi);
             $("input[name=dosis]").val(data.dosis);
@@ -176,18 +195,31 @@ $(document).ready(function () {
             cancelButtonColor: "#d33",
             title: "Konfirmasi",
             text: "Yakin hapus data ini?",
-            icon: "warning", showCancelButton: true, confirmButtonText: "Ya, hapus!"
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, hapus!",
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
                     url: "/obat/" + id,
                     type: "POST",
-                    data: { _method: "DELETE", _token: $('meta[name="csrf-token"]').attr("content") },
+                    data: {
+                        _method: "DELETE",
+                        _token: $('meta[name="csrf-token"]').attr("content"),
+                    },
                     success: function () {
                         loadData();
-                        Swal.fire({ icon: "success", title: "Dihapus", timer: 1400, showConfirmButton: false });
+                        Swal.fire({
+                            icon: "success",
+                            title: "Dihapus",
+                            timer: 1400,
+                            showConfirmButton: false,
+                        });
                     },
-                    error: function (xhr) { console.error(xhr); Swal.fire({icon:'error',title:'Gagal'}); }
+                    error: function (xhr) {
+                        console.error(xhr);
+                        Swal.fire({ icon: "error", title: "Gagal" });
+                    },
                 });
             }
         });
@@ -206,7 +238,7 @@ $(document).ready(function () {
 
     // utility escape
     function escapeHtml(text) {
-        if (!text) return '';
+        if (!text) return "";
         return String(text)
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
