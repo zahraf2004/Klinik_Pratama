@@ -40,7 +40,7 @@
       </div>
 
       {{-- Footer --}}
-      @include('partials.footer2')
+      @include('partials.Footer2')
     </div>
   </div>
 
