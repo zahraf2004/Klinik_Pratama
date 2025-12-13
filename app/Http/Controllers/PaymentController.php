@@ -237,26 +237,76 @@ class PaymentController extends Controller
         $transaction = Transaction::where('order_id', $orderId)->first();
         
         if (!$transaction) {
+            Log::error('Transaction not found: ' . $orderId);
             return redirect()->route('payment.index')->with('error', 'Transaction not found');
         }
 
+        Log::info('Success page accessed', [
+            'order_id' => $orderId,
+            'transaction_status' => $transaction->transaction_status,
+            'description' => $transaction->description,
+            'amount' => $transaction->gross_amount
+        ]);
+
         // Jika ini adalah pembayaran subscription, aktifkan subscription
         if ($transaction->isSuccess()) {
-            Log::info("Sukses");
+            Log::info("Transaction is successful, activating subscription");
             $this->activateSubscription($transaction);
+        } else {
+            Log::warning('Transaction is not successful: ' . $transaction->transaction_status);
+            
+            // TEMPORARY FIX: Jika user sampai ke success page, anggap pembayaran berhasil
+            // Ini karena Midtrans sandbox kadang webhook delay atau gak sampai
+            if (strpos($transaction->description, 'Berlangganan') !== false) {
+                Log::info("Force activating subscription for sandbox testing");
+                
+                // Update transaction status ke settlement
+                $transaction->update(['transaction_status' => 'settlement']);
+                
+                // Aktivasi subscription
+                $this->activateSubscription($transaction);
+            }
         }
 
         return view('payment.success', compact('transaction'));
     }
 
+    public function subscriptionSuccess($orderId)
+    {
+        $transaction = Transaction::where('order_id', $orderId)->first();
+        
+        if (!$transaction) {
+            return redirect()->route('payment.index')->with('error', 'Transaction not found');
+        }
+
+        // Aktivasi subscription jika belum
+        if ($transaction->isSuccess()) {
+            $this->activateSubscription($transaction);
+        }
+
+        // Auto-redirect ke chat setelah 3 detik
+        return view('payment.subscription-success', compact('transaction'));
+    }
+
     private function activateSubscription($transaction)
     {
-        // Cek apakah subscription sudah ada untuk transaction ini
+        Log::info('Activating subscription for transaction: ' . $transaction->order_id);
         
+        // Cek apakah subscription sudah ada untuk transaction ini
         $existingSubscription = \App\Models\Subscription::where('transaction_id', $transaction->order_id)->first();
         
         if ($existingSubscription) {
+            Log::info('Subscription already exists for transaction: ' . $transaction->order_id);
             return; // Subscription sudah ada
+        }
+
+        // Cek apakah ini pembayaran subscription
+        $isSubscription = strpos($transaction->description, 'Subscription') !== false || 
+                         strpos($transaction->description, 'Berlangganan') !== false;
+        
+        if (!$isSubscription) {
+            Log::info('Transaction is not a subscription: ' . $transaction->description);
+            return; // Bukan pembayaran subscription
         }
 
         // Tentukan plan berdasarkan amount
@@ -266,20 +316,37 @@ class PaymentController extends Controller
         $startsAt = now();
         $expiresAt = $startsAt->copy()->addMonths($duration);
 
-        \App\Models\Subscription::create([
+        Log::info('Creating subscription', [
             'user_id' => $transaction->user_id,
-            'plan_name' => $plan,
-            'price' => $transaction->gross_amount,
-            'status' => 'active',
-            'starts_at' => $startsAt,
-            'expires_at' => $expiresAt,
+            'plan' => $plan,
+            'amount' => $transaction->gross_amount,
             'transaction_id' => $transaction->order_id
         ]);
 
-        // Update semua chat sessions yang aktif menjadi premium
-        \App\Models\ChatSession::where('patient_id', $transaction->user_id)
-            ->where('is_active', true)
-            ->update(['is_premium' => true]);
+        try {
+            $subscription = \App\Models\Subscription::create([
+                'user_id' => $transaction->user_id,
+                'plan_name' => $plan,
+                'price' => $transaction->gross_amount,
+                'status' => 'active',
+                'starts_at' => $startsAt,
+                'expires_at' => $expiresAt,
+                'transaction_id' => $transaction->order_id
+            ]);
+
+            Log::info('Subscription created successfully: ' . $subscription->id);
+
+            // Update semua chat sessions yang aktif menjadi premium
+            $updatedSessions = \App\Models\ChatSession::where('patient_id', $transaction->user_id)
+                ->where('is_active', true)
+                ->update(['is_premium' => true]);
+
+            Log::info('Updated chat sessions to premium: ' . $updatedSessions);
+            
+        } catch (\Exception $e) {
+            Log::error('Error creating subscription: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+        }
     }
 
     public function failed($orderId)

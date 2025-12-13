@@ -38,24 +38,45 @@ class ChatSession extends Model
         return $this->belongsTo(User::class, 'doctor_id');
     }
 
-    // Check apakah sudah mencapai limit
-    public function hasReachedLimit()
+    // Check apakah user sudah mencapai limit session (bukan per pesan)
+    public function userHasReachedSessionLimit()
     {
-        return !$this->is_premium && $this->message_count >= 3;
+        if ($this->is_premium) {
+            return false; // Premium unlimited
+        }
+        
+        // Hitung berapa session yang sudah di-end untuk user ini
+        $completedSessions = ChatSession::where('patient_id', $this->patient_id)
+            ->where('is_active', false) // Session yang sudah di-end
+            ->where('is_premium', false) // Hanya hitung free sessions
+            ->count();
+            
+        return $completedSessions >= 3; // Limit 3 session
     }
 
-    // Increment message count
+    // Increment message count (tetap ada untuk tracking)
     public function incrementMessageCount()
     {
         $this->increment('message_count');
     }
 
-    // End session
+    // End session - ini yang mengurangi token
     public function endSession()
     {
         $this->update([
             'is_active' => false,
             'ended_at' => now(),
         ]);
+    }
+    
+    // Get remaining session tokens untuk user
+    public static function getRemainingSessionTokens($userId)
+    {
+        $completedSessions = self::where('patient_id', $userId)
+            ->where('is_active', false)
+            ->where('is_premium', false)
+            ->count();
+            
+        return max(0, 3 - $completedSessions);
     }
 }

@@ -33,6 +33,6 @@ class RegisController extends Controller
         Auth::login($user);
 
         // Redirect ke dashboard / halaman lain
-        return redirect('/dashboard-admin'); 
+        return redirect('/dashboard'); 
     }
 }

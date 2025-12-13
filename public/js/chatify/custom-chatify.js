@@ -717,20 +717,24 @@ setTimeout(function() {
                 console.log('Session loaded:', data);
                 
                 if (data.session && currentUserRole === 'pasien') {
-                    updateMessageCounter(data.session, data.subscription);
+                    updateSessionCounter(data.session, data.user_premium_status, data.subscription);
                     
                     // Handle premium vs free users
                     if (data.session.is_premium) {
                         showPremiumStatus(data.subscription);
                         enableUnlimitedChat();
                     } else {
-                        // Block input jika sudah limit untuk free users
-                        if (data.session.has_reached_limit) {
-                            blockMessageInput();
-                        } else {
+                        // Jika bisa chat (ada session aktif), enable chat
+                        if (data.session.can_chat) {
                             enableLimitedChat();
+                        } else {
+                            blockSessionInput();
                         }
                     }
+                } else if (data.error && currentUserRole === 'pasien') {
+                    // Jika error (token habis), block input dan show modal
+                    blockSessionInput();
+                    showPaymentModal();
                 }
             },
             error: (error) => {
@@ -739,19 +743,21 @@ setTimeout(function() {
         });
     }
     
-    function updateMessageCounter(session, subscription) {
+    function updateSessionCounter(session, userStatus, subscription) {
         if (session.is_premium) {
             // Premium user - show premium status
             showPremiumStatus(subscription);
         } else {
-            // Free user - show message counter
+            // Free user - show session token counter
             $('#messageCounter').show();
             
-            if (session.has_reached_limit) {
+            const remainingTokens = userStatus.remaining_session_tokens;
+            
+            if (remainingTokens <= 0) {
                 $('#remainingMessages').html(`
                     <strong style="color: #e74c3c;">
-                        <i class="fas fa-lock"></i> Limit pesan gratis tercapai! 
-                        Upgrade ke premium untuk melanjutkan.
+                        <i class="fas fa-lock"></i> Session token habis! 
+                        Upgrade ke premium untuk unlimited session.
                     </strong>
                 `);
                 $('#messageCounter').css({
@@ -762,7 +768,8 @@ setTimeout(function() {
                 });
             } else {
                 $('#remainingMessages').html(`
-                    Sisa pesan gratis: <strong>${session.remaining_messages}/3</strong>
+                    Session aktif - Sisa token: <strong>${remainingTokens}/3</strong>
+                    <br><small>Token berkurang saat dokter end session</small>
                 `);
                 $('#messageCounter').css({
                     'background': '#d1ecf1',
@@ -833,8 +840,8 @@ setTimeout(function() {
         console.log('Limited chat enabled for free user');
     }
     
-    function blockMessageInput() {
-        $('#message-form .m-send').attr('disabled', 'disabled').attr('placeholder', 'Limit pesan tercapai. Klik untuk upgrade premium.');
+    function blockSessionInput() {
+        $('#message-form .m-send').attr('disabled', 'disabled').attr('placeholder', 'Session token habis. Klik untuk upgrade premium.');
         $('#message-form button[type="submit"]').attr('disabled', 'disabled');
         $('.upload-attachment').attr('disabled', 'disabled');
         
@@ -848,7 +855,7 @@ setTimeout(function() {
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span>
                     <i class="fas fa-lock"></i> 
-                    <strong>Limit pesan gratis tercapai!</strong>
+                    <strong>Session token habis!</strong>
                 </span>
                 <button onclick="showPaymentModal()" style="
                     background: #007bff;

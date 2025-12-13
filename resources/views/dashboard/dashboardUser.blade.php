@@ -14,6 +14,8 @@
 </div>
 @include('dashboard.layanan')
 @include('dashboard.obat')
+@include('dashboard.review')
+@include('dashboard.inputReview')
 
     
 @endsection

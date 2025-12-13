@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
         payButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Memproses...';
         
         const formData = new FormData(this);
-        formData.append('description', 'Subscription ' + document.getElementById('plan-name-display').textContent);
+        formData.append('description', 'Berlangganan Chat Dokter - ' + document.getElementById('plan-name-display').textContent);
         
         fetch('{{ route("payment.process") }}', {
             method: 'POST',
@@ -339,17 +339,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             icon: 'success',
                             title: 'Pembayaran Berhasil!',
                             text: 'Subscription Anda telah aktif. Chat unlimited sudah bisa digunakan!',
-                            confirmButtonText: 'Mulai Chat',
+                            confirmButtonText: 'OK',
                             confirmButtonColor: '#28a745',
                             allowOutsideClick: false
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // Reload chat session untuk update status premium
-                                if (typeof loadChatSession === 'function') {
-                                    loadChatSession();
-                                }
-                                // Atau redirect ke success page
-                                window.location.href = '{{ url("payment/success") }}/' + data.order_id;
+                                // Reload halaman profil untuk update status
+                                window.location.reload();
                             }
                         });
                     },

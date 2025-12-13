@@ -15,6 +15,7 @@ use App\Http\Controllers\ProfilPasienController;
 use App\Http\Controllers\DashboardDokterController;
 use Chatify\Chatify;
 use App\Http\Controllers\TelemedicineController;
+use App\Http\Controllers\DataPasienController;
 
 /*
 |--------------------------------------------------------------------------
@@ -211,9 +212,9 @@ Route::get('/layanan-kami', function(){
     return view('layanan.layanan_kami');
 });
 
-Route::get('/data-pasien', function () {
-    return view('adminDatapasien.DataPasien');
-})->middleware('auth')->name('appointment.admin');
+Route::get('/data-pasien', [\App\Http\Controllers\DataPasienController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('data.pasien');
 
 Route::get('/coba', function () {
     return view('ujicoba');
@@ -228,12 +229,29 @@ Route::middleware(['auth'])->prefix('payment')->name('payment.')->group(function
     Route::get('/', [\App\Http\Controllers\PaymentController::class, 'index'])->name('index');
     Route::post('/process', [\App\Http\Controllers\PaymentController::class, 'process'])->name('process');
     Route::get('/success/{orderId}', [\App\Http\Controllers\PaymentController::class, 'success'])->name('success');
+    Route::get('/subscription-success/{orderId}', [\App\Http\Controllers\PaymentController::class, 'subscriptionSuccess'])->name('subscription.success');
     Route::get('/failed/{orderId}', [\App\Http\Controllers\PaymentController::class, 'failed'])->name('failed');
     Route::get('/history', [\App\Http\Controllers\PaymentController::class, 'history'])->name('history');
 });
 
 // Midtrans webhook (tidak perlu auth dan CSRF)
 Route::post('/payment/webhook', [\App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
+
+/*
+|--------------------------------------------------------------------------
+| Review Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->prefix('review')->name('review.')->group(function () {
+    Route::post('/store', [\App\Http\Controllers\ReviewController::class, 'store'])->name('store');
+});
+
+// Public review routes (tidak perlu auth)
+Route::prefix('api/reviews')->name('api.reviews.')->group(function () {
+    Route::get('/homepage', [\App\Http\Controllers\ReviewController::class, 'getHomepageReviews'])->name('homepage');
+    Route::get('/featured', [\App\Http\Controllers\ReviewController::class, 'getFeaturedReviews'])->name('featured');
+    Route::get('/', [\App\Http\Controllers\ReviewController::class, 'index'])->name('index');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -294,5 +312,208 @@ Route::middleware(['auth'])->group(function () {
             'response_body' => $response->json()
         ]);
     })->name('test.webhook');
+    
+    // Test subscription activation (development only)
+    Route::get('/test-subscription/{orderId}', function($orderId) {
+        if (!app()->environment('local')) {
+            abort(404);
+        }
+        
+        $transaction = \App\Models\Transaction::where('order_id', $orderId)->first();
+        
+        if (!$transaction) {
+            return response()->json(['error' => 'Transaction not found'], 404);
+        }
+        
+        // Force activate subscription
+        $paymentController = new \App\Http\Controllers\PaymentController();
+        $reflection = new ReflectionClass($paymentController);
+        $method = $reflection->getMethod('activateSubscription');
+        $method->setAccessible(true);
+        $method->invoke($paymentController, $transaction);
+        
+        return response()->json([
+            'message' => 'Subscription activation attempted',
+            'transaction' => $transaction,
+            'subscription_check' => \App\Models\Subscription::where('transaction_id', $orderId)->first()
+        ]);
+    })->name('test.subscription');
+    
+    // Debug subscription issue
+    Route::get('/debug-subscription', function() {
+        if (!app()->environment('local')) {
+            abort(404);
+        }
+        
+        try {
+            // 1. Cek apakah user login
+            if (!Auth::check()) {
+                return response()->json(['error' => 'User not authenticated']);
+            }
+            
+            // 2. Buat test transaction
+            $orderId = 'ORDER-TEST-' . time();
+            
+            $transaction = \App\Models\Transaction::create([
+                'order_id' => $orderId,
+                'user_id' => Auth::id(),
+                'gross_amount' => 50000,
+                'description' => 'Berlangganan Chat Dokter - Paket Bulanan',
+                'transaction_status' => 'settlement',
+                'transaction_id' => 'test-' . time(),
+                'payment_type' => 'credit_card'
+            ]);
+            
+            // 3. Test activateSubscription langsung
+            $paymentController = new \App\Http\Controllers\PaymentController();
+            
+            // Use reflection to call private method
+            $reflection = new ReflectionClass($paymentController);
+            $method = $reflection->getMethod('activateSubscription');
+            $method->setAccessible(true);
+            
+            // Call the method
+            $method->invoke($paymentController, $transaction);
+            
+            // 4. Cek apakah subscription berhasil dibuat
+            $subscription = \App\Models\Subscription::where('transaction_id', $orderId)->first();
+            
+            return response()->json([
+                'success' => true,
+                'transaction' => $transaction,
+                'subscription_created' => $subscription ? true : false,
+                'subscription' => $subscription,
+                'user_id' => Auth::id(),
+                'debug_info' => [
+                    'transaction_is_success' => $transaction->isSuccess(),
+                    'description_contains_berlangganan' => strpos($transaction->description, 'Berlangganan') !== false,
+                    'existing_subscriptions' => \App\Models\Subscription::where('user_id', Auth::id())->count()
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+    })->name('debug.subscription');
+    
+    // Manual activate subscription untuk pembayaran yang sudah berhasil
+    Route::get('/activate-paid-subscriptions', function() {
+        if (!app()->environment('local')) {
+            abort(404);
+        }
+        
+        // Cari semua transaksi berhasil yang belum punya subscription
+        $paidTransactions = \App\Models\Transaction::where('transaction_status', 'settlement')
+            ->where('description', 'like', '%Berlangganan%')
+            ->whereNotIn('order_id', function($query) {
+                $query->select('transaction_id')->from('subscriptions');
+            })
+            ->get();
+        
+        $activated = [];
+        
+        foreach ($paidTransactions as $transaction) {
+            // Tentukan plan berdasarkan amount
+            $plan = $transaction->gross_amount == 50000 ? 'monthly' : 'yearly';
+            $duration = $plan === 'monthly' ? 1 : 12;
+            
+            $startsAt = $transaction->created_at;
+            $expiresAt = $startsAt->copy()->addMonths($duration);
+            
+            $subscription = \App\Models\Subscription::create([
+                'user_id' => $transaction->user_id,
+                'plan_name' => $plan,
+                'price' => $transaction->gross_amount,
+                'status' => 'active',
+                'starts_at' => $startsAt,
+                'expires_at' => $expiresAt,
+                'transaction_id' => $transaction->order_id
+            ]);
+            
+            $activated[] = [
+                'transaction_id' => $transaction->order_id,
+                'user_id' => $transaction->user_id,
+                'subscription_id' => $subscription->id,
+                'plan' => $plan
+            ];
+        }
+        
+        return response()->json([
+            'message' => 'Manual activation completed',
+            'activated_count' => count($activated),
+            'activated_subscriptions' => $activated
+        ]);
+    })->name('activate.paid.subscriptions');
+    
+    // Simple fix untuk subscription
+    Route::get('/fix-subscription', function() {
+        if (!Auth::check()) {
+            return 'Please login first';
+        }
+        
+        $userId = Auth::id();
+        
+        // Cari transaksi berhasil user ini yang belum punya subscription
+        $transaction = \App\Models\Transaction::where('user_id', $userId)
+            ->where('transaction_status', 'settlement')
+            ->where('description', 'like', '%Berlangganan%')
+            ->whereNotIn('order_id', function($query) {
+                $query->select('transaction_id')->from('subscriptions');
+            })
+            ->latest()
+            ->first();
+        
+        if (!$transaction) {
+            return 'No paid transaction found or subscription already exists';
+        }
+        
+        // Buat subscription
+        $plan = $transaction->gross_amount == 50000 ? 'monthly' : 'yearly';
+        $duration = $plan === 'monthly' ? 1 : 12;
+        
+        $subscription = \App\Models\Subscription::create([
+            'user_id' => $userId,
+            'plan_name' => $plan,
+            'price' => $transaction->gross_amount,
+            'status' => 'active',
+            'starts_at' => now(),
+            'expires_at' => now()->addMonths($duration),
+            'transaction_id' => $transaction->order_id
+        ]);
+        
+        return 'Subscription activated! ID: ' . $subscription->id . ' - Plan: ' . $plan;
+    })->name('fix.subscription');
+    
+    // Update transaction status untuk testing
+    Route::get('/update-transaction-status/{orderId}', function($orderId) {
+        if (!app()->environment('local')) {
+            abort(404);
+        }
+        
+        $transaction = \App\Models\Transaction::where('order_id', $orderId)->first();
+        
+        if (!$transaction) {
+            return 'Transaction not found';
+        }
+        
+        // Update ke settlement
+        $transaction->update([
+            'transaction_status' => 'settlement',
+            'transaction_id' => 'manual-' . time(),
+            'payment_type' => 'credit_card'
+        ]);
+        
+        // Aktivasi subscription
+        $paymentController = new \App\Http\Controllers\PaymentController();
+        $reflection = new ReflectionClass($paymentController);
+        $method = $reflection->getMethod('activateSubscription');
+        $method->setAccessible(true);
+        $method->invoke($paymentController, $transaction);
+        
+        return 'Transaction updated to settlement and subscription activated!';
+    })->name('update.transaction.status');
 });
 

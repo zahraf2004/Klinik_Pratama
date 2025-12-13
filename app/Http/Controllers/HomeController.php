@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TenagaKesehatan;
+use App\Models\Review;
 
 class HomeController extends Controller
 {
@@ -14,6 +15,9 @@ class HomeController extends Controller
             ->take(4)
             ->get();
             
-        return view('home.homepage2', compact('dokters'));
+        // Ambil reviews untuk ditampilkan di homepage
+        $reviews = Review::with('user')->latest()->get();
+            
+        return view('home.homepage2', compact('dokters', 'reviews'));
     }
 }

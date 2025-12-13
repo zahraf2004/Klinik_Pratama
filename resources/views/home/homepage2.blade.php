@@ -15,6 +15,7 @@
 @include('home.layanan')
 @include('home.about')
 @include('home.doktor')
+@include('dashboard.review')
 
     
 @endsection

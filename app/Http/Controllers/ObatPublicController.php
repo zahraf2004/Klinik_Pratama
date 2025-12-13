@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Obat;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 class ObatPublicController extends Controller
@@ -11,7 +12,8 @@ class ObatPublicController extends Controller
     public function index()
     {
         $obat = Obat::latest()->take(4)->get();
-        return view('dashboard.dashboardUser', compact('obat'));
+        $reviews = Review::with('user')->latest()->get();
+        return view('dashboard.dashboardUser', compact('obat', 'reviews'));
     }
 
     // Menampilkan semua obat (halaman daftar obat) + search + filter kategori

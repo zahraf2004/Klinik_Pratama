@@ -91,6 +91,106 @@
                         </div>
                     </div>
 
+                    {{-- Keterangan Pembayaran Sederhana --}}
+                    <div class="pasien-card">
+                        <div class="pasien-card-header">
+                            <div class="pasien-card-title">Status Chat & Pembayaran</div>
+                        </div>
+
+                        <div class="payment-status-simple">
+                            @php
+                                $recentPayments = Auth::user()->transactions()
+                                    ->where('transaction_status', 'settlement')
+                                    ->where('description', 'like', '%Berlangganan%')
+                                    ->latest()
+                                    ->take(3)
+                                    ->get();
+                                
+                                $hasActiveSubscription = Auth::user()->hasActiveSubscription();
+                                $remainingTokens = Auth::user()->getRemainingSessionTokens();
+                            @endphp
+
+                            {{-- Status Chat --}}
+                            <div class="chat-status-info">
+                                @if($hasActiveSubscription)
+                                    <div class="status-item premium">
+                                        <i class="fas fa-crown"></i>
+                                        <span><strong>Premium Active</strong> - Chat Unlimited</span>
+                                    </div>
+                                @else
+                                    <div class="status-item free">
+                                        <i class="fas fa-comments"></i>
+                                        <span>Session Token: <strong>{{ $remainingTokens }}/3</strong> tersisa</span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Detail Pembayaran Lengkap --}}
+                            @if($recentPayments->count() > 0)
+                                <div class="payment-details">
+                                    <h6>Detail Pembayaran:</h6>
+                                    @foreach($recentPayments as $payment)
+                                        <div class="payment-detail-item">
+                                            <div class="payment-header">
+                                                <div class="payment-desc">{{ $payment->description }}</div>
+                                                <div class="payment-status">
+                                                    @if($payment->transaction_status === 'settlement')
+                                                        <span class="badge-success">Berhasil</span>
+                                                    @elseif($payment->transaction_status === 'pending')
+                                                        <span class="badge-pending">Pending</span>
+                                                    @else
+                                                        <span class="badge-failed">{{ ucfirst($payment->transaction_status) }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="payment-info-grid">
+                                                <div class="info-item">
+                                                    <span class="label">Order ID:</span>
+                                                    <span class="value">{{ $payment->order_id }}</span>
+                                                </div>
+                                                <div class="info-item">
+                                                    <span class="label">Jumlah:</span>
+                                                    <span class="value amount">Rp {{ number_format($payment->gross_amount, 0, ',', '.') }}</span>
+                                                </div>
+                                                <div class="info-item">
+                                                    <span class="label">Tanggal:</span>
+                                                    <span class="value">{{ $payment->created_at->format('d/m/Y H:i') }}</span>
+                                                </div>
+                                                @if($payment->payment_type)
+                                                <div class="info-item">
+                                                    <span class="label">Metode:</span>
+                                                    <span class="value">{{ ucfirst($payment->payment_type) }}</span>
+                                                </div>
+                                                @endif
+                                                @if($payment->transaction_id)
+                                                <div class="info-item">
+                                                    <span class="label">Transaction ID:</span>
+                                                    <span class="value">{{ $payment->transaction_id }}</span>
+                                                </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            {{-- Hidden Fix Link untuk Development --}}
+                            @if(app()->environment('local') && $recentPayments->count() > 0)
+                                @php $latestPayment = $recentPayments->first(); @endphp
+                                @if($latestPayment->transaction_status === 'pending')
+                                    <div style="margin-top: 10px; text-align: center;">
+                                        <a href="/update-transaction-status/{{ $latestPayment->order_id }}" 
+                                           style="font-size: 0.7rem; color: #6c757d; text-decoration: none;"
+                                           title="Development: Update transaction status">
+                                            [Dev: Update Status]
+                                        </a>
+                                    </div>
+                                @endif
+                            @endif
+                            
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="side-column">
@@ -128,7 +228,7 @@
                                 <div class="pasien-action-label">Buat Janji</div>
                             </a>
 
-                            <a href="/Janji-Berobat" class="pasien-action-btn">
+                            <a href="/chatify" class="pasien-action-btn">
                                 <i class="fa-solid fa-headset pasien-action-icon"></i>
                                 <div class="pasien-action-label">Chat Online</div>
                             </a>
@@ -140,7 +240,7 @@
     </div>
 
     <!-- Modal Popup -->
-    @include('profilPasien._modalprofil')    
+    @include('profilPasien._modalprofil')
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>

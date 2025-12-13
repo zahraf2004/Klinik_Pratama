@@ -345,8 +345,18 @@ class CustomChatifyController extends Controller
             ->where('is_active', true)
             ->first();
         
-        // Jika tidak ada, buat session baru
+        // Jika tidak ada session aktif, cek apakah bisa buat baru
         if (!$session) {
+            // Cek apakah user bisa mulai session baru
+            if (!$patient->canStartNewSession()) {
+                return response()->json([
+                    'error' => 'Session token habis',
+                    'message' => 'Anda sudah menggunakan 3 session gratis. Upgrade ke premium untuk unlimited session.',
+                    'remaining_tokens' => 0,
+                    'can_chat' => false
+                ]);
+            }
+            
             $session = ChatSession::create([
                 'patient_id' => $patientId,
                 'doctor_id' => $doctorId,
@@ -379,13 +389,13 @@ class CustomChatifyController extends Controller
                 'message_count' => $session->message_count,
                 'is_premium' => $session->is_premium,
                 'is_active' => $session->is_active,
-                'has_reached_limit' => $session->hasReachedLimit(),
-                'remaining_messages' => $session->is_premium ? -1 : max(0, 3 - $session->message_count),
+                'can_chat' => true, // Jika sampai sini berarti bisa chat
             ],
             'subscription' => $subscriptionInfo,
             'user_premium_status' => [
                 'has_active_subscription' => $hasActiveSubscription,
-                'remaining_free_chats' => $patient->getRemainingFreeChats()
+                'remaining_session_tokens' => $patient->getRemainingSessionTokens(),
+                'can_start_new_session' => $patient->canStartNewSession()
             ]
         ]);
     }

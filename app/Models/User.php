@@ -131,24 +131,44 @@ class User extends Authenticatable
         return $this->subscriptions()->active()->first();
     }
 
-    // Method untuk cek sisa chat gratis
-    public function getRemainingFreeChats(): int
+    // Method untuk cek sisa session token
+    public function getRemainingSessionTokens(): int
     {
         if ($this->hasActiveSubscription()) {
             return -1; // Unlimited untuk subscriber
         }
 
-        $totalUsedChats = $this->chatSessionsAsPatient()
-            ->where('is_premium', false)
-            ->sum('message_count');
-
-        return max(0, 3 - $totalUsedChats);
+        return ChatSession::getRemainingSessionTokens($this->id);
     }
 
-    // Method untuk cek apakah bisa chat
+    // Method untuk cek apakah bisa mulai session baru
+    public function canStartNewSession(): bool
+    {
+        if ($this->hasActiveSubscription()) {
+            return true; // Premium unlimited
+        }
+        
+        return $this->getRemainingSessionTokens() > 0;
+    }
+
+    // Method untuk cek apakah bisa chat (ada session aktif atau bisa buat baru)
     public function canChat(): bool
     {
-        return $this->hasActiveSubscription() || $this->getRemainingFreeChats() > 0;
+        if ($this->hasActiveSubscription()) {
+            return true;
+        }
+        
+        // Cek apakah ada session aktif
+        $activeSession = $this->chatSessionsAsPatient()
+            ->where('is_active', true)
+            ->exists();
+            
+        if ($activeSession) {
+            return true; // Bisa lanjut chat di session aktif
+        }
+        
+        // Jika gak ada session aktif, cek apakah bisa buat baru
+        return $this->canStartNewSession();
     }
 
 }

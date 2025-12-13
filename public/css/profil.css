@@ -256,3 +256,227 @@
         gap: 10px;
     }
 }
+
+/* Payment Status Simple Styling */
+.payment-status-simple {
+    padding: 0;
+}
+
+.chat-status-info {
+    margin-bottom: 15px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.status-item.premium {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    border-left: 4px solid #28a745;
+    color: #155724;
+}
+
+.status-item.free {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border-left: 4px solid #ffc107;
+    color: #856404;
+}
+
+.status-item i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.payment-details {
+    margin-bottom: 15px;
+}
+
+.payment-details h6 {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.payment-detail-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-left: 4px solid #28a745;
+}
+
+.payment-detail-item:last-child {
+    margin-bottom: 0;
+}
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.payment-desc {
+    font-size: 0.9rem;
+    color: #495057;
+    font-weight: 600;
+}
+
+.payment-status .badge-success {
+    background: #28a745;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.payment-status .badge-pending {
+    background: #ffc107;
+    color: #212529;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.payment-status .badge-failed {
+    background: #dc3545;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.payment-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+.info-item .label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.info-item .value {
+    color: #495057;
+    font-weight: 500;
+}
+
+.info-item .value.amount {
+    color: #28a745;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .payment-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.payment-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-upgrade-simple {
+    display: inline-block;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #ffc107, #ff8f00);
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-upgrade-simple:hover {
+    background: linear-gradient(135deg, #ff8f00, #f57c00);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.btn-history {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-chat {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-chat:hover {
+    background: #218838;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.btn-fix {
+    display: inline-block;
+    padding: 8px 12px;
+    background: #17a2b8;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-fix:hover {
+    background: #138496;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pasien-content-area {
+        grid-template-columns: 1fr;
+    }
+    
+    .premium-active,
+    .premium-inactive {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .premium-icon,
+    .free-icon {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
