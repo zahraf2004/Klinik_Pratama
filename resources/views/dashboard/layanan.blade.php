@@ -3,8 +3,8 @@
 
     <div class="solution-grid">
       <!-- Card 1 -->
-      <div class="solution-card">
-        <img src="{{asset('img/ilustrasi_r.png')}}" onclick="window.location='/konsultas'">
+      <div class="solution-card" onclick="window.location='/konsultasi'">
+        <img src="{{asset('img/ilustrasi_r.png')}}" >
         <div>
           <h3>Konsultasi Online</h3>
           <p>Chat dengan dokter kapan saja</p>
