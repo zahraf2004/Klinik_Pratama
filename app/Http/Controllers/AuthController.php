@@ -70,7 +70,7 @@ class AuthController extends Controller
 
         // Tentukan pesan error yang spesifik
         $errorField = 'email';
-        $errorMessage = 'Email atau nomor HP tidak ditemukan.';
+        $errorMessage = 'Email tidak ditemukan.';
         
         // Cek apakah user dengan email/hp ada tapi password salah
         if ($loginField === 'email') {

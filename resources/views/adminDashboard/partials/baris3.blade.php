@@ -23,7 +23,7 @@
                     @forelse($listNakes as $nakes)
                     <tr>
                         <td width="60">
-                        <img src="{{ $nakes->foto_path ? asset('storage/'.$nakes->foto_path) : asset('img/default.png') }}" 
+                        <img src="{{ $nakes->foto_path ? asset('storage/'.$nakes->foto_path) : asset('assets/img/avatar/avatar-1.png') }}" 
                             alt="Foto {{ $nakes->nama }}" 
                             class="rounded-circle" 
                             width="40" height="40">
@@ -35,7 +35,7 @@
                         {{ $nakes->email }}
                         </td>
                         <td>
-                        {{ ucfirst($nakes->profesi) }}
+                        {{ $nakes->role == 'dokter_umum' ? 'Dokter' : ucfirst($nakes->role) }}
                         </td>                        
                         <td>
                         <a href="{{ url('/admin/data-nakes/'.$nakes->id) }}" 
@@ -47,7 +47,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="text-center text-muted">Belum ada tenaga kesehatan.</td>
+                        <td colspan="5" class="text-center text-muted">Belum ada tenaga kesehatan.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -65,41 +65,22 @@
             </div>
             <div class="card-body">
             <ul class="list-unstyled list-unstyled-border mb-0">
+                @forelse($logAktivitas as $log)
                 <li class="media">
                 <img class="mr-3 rounded-circle" width="50" src="assets/img/avatar/avatar-1.png" alt="avatar">
                 <div class="media-body">
-                    <div class="float-right text-primary">5 menit lalu</div>
-                    <div class="media-title">Admin</div>
-                    <span class="text-small text-muted">Menyetujui janji berobat pasien <b>Andi Pratama</b>.</span>
+                    <div class="float-right text-primary">{{ $log->created_at->diffForHumans() }}</div>
+                    <div class="media-title">{{ $log->user ? $log->user->name : 'Admin' }}</div>
+                    <span class="text-small text-muted">{!! $log->description !!}</span>
                 </div>
                 </li>
-
+                @empty
                 <li class="media">
-                <img class="mr-3 rounded-circle" width="50" src="assets/img/avatar/avatar-2.png" alt="avatar">
-                <div class="media-body">
-                    <div class="float-right text-muted">15 menit lalu</div>
-                    <div class="media-title">Admin</div>
-                    <span class="text-small text-muted">Menambahkan data tenaga kesehatan <b>dr. Siti Aminah</b>.</span>
+                <div class="media-body text-center">
+                    <div class="text-muted">Belum ada aktivitas</div>
                 </div>
                 </li>
-
-                <li class="media">
-                <img class="mr-3 rounded-circle" width="50" src="assets/img/avatar/avatar-3.png" alt="avatar">
-                <div class="media-body">
-                    <div class="float-right text-muted">30 menit lalu</div>
-                    <div class="media-title">Admin</div>
-                    <span class="text-small text-muted">Menghapus data obat <b>Paracetamol</b>.</span>
-                </div>
-                </li>
-
-                <li class="media">
-                <img class="mr-3 rounded-circle" width="50" src="assets/img/avatar/avatar-4.png" alt="avatar">
-                <div class="media-body">
-                    <div class="float-right text-muted">1 jam lalu</div>
-                    <div class="media-title">Admin</div>
-                    <span class="text-small text-muted">Menambahkan informasi obat <b>Amoxicillin</b>.</span>
-                </div>
-                </li>
+                @endforelse
             </ul>
 
             <div class="text-center pt-2 pb-0">

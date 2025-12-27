@@ -158,17 +158,22 @@ class User extends Authenticatable
             return true;
         }
         
-        // Cek apakah ada session aktif
-        $activeSession = $this->chatSessionsAsPatient()
-            ->where('is_active', true)
-            ->exists();
-            
-        if ($activeSession) {
-            return true; // Bisa lanjut chat di session aktif
+        // Untuk user non-premium, cek token dulu
+        $remainingTokens = $this->getRemainingSessionTokens();
+        
+        // Jika token habis, tidak bisa chat sama sekali
+        if ($remainingTokens <= 0) {
+            return false;
         }
         
-        // Jika gak ada session aktif, cek apakah bisa buat baru
-        return $this->canStartNewSession();
+        // Jika masih ada token, bisa chat
+        return true;
+    }
+
+    // Method untuk cek apakah bisa kirim pesan
+    public function canSendMessage(): bool
+    {
+        return $this->canChat();
     }
 
 }

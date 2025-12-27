@@ -19,34 +19,26 @@
         </div>
         <div class="card-body">
           <ul class="list-unstyled p-0 list-unstyled-border">
+            @forelse($janjiTerbaru as $janji)
             <li class="media">
               <img class="mr-3 rounded-circle" width="50" src="assets/img/avatar/avatar-1.png" alt="avatar">
               <div class="media-body">
-                <div class="float-right text-primary">5 menit lalu</div>
-                <div class="media-title">Andi Pratama</div>
-                <span class="text-small text-muted">Keluhan: Demam tinggi</span>
+                <div class="float-right text-primary">{{ $janji->created_at->diffForHumans() }}</div>
+                <div class="media-title">{{ $janji->nama }}</div>
+                <span class="text-small text-muted">Keluhan: {{ $janji->keluhan }}</span>
               </div>
             </li>
+            @empty
             <li class="media">
-              <img class="mr-3 rounded-circle" width="50" src="assets/img/avatar/avatar-2.png" alt="avatar">
-              <div class="media-body">
-                <div class="float-right text-primary">20 menit lalu</div>
-                <div class="media-title">Siti Aminah</div>
-                <span class="text-small text-muted">Keluhan: Batuk & pilek</span>
+              <div class="media-body text-center">
+                <div class="text-muted">Belum ada janji berobat</div>
               </div>
             </li>
-            <li class="media">
-              <img class="mr-3 rounded-circle" width="50" src="assets/img/avatar/avatar-3.png" alt="avatar">
-              <div class="media-body">
-                <div class="float-right text-primary">1 jam lalu</div>
-                <div class="media-title">Budi Santoso</div>
-                <span class="text-small text-muted">Keluhan: Sakit kepala</span>
-              </div>
-            </li>
+            @endforelse
           </ul>
 
           <div class="text-center pt-1 pb-1">
-            <a href="#" class="btn btn-primary btn-lg btn-round">
+            <a href="{{ route('appointment.admin') }}" class="btn btn-primary btn-lg btn-round">
               Lihat Semua
             </a>
           </div>

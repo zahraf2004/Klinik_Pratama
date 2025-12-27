@@ -442,30 +442,145 @@ class CustomChatifyController extends Controller
      */
     public function endSession(Request $request)
     {
+        try {
+            \Log::info('EndSession called', ['request' => $request->all()]);
+            
+            $currentUser = Auth::user();
+            \Log::info('Current user', ['user_id' => $currentUser->id, 'role' => $currentUser->role]);
+            
+            // Hanya dokter yang bisa end session
+            if ($currentUser->role !== 'dokter') {
+                \Log::warning('Non-doctor tried to end session', ['user_id' => $currentUser->id, 'role' => $currentUser->role]);
+                return response()->json(['success' => false, 'message' => 'Only doctors can end sessions'], 403);
+            }
+        
+            $patientId = $request->patient_id;
+            $doctorId = $currentUser->id;
+            
+            \Log::info('Looking for session', ['patient_id' => $patientId, 'doctor_id' => $doctorId]);
+            
+            $session = ChatSession::where('patient_id', $patientId)
+                ->where('doctor_id', $doctorId)
+                ->where('is_active', true)
+                ->first();
+            
+            if ($session) {
+                \Log::info('Session found, ending session', ['session_id' => $session->id]);
+                $session->endSession();
+                
+                // Get updated token info for patient
+                $patient = User::find($patientId);
+                $remainingTokens = $patient->getRemainingSessionTokens();
+                
+                \Log::info('Session ended successfully', ['remaining_tokens' => $remainingTokens]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Session ended successfully',
+                    'patient_remaining_tokens' => $remainingTokens,
+                    'session_completed' => true
+                ]);
+            }
+            
+            // Jika tidak ada session aktif, cek apakah ada chat messages antara dokter dan pasien
+            $hasMessages = \DB::table('ch_messages')
+                ->where(function($query) use ($patientId, $doctorId) {
+                    $query->where('from_id', $patientId)->where('to_id', $doctorId);
+                })
+                ->orWhere(function($query) use ($patientId, $doctorId) {
+                    $query->where('from_id', $doctorId)->where('to_id', $patientId);
+                })
+                ->exists();
+            
+            if ($hasMessages) {
+                // Ada chat tapi tidak ada session aktif, buat session baru lalu langsung end
+                $patient = User::find($patientId);
+                
+                if (!$patient->canStartNewSession()) {
+                    \Log::warning('Patient cannot start new session - tokens exhausted', ['patient_id' => $patientId]);
+                    
+                    $remainingTokens = $patient->getRemainingSessionTokens();
+                    
+                    return response()->json([
+                        'success' => false, 
+                        'message' => 'Patient has no remaining session tokens. All 3 free sessions have been used.',
+                        'patient_remaining_tokens' => $remainingTokens,
+                        'tokens_exhausted' => true
+                    ]);
+                }
+                
+                $hasActiveSubscription = $patient->hasActiveSubscription();
+                
+                $session = ChatSession::create([
+                    'patient_id' => $patientId,
+                    'doctor_id' => $doctorId,
+                    'message_count' => 0,
+                    'is_premium' => $hasActiveSubscription,
+                    'is_active' => true,
+                    'started_at' => now(),
+                ]);
+                
+                \Log::info('Created new session and ending it', ['session_id' => $session->id]);
+                $session->endSession();
+                
+                $remainingTokens = $patient->getRemainingSessionTokens();
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Session created and ended successfully',
+                    'patient_remaining_tokens' => $remainingTokens,
+                    'session_completed' => true
+                ]);
+            }
+            
+            \Log::warning('No active session and no messages found', ['patient_id' => $patientId, 'doctor_id' => $doctorId]);
+            return response()->json(['success' => false, 'message' => 'No active conversation found'], 404);
+            
+        } catch (\Exception $e) {
+            \Log::error('EndSession error', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['success' => false, 'message' => 'Server error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Check if user can send chat messages
+     */
+    public function checkChatPermission(Request $request)
+    {
         $currentUser = Auth::user();
         
-        // Hanya dokter yang bisa end session
-        if ($currentUser->role !== 'dokter') {
-            return response()->json(['success' => false, 'message' => 'Only doctors can end sessions'], 403);
-        }
-        
-        $patientId = $request->patient_id;
-        $doctorId = $currentUser->id;
-        
-        $session = ChatSession::where('patient_id', $patientId)
-            ->where('doctor_id', $doctorId)
-            ->where('is_active', true)
-            ->first();
-        
-        if ($session) {
-            $session->endSession();
-            
+        // Dokter selalu bisa chat
+        if ($currentUser->role === 'dokter') {
             return response()->json([
-                'success' => true,
-                'message' => 'Session ended successfully'
+                'can_chat' => true,
+                'remaining_tokens' => -1,
+                'has_active_subscription' => false
             ]);
         }
         
-        return response()->json(['success' => false, 'message' => 'Active session not found'], 404);
+        // Untuk pasien, cek token dan subscription
+        $hasActiveSubscription = $currentUser->hasActiveSubscription();
+        $remainingTokens = $currentUser->getRemainingSessionTokens();
+        
+        // Jika premium, selalu bisa chat
+        if ($hasActiveSubscription) {
+            return response()->json([
+                'can_chat' => true,
+                'remaining_tokens' => -1,
+                'has_active_subscription' => true,
+                'message' => 'Premium user - unlimited chat'
+            ]);
+        }
+        
+        // Jika bukan premium, cek token
+        $canChat = $remainingTokens > 0;
+        
+        return response()->json([
+            'can_chat' => $canChat,
+            'remaining_tokens' => $remainingTokens,
+            'has_active_subscription' => false,
+            'message' => $canChat ? 'Can send messages' : 'No remaining tokens, upgrade required',
+            'tokens_exhausted' => $remainingTokens <= 0
+        ]);
     }
 }

@@ -186,6 +186,7 @@ Route::group(['middleware' => ['auth', 'role:dokter,pasien']], function () {
     Route::post('/chatify/getOrCreateSession', [\App\Http\Controllers\CustomChatifyController::class, 'getOrCreateSession']);
     Route::post('/chatify/incrementMessageCount', [\App\Http\Controllers\CustomChatifyController::class, 'incrementMessageCount']);
     Route::post('/chatify/endSession', [\App\Http\Controllers\CustomChatifyController::class, 'endSession']);
+    Route::post('/chatify/checkChatPermission', [\App\Http\Controllers\CustomChatifyController::class, 'checkChatPermission']);
     
     // Default Chatify routes
     Route::get('/chatify', [\Chatify\Http\Controllers\MessagesController::class, 'index'])->name('chatify');

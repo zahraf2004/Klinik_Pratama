@@ -9,6 +9,17 @@
 setTimeout(function() {
     console.log('Initializing custom chatify...');
     
+    // Ensure variables are available
+    if (typeof url === 'undefined') {
+        window.url = $('meta[name="url"]').attr('content');
+    }
+    if (typeof csrfToken === 'undefined') {
+        window.csrfToken = $('meta[name="csrf-token"]').attr('content');
+    }
+    
+    console.log('URL:', url);
+    console.log('CSRF Token:', csrfToken);
+    
     // ========== CUSTOM CONTACT MANAGEMENT ==========
     
     // Override fungsi updateContactItem yang ada
@@ -643,6 +654,9 @@ setTimeout(function() {
             </button>
         `);
         
+        // Check patient token status and update button visibility
+        updateEndSessionButton();
+        
         $('#endSessionBtn').click(function() {
             const patientId = typeof getMessengerId === 'function' ? getMessengerId() : null;
             
@@ -653,6 +667,18 @@ setTimeout(function() {
                     text: 'Pilih pasien terlebih dahulu',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#4a83d3'
+                });
+                return;
+            }
+            
+            // Check if button is in disabled state (patient has no tokens)
+            if ($(this).css('cursor') === 'not-allowed') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Token Pasien Habis',
+                    text: 'Pasien sudah menggunakan semua token gratis (0/3). Tidak ada sesi aktif untuk diakhiri.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#17a2b8'
                 });
                 return;
             }
@@ -873,7 +899,72 @@ setTimeout(function() {
         `);
     }
     
+    function updateMessageCounter(session, subscription) {
+        // Show counter
+        $('#messageCounter').show();
+        
+        if (session.has_reached_limit) {
+            $('#remainingMessages').html(`
+                <strong style="color: #e74c3c;">
+                    <i class="fas fa-lock"></i> Limit pesan gratis tercapai! 
+                    Upgrade ke premium untuk melanjutkan.
+                </strong>
+            `);
+            $('#messageCounter').css({
+                'background': '#f8d7da',
+                'border-color': '#e74c3c',
+                'color': '#721c24',
+                'display': 'block'
+            });
+        } else {
+            $('#remainingMessages').html(`
+                Sisa pesan gratis: <strong>${session.remaining_messages}/3</strong>
+            `);
+            $('#messageCounter').css({
+                'background': '#d1ecf1',
+                'border-color': '#17a2b8',
+                'color': '#0c5460',
+                'display': 'block'
+            });
+        }
+    }
+    
+    function blockMessageInput() {
+        $('#message-form .m-send').attr('disabled', 'disabled').attr('placeholder', 'Upgrade ke premium untuk melanjutkan chat.');
+        $('#message-form button[type="submit"]').attr('disabled', 'disabled');
+        $('.upload-attachment').attr('disabled', 'disabled');
+        
+        // Add visual indicator
+        $('#message-form').addClass('blocked-input');
+        
+        // Show permanent warning with payment modal trigger
+        if ($('#tokenWarning').length === 0) {
+            $('.messenger-sendCard').prepend(`
+                <div id="tokenWarning" style="
+                    padding: 10px 15px;
+                    background: #f8d7da;
+                    border: 1px solid #e74c3c;
+                    border-radius: 8px;
+                    margin-bottom: 10px;
+                    text-align: center;
+                    font-size: 13px;
+                    color: #721c24;
+                ">
+                    <i class="fas fa-lock"></i> 
+                    <strong>Upgrade ke Premium!</strong> 
+                    <a href="javascript:void(0)" onclick="showPaymentModalWithRetry()" style="color: #721c24; text-decoration: underline;">Upgrade sekarang</a> untuk chat unlimited.
+                </div>
+            `);
+        }
+    }
+
     function endChatSession(patientId) {
+        // Debug logging
+        console.log('endChatSession called with patientId:', patientId);
+        console.log('url variable:', url);
+        console.log('csrfToken variable:', csrfToken);
+        console.log('Full URL will be:', url + "/endSession");
+        
         // Show loading popup
         Swal.fire({
             title: 'Mengakhiri Sesi...',
@@ -899,24 +990,40 @@ setTimeout(function() {
                 console.log('Session ended:', data);
                 
                 if (data.success) {
+                    let successText = 'Sesi chat dengan pasien telah berakhir. Halaman akan dimuat ulang.';
+                    
+                    // Add token info if available
+                    if (data.patient_remaining_tokens !== undefined) {
+                        successText += `\n\nToken pasien tersisa: ${data.patient_remaining_tokens}/3`;
+                    }
+                    
                     Swal.fire({
                         icon: 'success',
                         title: 'Sesi Berhasil Diakhiri!',
-                        text: 'Sesi chat dengan pasien telah berakhir. Halaman akan dimuat ulang.',
+                        text: successText,
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#28a745',
-                        timer: 3000,
+                        timer: 4000,
                         timerProgressBar: true
                     }).then(() => {
                         window.location.reload();
                     });
                 } else {
+                    // Handle different error types
+                    let errorTitle = 'Gagal Mengakhiri Sesi';
+                    let errorText = data.message || 'Terjadi kesalahan saat mengakhiri sesi';
+                    
+                    if (data.tokens_exhausted) {
+                        errorTitle = 'Sesi Sudah Berakhir';
+                        errorText = `Pasien sudah menggunakan semua token gratis (${data.patient_remaining_tokens}/3). Tidak ada sesi aktif untuk diakhiri.`;
+                    }
+                    
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal Mengakhiri Sesi',
-                        text: data.message || 'Terjadi kesalahan saat mengakhiri sesi',
+                        icon: data.tokens_exhausted ? 'info' : 'error',
+                        title: errorTitle,
+                        text: errorText,
                         confirmButtonText: 'OK',
-                        confirmButtonColor: '#e74c3c'
+                        confirmButtonColor: data.tokens_exhausted ? '#17a2b8' : '#e74c3c'
                     });
                 }
             },
@@ -934,76 +1041,361 @@ setTimeout(function() {
         });
     }
     
-    // Intercept send message untuk increment counter
+    // Intercept send message untuk block jika token habis
     const originalSendMessage = window.sendMessage;
+    
+    console.log('Original sendMessage function:', typeof originalSendMessage);
+    console.log('Current user role:', currentUserRole);
+    
     if (typeof originalSendMessage === 'function' && currentUserRole === 'pasien') {
+        console.log('Setting up sendMessage interceptor for patient');
+        
         window.sendMessage = function() {
+            console.log('sendMessage intercepted!');
+            
             const targetUserId = typeof getMessengerId === 'function' ? getMessengerId() : null;
+            console.log('Target user ID:', targetUserId);
             
             if (targetUserId) {
-                // Check current session first
+                console.log('Checking chat permission...');
+                
+                // Block message immediately and check permission
+                const messageInput = $('#message-form input[name="message"]');
+                const originalValue = messageInput.val();
+                
+                // Check if user can still send messages BEFORE sending
                 $.ajax({
-                    url: url + "/getOrCreateSession",
+                    url: url + "/checkChatPermission",
                     method: "POST",
                     data: { 
                         _token: csrfToken, 
                         target_user_id: targetUserId 
                     },
                     dataType: "JSON",
-                    success: (data) => {
-                        // Jika user premium, langsung kirim pesan tanpa cek limit
-                        if (data.session && data.session.is_premium) {
-                            console.log('Premium user - sending message without limit check');
-                            return originalSendMessage.apply(this, arguments);
-                        }
+                    success: (permissionData) => {
+                        console.log('Permission check result:', permissionData);
                         
-                        // Jika free user dan sudah limit, show payment modal
-                        if (data.session && data.session.has_reached_limit) {
-                            showPaymentModal();
-                            return false;
+                        if (!permissionData.can_chat || permissionData.tokens_exhausted) {
+                            console.log('User cannot chat - tokens exhausted, showing payment modal');
+                            showPaymentModalWithRetry();
+                            
+                            // Clear the input to prevent message from being sent
+                            messageInput.val('');
+                            
+                            // Hanya tampilkan popup premium tanpa redirect
+                            
+                            return false; // Block message
+                        } else {
+                            // User can chat - restore input and send message
+                            console.log('User can chat, sending message');
+                            messageInput.val(originalValue);
+                            
+                            // Call original function with proper context
+                            setTimeout(() => {
+                                originalSendMessage.apply(window, arguments);
+                            }, 100);
                         }
+                    },
+                    error: (xhr, status, error) => {
+                        console.log('Permission check failed:', error);
+                        console.log('Blocking message due to error to be safe');
                         
-                        // Jika free user dan belum limit, increment counter dan kirim pesan
-                        $.ajax({
-                            url: url + "/incrementMessageCount",
-                            method: "POST",
-                            data: { 
-                                _token: csrfToken, 
-                                target_user_id: targetUserId 
-                            },
-                            dataType: "JSON",
-                            success: (incrementData) => {
-                                console.log('Message count incremented:', incrementData);
-                                
-                                if (incrementData.session) {
-                                    updateMessageCounter(incrementData.session, data.subscription);
-                                    
-                                    if (incrementData.session.has_reached_limit) {
-                                        blockMessageInput();
-                                        // Show payment modal after reaching limit
-                                        setTimeout(() => {
-                                            showPaymentModal();
-                                        }, 1000);
-                                    }
-                                }
-                            }
+                        // Clear input and show error
+                        messageInput.val('');
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan',
+                            text: 'Tidak dapat memverifikasi status chat. Silakan refresh halaman.',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#e74c3c'
                         });
-                        
-                        // Call original function
-                        return originalSendMessage.apply(this, arguments);
                     }
                 });
+                
+                // Return false to prevent original function from executing immediately
+                return false;
             } else {
                 // Call original function if no target user
                 return originalSendMessage.apply(this, arguments);
             }
         };
+    } else {
+        console.log('sendMessage interceptor not set up');
+        console.log('Reason - sendMessage available:', typeof originalSendMessage === 'function');
+        console.log('Reason - user is patient:', currentUserRole === 'pasien');
     }
     
     // Load session saat pilih kontak
     $(document).on('click', '.messenger-list-item', function() {
         setTimeout(loadChatSession, 500);
+        
+        // Check token status
+        setTimeout(checkTokenStatus, 1000);
+        
+        // Update end session button for doctors
+        if (currentUserRole === 'dokter') {
+            setTimeout(updateEndSessionButton, 1200);
+        }
     });
+    
+    // Alternative approach: Intercept form submit and send button clicks
+    if (currentUserRole === 'pasien') {
+        console.log('Setting up form submit interceptor for patient');
+        
+        // Intercept message form submit
+        $(document).on('submit', '#message-form', function(e) {
+            console.log('Message form submit intercepted');
+            
+            const targetUserId = typeof getMessengerId === 'function' ? getMessengerId() : null;
+            if (targetUserId) {
+                e.preventDefault(); // Stop form submission
+                
+                console.log('Checking permission before form submit...');
+                checkPermissionAndProceed(targetUserId, () => {
+                    console.log('Permission OK, submitting form');
+                    // Remove event handler temporarily and submit
+                    $(e.target).off('submit').submit();
+                });
+            }
+        });
+        
+        // Intercept send button clicks
+        $(document).on('click', '.messenger-sendCard button[type="submit"], .send-button', function(e) {
+            console.log('Send button click intercepted');
+            
+            const targetUserId = typeof getMessengerId === 'function' ? getMessengerId() : null;
+            if (targetUserId) {
+                e.preventDefault(); // Stop button action
+                
+                console.log('Checking permission before send button...');
+                checkPermissionAndProceed(targetUserId, () => {
+                    console.log('Permission OK, triggering send');
+                    // Trigger original send logic
+                    if (typeof window.sendMessage === 'function') {
+                        window.sendMessage();
+                    }
+                });
+            }
+        });
+        
+        // Function to check permission and proceed if allowed
+        function checkPermissionAndProceed(targetUserId, callback) {
+            $.ajax({
+                url: url + "/checkChatPermission",
+                method: "POST",
+                data: { 
+                    _token: csrfToken, 
+                    target_user_id: targetUserId 
+                },
+                dataType: "JSON",
+                success: (permissionData) => {
+                    console.log('Form permission check result:', permissionData);
+                    
+                    if (!permissionData.can_chat || permissionData.tokens_exhausted) {
+                        console.log('User cannot chat - tokens exhausted, showing payment modal');
+                        
+                        // Clear message input
+                        $('#message-form input[name="message"]').val('');
+                        
+                        // Show payment modal
+                        showPaymentModalWithRetry();
+                        
+                        // Hanya tampilkan popup premium tanpa redirect
+                    } else {
+                        console.log('User can chat, proceeding');
+                        callback();
+                    }
+                },
+                error: (xhr, status, error) => {
+                    console.log('Form permission check failed:', error);
+                    console.log('Blocking action due to error to be safe');
+                    
+                    // Clear message input
+                    $('#message-form input[name="message"]').val('');
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: 'Tidak dapat memverifikasi status chat. Silakan refresh halaman.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#e74c3c'
+                    });
+                }
+            });
+        }
+    }
+    
+    // Function to check token status and block input if needed
+    function checkTokenStatus() {
+        const targetUserId = typeof getMessengerId === 'function' ? getMessengerId() : null;
+        
+        if (targetUserId) {
+            $.ajax({
+                url: url + "/checkChatPermission",
+                method: "POST",
+                data: { 
+                    _token: csrfToken, 
+                    target_user_id: targetUserId 
+                },
+                dataType: "JSON",
+                success: (data) => {
+                    if (!data.can_chat && data.remaining_tokens <= 0) {
+                        blockMessageInput();
+                    }
+                    
+                    // Update end session button for doctors
+                    if (currentUserRole === 'dokter') {
+                        updateEndSessionButtonState(data);
+                    }
+                },
+                error: (error) => {
+                    console.error('Error checking token status:', error);
+                }
+            });
+        }
+    }
+    
+    // Function to update end session button visibility and state
+    function updateEndSessionButton() {
+        const targetUserId = typeof getMessengerId === 'function' ? getMessengerId() : null;
+        
+        if (targetUserId && currentUserRole === 'dokter') {
+            $.ajax({
+                url: url + "/checkChatPermission",
+                method: "POST",
+                data: { 
+                    _token: csrfToken, 
+                    target_user_id: targetUserId 
+                },
+                dataType: "JSON",
+                success: (data) => {
+                    updateEndSessionButtonState(data);
+                },
+                error: (error) => {
+                    console.error('Error checking patient token status:', error);
+                }
+            });
+        }
+    }
+    
+    function updateEndSessionButtonState(patientData) {
+        const $endBtn = $('#endSessionBtn');
+        
+        if (patientData.remaining_tokens <= 0 && !patientData.has_active_subscription) {
+            // Patient has no tokens left, change button style
+            $endBtn.css({
+                'background': '#6c757d',
+                'cursor': 'not-allowed',
+                'opacity': '0.7'
+            }).html('<i class="fas fa-info-circle"></i> Token Habis');
+            
+            // Add tooltip or info
+            $endBtn.attr('title', 'Pasien sudah menggunakan semua token gratis (0/3)');
+        } else {
+            // Normal state
+            $endBtn.css({
+                'background': '#e74c3c',
+                'cursor': 'pointer',
+                'opacity': '1'
+            }).html('<i class="fas fa-stop-circle"></i> Sesi Selesai');
+            
+            $endBtn.attr('title', 'Akhiri sesi chat dengan pasien');
+        }
+    }
+    
+    // Function to show payment modal with retry mechanism
+    function showPaymentModalWithRetry(retryCount = 0) {
+        console.log('Attempting to show payment modal, retry:', retryCount);
+        console.log('showPaymentModal function available:', typeof showPaymentModal);
+        console.log('paymentModal element exists:', $('#paymentModal').length > 0);
+        console.log('Bootstrap available:', typeof bootstrap);
+        
+        // Method 1: Try direct Bootstrap 5 modal first
+        const modalEl = document.getElementById('paymentModal');
+        if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            console.log('Using Bootstrap 5 modal directly');
+            try {
+                const modal = new bootstrap.Modal(modalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                modal.show();
+                return;
+            } catch (error) {
+                console.error('Bootstrap 5 modal error:', error);
+            }
+        }
+        
+        // Method 2: Try jQuery modal (Bootstrap 4 compatibility)
+        if ($('#paymentModal').length > 0 && typeof $.fn.modal === 'function') {
+            console.log('Using jQuery modal (Bootstrap 4)');
+            try {
+                $('#paymentModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }).modal('show');
+                return;
+            } catch (error) {
+                console.error('jQuery modal error:', error);
+            }
+        }
+        
+        // Method 3: Use existing showPaymentModal function
+        if (typeof showPaymentModal === 'function') {
+            console.log('Using showPaymentModal() function');
+            try {
+                showPaymentModal();
+                return;
+            } catch (error) {
+                console.error('showPaymentModal error:', error);
+            }
+        }
+        
+        // Method 4: Retry after delay (max 3 times)
+        if (retryCount < 3) {
+            console.log('Retrying in 1000ms...');
+            setTimeout(() => {
+                showPaymentModalWithRetry(retryCount + 1);
+            }, 1000);
+            return;
+        }
+        
+        // Method 5: Fallback to SweetAlert2 with better styling
+        console.log('All methods failed, using SweetAlert2 fallback');
+        Swal.fire({
+            icon: 'warning',
+            title: '<i class="fas fa-crown"></i> Upgrade ke Premium!',
+            html: `
+                <div style="text-align: left; margin: 20px 0;">
+                    <p><strong>Anda sudah menggunakan 3 session gratis.</strong></p>
+                    <p>Upgrade ke premium untuk:</p>
+                    <ul style="text-align: left; margin-left: 20px;">
+                        <li>✅ Chat unlimited dengan dokter</li>
+                        <li>✅ Konsultasi 24/7</li>
+                        <li>✅ Riwayat chat tersimpan</li>
+                        <li>✅ Prioritas respon dokter</li>
+                    </ul>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong>Paket Bulanan: Rp 50.000</strong><br>
+                        <small>Chat unlimited selama 1 bulan</small>
+                    </div>
+                </div>
+            `,
+            confirmButtonText: '<i class="fas fa-credit-card"></i> Upgrade Sekarang',
+            confirmButtonColor: '#28a745',
+            showCancelButton: true,
+            cancelButtonText: 'Nanti Saja',
+            cancelButtonColor: '#6c757d',
+            width: '500px',
+            customClass: {
+                popup: 'payment-swal-popup'
+            }
+        }).then((result) => {
+            // Tidak ada redirect, hanya tutup popup
+            console.log('Premium popup closed');
+        });
+    }
     
     // Debug: Log semua elemen yang ada
     console.log('Avatar elements:', $('.header-avatar.show-infoSide').length);

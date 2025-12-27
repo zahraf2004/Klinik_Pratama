@@ -16,6 +16,35 @@
 <script src="{{ asset('js/chatify/utils.js') }}"></script>
 <script src="{{ asset('js/chatify/code.js') }}"></script>
 <script src="{{ asset('js/chatify/custom-chatify.js') }}"></script>
+
+{{-- Payment Modal JS for Premium Features --}}
+@if(Auth::user()->role === 'pasien')
+    <script src="{{ asset('js/payment-modal.js') }}"></script>
+    <script>
+        // Debug payment modal availability
+        console.log('Payment modal script loaded');
+        console.log('showPaymentModal function:', typeof showPaymentModal);
+        console.log('paymentModal element:', document.getElementById('paymentModal'));
+        console.log('Bootstrap available:', typeof bootstrap);
+        
+        // Test function to manually trigger modal
+        window.testPaymentModal = function() {
+            console.log('Testing payment modal...');
+            if (typeof showPaymentModal === 'function') {
+                showPaymentModal();
+            } else {
+                console.log('showPaymentModal not available, trying direct Bootstrap');
+                const modalEl = document.getElementById('paymentModal');
+                if (modalEl && typeof bootstrap !== 'undefined') {
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+                } else {
+                    console.log('Modal element or Bootstrap not available');
+                }
+            }
+        };
+    </script>
+@endif
 <script>
 // Auto-refresh contact list every 10 seconds
 // This ensures new messages appear in the list even if Pusher fails

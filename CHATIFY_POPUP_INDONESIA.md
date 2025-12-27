@@ -39,6 +39,28 @@ Popup konfirmasi SweetAlert2 dengan teks Bahasa Indonesia untuk sistem chat dokt
 - **Buttons**: "Ya, Hapus" / "Batal"
 - **Success**: "Percakapan Dihapus!" dengan auto-close
 
+## Token Logic Fix
+
+### Problem
+End session tidak mengurangi token gratis pasien secara visual.
+
+### Solution
+1. **Backend Logic** (sudah benar):
+   - Token = `3 - completed_sessions`
+   - End session mengubah `is_active = false`
+   - Token otomatis berkurang karena completed session bertambah
+
+2. **Frontend Enhancement**:
+   - Show remaining tokens in success popup
+   - Better feedback untuk dokter
+   - Auto refresh untuk update counter
+
+### Token Calculation Flow
+1. **Start**: Pasien punya 3 token gratis
+2. **Chat**: Buat session baru (`is_active = true`)
+3. **End Session**: Dokter klik "Sesi Selesai" → `is_active = false`
+4. **Result**: Token berkurang 1 (completed sessions +1)
+
 ## Technical Implementation
 
 ### Files Modified
@@ -51,6 +73,11 @@ Popup konfirmasi SweetAlert2 dengan teks Bahasa Indonesia untuk sistem chat dokt
    - Indonesian text for all messages
    - Proper error handling
    - Loading states and success feedback
+   - Show remaining tokens in success popup
+
+3. `app/Http/Controllers/CustomChatifyController.php`
+   - Enhanced endSession response with token info
+   - Return patient remaining tokens after session end
 
 ### Popup Styles
 - **Primary Color**: `#4a83d3` (biru)

@@ -16,7 +16,19 @@ class DashboardAdminController extends Controller
         $totalJanji = Appointment::count();
         $totalObat = Obat::count();
         $listNakes = TenagaKesehatan::latest()->take(10)->get(); // ambil 10 terbaru
+        
+        // Ambil 3 janji berobat terbaru dengan relasi user
+        $janjiTerbaru = Appointment::with('user')
+            ->latest('created_at')
+            ->take(3)
+            ->get();
 
-        return view('adminDashboard.DashboardAdmin', compact('totalNakes', 'listNakes', 'totalObat','totalJanji'));
+        // Ambil 4 log aktivitas terbaru
+        $logAktivitas = \App\Models\ActivityLog::with('user')
+            ->latest('created_at')
+            ->take(4)
+            ->get();
+
+        return view('adminDashboard.DashboardAdmin', compact('totalNakes', 'listNakes', 'totalObat','totalJanji', 'janjiTerbaru', 'logAktivitas'));
     }    
 }
