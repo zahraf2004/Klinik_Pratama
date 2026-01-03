@@ -2,7 +2,7 @@
     <div class="col-lg-8 col-md-12 col-12 col-sm-12">
       <div class="card">
         <div class="card-header">
-          <h4>Statistik Janji Berobat Disetujui</h4>
+          <h4>Statistik Janji Berobat Selesai</h4>
         </div>
         <div class="card-body">
           <canvas id="janjiChart" height="120"></canvas>

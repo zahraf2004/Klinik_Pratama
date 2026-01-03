@@ -29,6 +29,35 @@ class DashboardAdminController extends Controller
             ->take(4)
             ->get();
 
-        return view('adminDashboard.DashboardAdmin', compact('totalNakes', 'listNakes', 'totalObat','totalJanji', 'janjiTerbaru', 'logAktivitas'));
+        // Data untuk grafik - janji berobat selesai per bulan (12 bulan terakhir)
+        $chartData = $this->getChartData();
+
+        return view('adminDashboard.DashboardAdmin', compact('totalNakes', 'listNakes', 'totalObat','totalJanji', 'janjiTerbaru', 'logAktivitas', 'chartData'));
+    }
+
+    private function getChartData()
+    {
+        $months = [];
+        $data = [];
+        
+        // Generate 12 bulan terakhir
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $monthName = $date->format('M Y'); // Jan 2025, Feb 2025, etc
+            $months[] = $monthName;
+            
+            // Hitung janji berobat yang selesai di bulan tersebut
+            $count = Appointment::where('status', 'Selesai')
+                ->whereYear('updated_at', $date->year)
+                ->whereMonth('updated_at', $date->month)
+                ->count();
+                
+            $data[] = $count;
+        }
+        
+        return [
+            'labels' => $months,
+            'data' => $data
+        ];
     }    
 }

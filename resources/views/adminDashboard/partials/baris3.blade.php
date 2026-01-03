@@ -82,12 +82,6 @@
                 </li>
                 @endforelse
             </ul>
-
-            <div class="text-center pt-2 pb-0">
-                <a href="#" class="btn btn-primary btn-sm btn-round">
-                Lihat Semua
-                </a>
-            </div>
             </div>
         </div>
         </div>

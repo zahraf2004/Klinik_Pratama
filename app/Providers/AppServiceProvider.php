@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register view composer untuk notifikasi
+        $this->app->register(\App\Providers\ViewComposerServiceProvider::class);
+        
+        // Register observers
+        \App\Models\User::observe(\App\Observers\UserObserver::class);
+        \App\Models\Subscription::observe(\App\Observers\SubscriptionObserver::class);
     }
 }

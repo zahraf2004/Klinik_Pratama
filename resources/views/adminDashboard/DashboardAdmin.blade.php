@@ -17,15 +17,20 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var ctx = document.getElementById("janjiChart").getContext('2d');
+    
+    // Data dari controller
+    var chartLabels = @json($chartData['labels']);
+    var chartData = @json($chartData['data']);
+    
     var janjiChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul"],
+        labels: chartLabels,
         datasets: [{
-          label: 'Disetujui',
-          data: [12, 19, 8, 15, 22, 30, 25],
-          backgroundColor: '#6777ef',
-          borderColor: '#6777ef',
+          label: 'Janji Selesai',
+          data: chartData,
+          backgroundColor: '#28a745',
+          borderColor: '#28a745',
           borderWidth: 2,
           borderRadius: 6
         }]
@@ -38,13 +43,27 @@
             labels: {
               color: '#252525'
             }
+          },
+          title: {
+            display: true,
+            text: 'Statistik Janji Berobat Selesai (12 Bulan Terakhir)',
+            color: '#252525'
           }
         },
         scales: {
           y: {
             beginAtZero: true,
             ticks: {
-              stepSize: 5
+              stepSize: 1,
+              callback: function(value) {
+                return Number.isInteger(value) ? value : '';
+              }
+            }
+          },
+          x: {
+            ticks: {
+              maxRotation: 45,
+              minRotation: 45
             }
           }
         }

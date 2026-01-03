@@ -59,6 +59,18 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     /*
     |-----------------------------
+    | Notifications
+    |-----------------------------
+    */
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'getNotifications'])->name('index');
+        Route::post('/mark-read/{id}', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('mark-read');
+        Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+        Route::get('/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('unread-count');
+    });
+
+    /*
+    |-----------------------------
     | Data Nakes Admin
     |-----------------------------
     */

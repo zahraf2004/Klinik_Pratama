@@ -10,10 +10,36 @@ trait LogsActivity
     {
         static::created(function ($model) {
             static::logActivity('create', $model, 'Menambahkan ' . static::getModelName() . ' <b>' . static::getModelIdentifier($model) . '</b>');
+            
+            // Buat notifikasi untuk appointment baru
+            if ($model instanceof \App\Models\Appointment) {
+                \App\Http\Controllers\NotificationController::createAppointmentNotification($model, 'new');
+            }
         });
 
         static::updated(function ($model) {
             static::logActivity('update', $model, 'Mengupdate ' . static::getModelName() . ' <b>' . static::getModelIdentifier($model) . '</b>');
+            
+            // Buat notifikasi untuk perubahan appointment
+            if ($model instanceof \App\Models\Appointment) {
+                if ($model->isDirty('status')) {
+                    // Notifikasi untuk perubahan status
+                    $status = $model->status;
+                    $type = match($status) {
+                        'Disetujui' => 'approved',
+                        'Dibatalkan' => 'cancelled',
+                        'Selesai' => 'completed',
+                        default => null
+                    };
+                    
+                    if ($type) {
+                        \App\Http\Controllers\NotificationController::createAppointmentNotification($model, $type);
+                    }
+                } else {
+                    // Notifikasi untuk edit data appointment oleh pasien
+                    \App\Http\Controllers\NotificationController::createAppointmentNotification($model, 'updated');
+                }
+            }
         });
 
         static::deleted(function ($model) {

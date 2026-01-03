@@ -25,7 +25,7 @@
             <h4>Janji Berobat</h4>
           </div>
           <div class="card-body">
-            2
+            {{ $totalJanji }}
           </div>
         </div>
       </div>
