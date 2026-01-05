@@ -12,14 +12,23 @@ class NotificationSeeder extends Seeder
      */
     public function run(): void
     {
+        // Ambil admin pertama untuk contoh notifikasi
+        $admin = \App\Models\User::where('role', 'admin')->first();
+        $adminId = $admin ? $admin->id : 2; // Default ke ID 2 jika tidak ada admin
+        
+        // Ambil dokter dan pasien untuk sample notifikasi
+        $dokter = \App\Models\User::where('role', 'dokter')->first();
+        $pasien = \App\Models\User::where('role', 'pasien')->first();
+        
         $notifications = [
+            // Notifikasi untuk Admin
             [
                 'type' => 'appointment',
                 'title' => 'Janji Berobat',
                 'message' => 'Ajuan janji berobat baru dari <b>Riko Alfian</b>',
                 'icon' => 'fas fa-calendar-plus',
                 'color' => 'bg-primary',
-                'user_id' => null, // Untuk semua admin
+                'user_id' => $adminId,
                 'related_id' => 9,
                 'related_type' => 'App\Models\Appointment',
                 'action_url' => '/data-janji-berobat',
@@ -28,26 +37,12 @@ class NotificationSeeder extends Seeder
                 'updated_at' => now()->subMinutes(5)
             ],
             [
-                'type' => 'appointment',
-                'title' => 'Janji Berobat',
-                'message' => 'Janji berobat <b>Ahmad Rizki</b> telah diubah',
-                'icon' => 'fas fa-edit',
-                'color' => 'bg-warning',
-                'user_id' => null,
-                'related_id' => 10,
-                'related_type' => 'App\Models\Appointment',
-                'action_url' => '/data-janji-berobat',
-                'is_read' => false,
-                'created_at' => now()->subMinutes(15),
-                'updated_at' => now()->subMinutes(15)
-            ],
-            [
                 'type' => 'user_registration',
                 'title' => 'Pasien Baru',
                 'message' => 'Pasien baru <b>Siti Nurhaliza</b> telah mendaftar',
                 'icon' => 'fas fa-user-plus',
                 'color' => 'bg-success',
-                'user_id' => null,
+                'user_id' => $adminId,
                 'related_id' => 6,
                 'related_type' => 'App\Models\User',
                 'action_url' => '/data-pasien',
@@ -55,36 +50,57 @@ class NotificationSeeder extends Seeder
                 'created_at' => now()->subMinutes(30),
                 'updated_at' => now()->subMinutes(30)
             ],
-            [
-                'type' => 'subscription',
-                'title' => 'Berlangganan Baru',
-                'message' => 'Pasien <b>Budi Santoso</b> telah berlangganan paket monthly',
-                'icon' => 'fas fa-crown',
-                'color' => 'bg-warning',
-                'user_id' => null,
-                'related_id' => 5,
-                'related_type' => 'App\Models\User',
-                'action_url' => '/data-pasien',
-                'is_read' => true,
-                'read_at' => now()->subHour(1),
-                'created_at' => now()->subHour(2),
-                'updated_at' => now()->subHour(1)
-            ],
-            [
-                'type' => 'user_registration',
-                'title' => 'Pasien Baru',
-                'message' => 'Pasien baru <b>Dewi Sartika</b> telah mendaftar',
-                'icon' => 'fas fa-user-plus',
-                'color' => 'bg-success',
-                'user_id' => null,
-                'related_id' => 21,
-                'related_type' => 'App\Models\User',
-                'action_url' => '/data-pasien',
-                'is_read' => true,
-                'read_at' => now()->subHours(3),
-                'created_at' => now()->subHours(4),
-                'updated_at' => now()->subHours(3)
-            ]
+            
+            // Notifikasi untuk Dokter (jika ada)
+            ...$dokter ? [
+                [
+                    'type' => 'new_message',
+                    'title' => 'Pesan Baru',
+                    'message' => 'Pesan baru dari <b>' . ($pasien ? $pasien->name : 'Pasien') . '</b>',
+                    'icon' => 'fas fa-comment',
+                    'color' => 'bg-info',
+                    'user_id' => $dokter->id,
+                    'related_id' => $pasien ? $pasien->id : 5,
+                    'related_type' => 'App\Models\User',
+                    'action_url' => '/chatify/' . ($pasien ? $pasien->id : 5),
+                    'is_read' => false,
+                    'created_at' => now()->subMinutes(10),
+                    'updated_at' => now()->subMinutes(10)
+                ]
+            ] : [],
+            
+            // Notifikasi untuk Pasien (jika ada)
+            ...$pasien ? [
+                [
+                    'type' => 'appointment_status',
+                    'title' => 'Status Janji Berobat',
+                    'message' => 'Janji berobat Anda telah <b>disetujui</b>',
+                    'icon' => 'fas fa-check',
+                    'color' => 'bg-success',
+                    'user_id' => $pasien->id,
+                    'related_id' => 9,
+                    'related_type' => 'App\Models\Appointment',
+                    'action_url' => '/janji-berobat',
+                    'is_read' => false,
+                    'created_at' => now()->subMinutes(20),
+                    'updated_at' => now()->subMinutes(20)
+                ],
+                [
+                    'type' => 'doctor_reply',
+                    'title' => 'Balasan Dokter',
+                    'message' => 'Dokter <b>' . ($dokter ? $dokter->name : 'dr. Dokter') . '</b> membalas pesan Anda',
+                    'icon' => 'fas fa-user-md',
+                    'color' => 'bg-success',
+                    'user_id' => $pasien->id,
+                    'related_id' => $dokter ? $dokter->id : 7,
+                    'related_type' => 'App\Models\User',
+                    'action_url' => '/chatify/' . ($dokter ? $dokter->id : 7),
+                    'is_read' => true,
+                    'read_at' => now()->subHour(1),
+                    'created_at' => now()->subHour(2),
+                    'updated_at' => now()->subHour(1)
+                ]
+            ] : []
         ];
 
         foreach ($notifications as $notification) {

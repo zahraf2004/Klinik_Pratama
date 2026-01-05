@@ -8,10 +8,10 @@
         </form>
         <ul class="navbar-nav navbar-right">
           <li class="dropdown dropdown-list-toggle">
-            <a href="#" data-toggle="dropdown" class="nav-link notification-toggle nav-link-lg {{ isset($unreadCount) && $unreadCount > 0 ? 'beep' : '' }}">
+            <a href="#" data-toggle="dropdown" class="nav-link notification-toggle nav-link-lg" style="position: relative;">
               <i class="far fa-bell"></i>
               @if(isset($unreadCount) && $unreadCount > 0)
-                <span class="badge badge-danger navbar-badge">{{ $unreadCount }}</span>
+                <span class="badge badge-danger navbar-badge" style="position: absolute; top: -8px; right: -8px; font-size: 10px; min-width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">{{ $unreadCount }}</span>
               @endif
             </a>
             <div class="dropdown-menu dropdown-list dropdown-menu-right">
@@ -131,15 +131,14 @@ function updateNotificationBadge() {
                 // Create badge if doesn't exist
                 const newBadge = document.createElement('span');
                 newBadge.className = 'badge badge-danger navbar-badge';
+                newBadge.style.cssText = 'position: absolute; top: -8px; right: -8px; font-size: 10px; min-width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;';
                 newBadge.textContent = data.count;
                 bellIcon.appendChild(newBadge);
             }
-            bellIcon.classList.add('beep');
         } else {
             if (badge) {
                 badge.remove();
             }
-            bellIcon.classList.remove('beep');
         }
     })
     .catch(error => console.error('Error:', error));

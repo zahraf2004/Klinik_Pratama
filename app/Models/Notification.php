@@ -46,13 +46,15 @@ class Notification extends Model
         return $query->where('is_read', false);
     }
 
-    // Scope untuk notifikasi admin (user_id null atau admin)
+    // Scope untuk notifikasi admin (hanya untuk admin yang login)
     public function scopeForAdmin($query, $adminId = null)
     {
-        return $query->where(function($q) use ($adminId) {
-            $q->whereNull('user_id') // Notifikasi untuk semua admin
-              ->orWhere('user_id', $adminId); // Notifikasi khusus admin tertentu
-        });
+        if ($adminId) {
+            return $query->where('user_id', $adminId);
+        }
+        
+        // Jika tidak ada adminId, ambil untuk admin yang sedang login
+        return $query->where('user_id', auth()->id());
     }
 
     // Method untuk menandai sebagai dibaca

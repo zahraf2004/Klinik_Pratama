@@ -88,52 +88,70 @@ class NotificationController extends Controller
             'completed' => 'fas fa-check-circle'
         ];
 
-        Notification::create_notification(
-            'appointment',
-            'Janji Berobat',
-            $messages[$type],
-            [
-                'icon' => $icons[$type],
-                'color' => $colors[$type],
-                'related_id' => $appointment->id,
-                'related_type' => 'App\Models\Appointment',
-                'action_url' => route('appointment.admin')
-            ]
-        );
+        // Ambil semua admin dan buat notifikasi untuk masing-masing
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        
+        foreach ($admins as $admin) {
+            Notification::create_notification(
+                'appointment',
+                'Janji Berobat',
+                $messages[$type],
+                [
+                    'icon' => $icons[$type],
+                    'color' => $colors[$type],
+                    'user_id' => $admin->id, // Set user_id ke admin spesifik
+                    'related_id' => $appointment->id,
+                    'related_type' => 'App\Models\Appointment',
+                    'action_url' => route('appointment.admin')
+                ]
+            );
+        }
     }
 
     // Method untuk notifikasi pasien baru registrasi
     public static function createUserRegistrationNotification($user)
     {
-        Notification::create_notification(
-            'user_registration',
-            'Pasien Baru',
-            "Pasien baru <b>{$user->name}</b> telah mendaftar",
-            [
-                'icon' => 'fas fa-user-plus',
-                'color' => 'bg-success',
-                'related_id' => $user->id,
-                'related_type' => 'App\Models\User',
-                'action_url' => route('data.pasien')
-            ]
-        );
+        // Ambil semua admin dan buat notifikasi untuk masing-masing
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        
+        foreach ($admins as $admin) {
+            Notification::create_notification(
+                'user_registration',
+                'Pasien Baru',
+                "Pasien baru <b>{$user->name}</b> telah mendaftar",
+                [
+                    'icon' => 'fas fa-user-plus',
+                    'color' => 'bg-success',
+                    'user_id' => $admin->id, // Set user_id ke admin spesifik
+                    'related_id' => $user->id,
+                    'related_type' => 'App\Models\User',
+                    'action_url' => route('data.pasien')
+                ]
+            );
+        }
     }
 
     // Method untuk notifikasi berlangganan baru
     public static function createSubscriptionNotification($user, $subscription)
     {
-        Notification::create_notification(
-            'subscription',
-            'Berlangganan Baru',
-            "Pasien <b>{$user->name}</b> telah berlangganan paket {$subscription->plan_name}",
-            [
-                'icon' => 'fas fa-crown',
-                'color' => 'bg-warning',
-                'related_id' => $user->id,
-                'related_type' => 'App\Models\User',
-                'action_url' => route('data.pasien')
-            ]
-        );
+        // Ambil semua admin dan buat notifikasi untuk masing-masing
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        
+        foreach ($admins as $admin) {
+            Notification::create_notification(
+                'subscription',
+                'Berlangganan Baru',
+                "Pasien <b>{$user->name}</b> telah berlangganan paket {$subscription->plan_name}",
+                [
+                    'icon' => 'fas fa-crown',
+                    'color' => 'bg-warning',
+                    'user_id' => $admin->id, // Set user_id ke admin spesifik
+                    'related_id' => $user->id,
+                    'related_type' => 'App\Models\User',
+                    'action_url' => route('data.pasien')
+                ]
+            );
+        }
     }
 
     // Method untuk membuat notifikasi sistem
@@ -148,5 +166,132 @@ class NotificationController extends Controller
                 'color' => 'bg-warning'
             ], $options)
         );
+    }
+
+    // Method untuk notifikasi pesan baru (untuk dokter)
+    public static function createNewMessageNotification($fromUser, $toUser, $message)
+    {
+        Notification::create_notification(
+            'new_message',
+            'Pesan Baru',
+            "Pesan baru dari <b>{$fromUser->name}</b>",
+            [
+                'icon' => 'fas fa-comment',
+                'color' => 'bg-info',
+                'user_id' => $toUser->id,
+                'related_id' => $fromUser->id,
+                'related_type' => 'App\Models\User',
+                'action_url' => url("/chatify/{$fromUser->id}")
+            ]
+        );
+    }
+
+    // Method untuk notifikasi status appointment (untuk pasien)
+    public static function createAppointmentStatusNotification($appointment, $status)
+    {
+        if (!$appointment->user_id) return; // Skip jika tidak ada user_id
+        
+        $messages = [
+            'Disetujui' => "Janji berobat Anda telah <b>disetujui</b>",
+            'Dibatalkan' => "Janji berobat Anda telah <b>dibatalkan</b>",
+            'Selesai' => "Janji berobat Anda telah <b>selesai</b>"
+        ];
+
+        $colors = [
+            'Disetujui' => 'bg-success',
+            'Dibatalkan' => 'bg-danger',
+            'Selesai' => 'bg-info'
+        ];
+
+        $icons = [
+            'Disetujui' => 'fas fa-check',
+            'Dibatalkan' => 'fas fa-times',
+            'Selesai' => 'fas fa-check-circle'
+        ];
+
+        if (isset($messages[$status])) {
+            Notification::create_notification(
+                'appointment_status',
+                'Status Janji Berobat',
+                $messages[$status],
+                [
+                    'icon' => $icons[$status],
+                    'color' => $colors[$status],
+                    'user_id' => $appointment->user_id,
+                    'related_id' => $appointment->id,
+                    'related_type' => 'App\Models\Appointment',
+                    'action_url' => route('appointment.index')
+                ]
+            );
+        }
+    }
+
+    // Method untuk notifikasi balasan dokter (untuk pasien)
+    public static function createDoctorReplyNotification($fromDoctor, $toPatient)
+    {
+        Notification::create_notification(
+            'doctor_reply',
+            'Balasan Dokter',
+            "Dokter <b>{$fromDoctor->name}</b> membalas pesan Anda",
+            [
+                'icon' => 'fas fa-user-md',
+                'color' => 'bg-success',
+                'user_id' => $toPatient->id,
+                'related_id' => $fromDoctor->id,
+                'related_type' => 'App\Models\User',
+                'action_url' => url("/chatify/{$fromDoctor->id}")
+            ]
+        );
+    }
+
+    // Method untuk mendapatkan notifikasi berdasarkan role user
+    public function getNotificationsByRole()
+    {
+        $user = Auth::user();
+        $notifications = Notification::where('user_id', $user->id)
+            ->latest()
+            ->take(10)
+            ->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)
+            ->unread()
+            ->count();
+
+        return response()->json([
+            'notifications' => $notifications,
+            'unread_count' => $unreadCount
+        ]);
+    }
+
+    // Method untuk mark as read berdasarkan user
+    public function markAsReadByUser($id)
+    {
+        $notification = Notification::where('user_id', Auth::id())->findOrFail($id);
+        $notification->markAsRead();
+
+        return response()->json(['success' => true]);
+    }
+
+    // Method untuk mark all as read berdasarkan user
+    public function markAllAsReadByUser()
+    {
+        Notification::where('user_id', Auth::id())
+            ->unread()
+            ->update([
+                'is_read' => true,
+                'read_at' => now()
+            ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    // Method untuk mendapatkan unread count berdasarkan user
+    public function getUnreadCountByUser()
+    {
+        $count = Notification::where('user_id', Auth::id())
+            ->unread()
+            ->count();
+
+        return response()->json(['count' => $count]);
     }
 }

@@ -59,7 +59,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     /*
     |-----------------------------
-    | Notifications
+    | Notifications (Admin)
     |-----------------------------
     */
     Route::prefix('notifications')->name('notifications.')->group(function () {
@@ -120,10 +120,31 @@ Route::middleware(['auth', 'role:dokter,bidan,perawat'])
 
         Route::get('/janji-temu', [AppointmentDokterController::class, 'index']);
         Route::get('/janji-temu/{id}', [AppointmentDokterController::class, 'show']);
+        
+        /*
+        |-----------------------------
+        | Notifications (Dokter)
+        |-----------------------------
+        */
+        Route::prefix('notifications')->name('dokter.notifications.')->group(function () {
+            Route::get('/', [App\Http\Controllers\NotificationController::class, 'getNotificationsByRole'])->name('index');
+            Route::post('/mark-read/{id}', [App\Http\Controllers\NotificationController::class, 'markAsReadByUser'])->name('mark-read');
+            Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsReadByUser'])->name('mark-all-read');
+            Route::get('/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCountByUser'])->name('unread-count');
+        });
     });
 Route::get('/nakes/dashboard', [DashboardDokterController::class, 'dokter'])
     ->middleware(['auth', 'role:dokter,bidan,perawat'])
     ->name('dokter.Dashboard');
+
+// API endpoints untuk dashboard dokter
+Route::middleware(['auth', 'role:dokter,bidan,perawat'])->prefix('api/dokter')->name('api.dokter.')->group(function () {
+    Route::get('/jadwal-hari-ini', [DashboardDokterController::class, 'getJadwalHariIniApi'])->name('jadwal.hari.ini');
+    Route::get('/riwayat-janji-temu', [DashboardDokterController::class, 'getRiwayatJanjiTemuApi'])->name('riwayat.janji.temu');
+    Route::get('/appointment/{id}', [DashboardDokterController::class, 'getDetailAppointment'])->name('appointment.detail');
+    Route::get('/jadwal-range', [DashboardDokterController::class, 'getJadwalByDateRange'])->name('jadwal.range');
+    Route::get('/statistik-mingguan', [DashboardDokterController::class, 'getStatistikMingguan'])->name('statistik.mingguan');
+});
     
 /*
 |--------------------------------------------------------------------------
@@ -132,6 +153,18 @@ Route::get('/nakes/dashboard', [DashboardDokterController::class, 'dokter'])
 */
 
 Route::middleware(['auth'])->group(function () {
+
+    /*
+    |-----------------------------
+    | Notifications (Pasien)
+    |-----------------------------
+    */
+    Route::prefix('user-notifications')->name('user.notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'getNotificationsByRole'])->name('index');
+        Route::post('/mark-read/{id}', [App\Http\Controllers\NotificationController::class, 'markAsReadByUser'])->name('mark-read');
+        Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsReadByUser'])->name('mark-all-read');
+        Route::get('/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCountByUser'])->name('unread-count');
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -193,6 +226,9 @@ Route::group(['middleware' => ['auth', 'role:dokter,pasien']], function () {
     Route::get('/chatify/getContacts', [\App\Http\Controllers\CustomChatifyController::class, 'getContacts']);
     Route::post('/chatify/updateContacts', [\App\Http\Controllers\CustomChatifyController::class, 'updateContacts']);
     Route::post('/chatify/getUserDetails', [\App\Http\Controllers\CustomChatifyController::class, 'getUserDetails']);
+    
+    // Override sendMessage route untuk notifikasi
+    Route::post('/chatify/sendMessage', [\App\Http\Controllers\CustomMessagesController::class, 'send'])->name('send.message');
     
     // Chat session management (premium feature)
     Route::post('/chatify/getOrCreateSession', [\App\Http\Controllers\CustomChatifyController::class, 'getOrCreateSession']);

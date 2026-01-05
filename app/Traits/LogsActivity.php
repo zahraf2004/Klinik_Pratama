@@ -23,7 +23,7 @@ trait LogsActivity
             // Buat notifikasi untuk perubahan appointment
             if ($model instanceof \App\Models\Appointment) {
                 if ($model->isDirty('status')) {
-                    // Notifikasi untuk perubahan status
+                    // Notifikasi untuk admin tentang perubahan status
                     $status = $model->status;
                     $type = match($status) {
                         'Disetujui' => 'approved',
@@ -35,6 +35,9 @@ trait LogsActivity
                     if ($type) {
                         \App\Http\Controllers\NotificationController::createAppointmentNotification($model, $type);
                     }
+                    
+                    // Notifikasi untuk pasien tentang status appointment
+                    \App\Http\Controllers\NotificationController::createAppointmentStatusNotification($model, $status);
                 } else {
                     // Notifikasi untuk edit data appointment oleh pasien
                     \App\Http\Controllers\NotificationController::createAppointmentNotification($model, 'updated');

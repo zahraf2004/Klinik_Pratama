@@ -13,5 +13,53 @@
     border-radius: 7px;
     margin-bottom: 8px;
     border-left: 4px solid #4e9cff;
+    transition: all 0.3s ease;
+}
+
+.schedule-list li:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.schedule-item {
+    cursor: pointer;
+}
+
+.riwayat-item {
+    transition: background-color 0.3s ease;
+}
+
+.riwayat-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+}
+
+.modal-body .table td {
+    padding: 0.5rem 0.75rem;
+    vertical-align: middle;
+}
+
+.modal-body .table td:first-child {
+    width: 30%;
+    font-weight: 500;
+}
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
 }
 

@@ -25,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
         // Register observers
         \App\Models\User::observe(\App\Observers\UserObserver::class);
         \App\Models\Subscription::observe(\App\Observers\SubscriptionObserver::class);
+        \App\Models\ChatMessage::observe(\App\Observers\MessageObserver::class);
     }
 }
