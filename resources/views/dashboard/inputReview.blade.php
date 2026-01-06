@@ -85,7 +85,7 @@
 /* CSS khusus untuk section review - menggunakan class spesifik untuk menghindari konflik */
 .review-section {
     max-width: 1200px;
-    margin: 80px auto 60px auto;
+    margin: 10px auto 60px auto;
     padding: 0 20px;
     font-family: "Nunito", sans-serif;
 }

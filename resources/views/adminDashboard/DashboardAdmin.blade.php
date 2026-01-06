@@ -29,8 +29,8 @@
         datasets: [{
           label: 'Janji Selesai',
           data: chartData,
-          backgroundColor: '#28a745',
-          borderColor: '#28a745',
+          backgroundColor: '#3498DB',
+          borderColor: '#3498DB',
           borderWidth: 2,
           borderRadius: 6
         }]

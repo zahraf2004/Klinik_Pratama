@@ -548,21 +548,46 @@ class CustomChatifyController extends Controller
     public function checkChatPermission(Request $request)
     {
         $currentUser = Auth::user();
-        
-        // Dokter selalu bisa chat
-        if ($currentUser->role === 'dokter') {
+
+        // If a doctor is checking permission for a patient (via AJAX from doctor UI),
+        // use the target_user_id to return the patient's token/subscription status.
+        $targetUserId = $request->input('target_user_id');
+
+        if ($currentUser->role === 'dokter' && $targetUserId) {
+            $patient = User::find($targetUserId);
+            if (!$patient) {
+                return response()->json(['can_chat' => false, 'remaining_tokens' => 0, 'has_active_subscription' => false]);
+            }
+
+            $hasActiveSubscription = $patient->hasActiveSubscription();
+            $remainingTokens = $patient->getRemainingSessionTokens();
+
+            // If premium patient
+            if ($hasActiveSubscription) {
+                return response()->json([
+                    'can_chat' => true,
+                    'remaining_tokens' => -1,
+                    'has_active_subscription' => true,
+                    'message' => 'Patient is premium - unlimited chat'
+                ]);
+            }
+
+            $canChat = $remainingTokens > 0;
+
             return response()->json([
-                'can_chat' => true,
-                'remaining_tokens' => -1,
-                'has_active_subscription' => false
+                'can_chat' => $canChat,
+                'remaining_tokens' => $remainingTokens,
+                'has_active_subscription' => false,
+                'message' => $canChat ? 'Patient can chat' : 'Patient has no remaining tokens',
+                'tokens_exhausted' => $remainingTokens <= 0
             ]);
         }
-        
-        // Untuk pasien, cek token dan subscription
+
+        // Default: treat the authenticated user (typically patient) as the target
+        // For patients, check their own tokens/subscription
         $hasActiveSubscription = $currentUser->hasActiveSubscription();
         $remainingTokens = $currentUser->getRemainingSessionTokens();
-        
-        // Jika premium, selalu bisa chat
+
         if ($hasActiveSubscription) {
             return response()->json([
                 'can_chat' => true,
@@ -571,10 +596,9 @@ class CustomChatifyController extends Controller
                 'message' => 'Premium user - unlimited chat'
             ]);
         }
-        
-        // Jika bukan premium, cek token
+
         $canChat = $remainingTokens > 0;
-        
+
         return response()->json([
             'can_chat' => $canChat,
             'remaining_tokens' => $remainingTokens,

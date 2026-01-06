@@ -106,6 +106,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::post('/admin/appointments/update/{id}', [AppointmentAdminController::class, 'updateStatus'])
         ->name('appointment.admin.update');
+    
+    // Admin delete appointment (only allowed when canceled by admin)
+    Route::delete('/admin/appointments/{id}', [AppointmentAdminController::class, 'destroy'])
+        ->name('appointment.admin.destroy');
 });
 
 

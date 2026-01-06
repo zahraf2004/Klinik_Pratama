@@ -147,11 +147,15 @@ $(document).ready(function () {
                             `
                                     : ""
                             }
-                            <button class="btn btn-sm btn-outline-danger btnDelete" data-id="${
-                                item.id
-                            }">
-                                <i class="fas fa-trash"></i> Hapus
-                            </button>
+                            ${
+                                item.status === "Dibatalkan"
+                                    ? `
+                                <button class="btn btn-sm btn-danger btnDelete" data-id="${item.id}" style="background:#f44336;border-color:#f44336;color:#fff;border-radius:6px;">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            `
+                                    : ``
+                            }
                         </div>
                     </div>`;
             });
@@ -188,6 +192,8 @@ $(document).ready(function () {
             showCancelButton: true,
             confirmButtonText: "Ya, hapus",
             cancelButtonText: "Batal",
+            confirmButtonColor: "#e74c3c",
+            cancelButtonColor: "#6c757d",
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({

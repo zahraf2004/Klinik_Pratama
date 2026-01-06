@@ -1,17 +1,25 @@
 @extends('layouts.app3')
 @section('content')
-<div class="hero">
-  <div class="hero-content">
-    <h1>Mitra <span class="gradient-text">terpercaya dalam</span> layanan kesehatan</h1>
-    <p>
-      Meningkatkan Kesehatan Anda di Setiap Langkah. 
-      Nikmati perawatan medis personal dari jarak jauh. 
-      Terhubung dengan dokter bersertifikat, dan jadwalkan janji temu dengan mudah. 
-      Siap untuk menjaga kesehatan Anda?
-    </p>
-    <a href="/login" class="btn">Buat Janji Berobat Sekarang!</a>
+<section class="hero-wrapper">
+  <div class="hero-box">
+    
+    <!-- TEXT -->
+    <div class="hero-text">
+      <h1 class="hero-title">
+        <span class="title-big">LANGKAH MUDAH</span><br>
+        <span class="title-small">MENUJU KESEHATAN</span>
+      </h1>
+      <p>Cek kesehatan & konsultasi online dengan mudah</p>
+      <a href="/Janji-Berobat" class="btn-hero">Buat Janji Berobat Sekarang</a>
+    </div>
+
+    <!-- IMAGE -->
+    <div class="hero-image">
+      <img src="/img/doktor.png" alt="Dokter">
+    </div>
+
   </div>
-</div>
+</section>
 @include('dashboard.layanan')
 @include('dashboard.obat')
 @include('dashboard.review')

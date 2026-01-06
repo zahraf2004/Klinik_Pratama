@@ -1,20 +1,19 @@
 <!-- Navbar -->
     <nav class="navbar">
         <div class="logo">
-            <a href="/dashboard"><img src="/img/logo.png" alt="logo" height="40px" ></a>
+            <a href="{{ auth()->check() ? '/dashboard' : '/' }}"><img src="/img/logo.png" alt="logo" height="40px" ></a>
             <div class="logo-text">
                 <span class="top">Klinik Pratama</span>
                 <span class="bottom">Dokter Yanti</span>
             </div>
         </div>
         <ul class="nav-links">
-            <li><a href="/dashboard" class="">Beranda</a></li>
+            <li><a href="{{ auth()->check() ? '/dashboard' : '/' }}" class="">Beranda</a></li>
             <li class="dropdown">
                 <a href="#">Layanan <i class="fas fa-caret-down"></i></a>
-                <div class="dropdown-content">
-                    <a href="/konsultasi"><i class="fas fa-stethoscope"></i> Konsultasi Dokter Online</a>
+                <div class="dropdown-content">                    
                     <a href="/Janji-Berobat"><i class="fa-regular fa-calendar"></i> Janji berobat</a>
-                    <a href="/layanan-kami"><i class="fas fa-capsules"></i> Layanan lainnya</a>
+                    <a href="/konsultasi"><i class="fas fa-stethoscope"></i> Chat Dokter</a>
                 </div>
             </li>
             <li><a href="/tentang-kami">Tentang Kami</a></li>
@@ -25,6 +24,7 @@
             <a href="{{ route('login') }}" class="btn">Masuk</a>
         @endguest
         @auth
+        <div class="nav-actions">
             <!-- Notifikasi Bell Icon -->
             <div class="notification-bell">
                 <div class="bell-icon" id="notificationBell">
@@ -93,6 +93,7 @@
                         </form>
                     </div>
                 </div>
+        </div>
         @endauth
         
         <div class="hamburger" id="hamburger">
@@ -103,7 +104,12 @@
 /* Notification Bell Styles */
 .notification-bell {
     position: relative;
-    margin-right: -185px;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px; /* space between bell and profile */
 }
 
 .bell-icon {
@@ -148,6 +154,11 @@
     display: none;
     max-height: 400px;
     overflow-y: auto;
+}
+
+/* prevent dropdown from overlapping profile when opened */
+.notification-dropdown {
+    margin-top: 8px;
 }
 
 .notification-dropdown.show {
@@ -244,6 +255,9 @@
         right: -50px;
     }
 }
+/* ensure bell and profile look balanced */
+.bell-icon { padding: 8px; border-radius: 8px; }
+.user-profile { gap: 10px; }
 </style>
 
 <script>

@@ -20,7 +20,7 @@
 
 body {
     font-family: "Poppins", sans-serif;
-    background-color: #ffffff;
+    background: linear-gradient(to bottom, #EEF2FF, #E0F2FE);
     color: var(--text-color);
     min-height: 100vh;
     display: flex;
@@ -47,7 +47,7 @@ body {
 
 .login-image {
     flex: 1;
-    background-color: #e3f2fd;
+    background-color: #F4F9FC;
     display: flex;
     align-items: center;
     justify-content: center;

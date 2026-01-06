@@ -14,7 +14,7 @@
                     <p>Telemedicine adalah layanan ...</p>
 
                     <div class="konsul-telemedicine-image">
-                        <i class="fa-solid fa-comments" style="color:#4a83d3"></i>
+                        <img src="{{ asset('/img/konsul.png') }}" alt="Konsultasi" class="konsul-telemedicine-img">
                     </div>
 
                     <h3 class="konsul-benefit-title">Manfaat Telemedicine:</h3>
@@ -201,7 +201,7 @@
 
                     @if($nakes->hasPages())
                     <div class="konsul-pagination">
-                        {{ $nakes->links() }}
+                        {{ $nakes->links('pagination::bootstrap-4') }}
                     </div>
                     @endif
 

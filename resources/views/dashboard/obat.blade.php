@@ -1,5 +1,5 @@
 <section class="product-section">
-    <h2 style="margin-top:90px;">Obat & Suplemen Kesehatan</h2>
+    <h2 style="margin-top:75px;">Obat & Suplemen Kesehatan</h2>
 
     <!-- Kategori --> 
      <div class="categories"> 
@@ -21,8 +21,4 @@
             </div>
         @endforeach
     </div>
-
-    <a href="{{ route('obat.all') }}" class="see-all bottom" style="margin-bottom:70px;">
-        Lihat Semua Obat
-    </a>
 </section>

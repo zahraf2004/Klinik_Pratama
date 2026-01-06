@@ -6,7 +6,7 @@
         <p>Tim Klinik Pratama siap membantu Anda. Kami senang mendengar dari Anda</p>
     </section>
 
-    <div class="container2">
+    <div class="container2" style="margin: 50px 50px;">
         <div class="contact-main">
             <div class="contact-info">
                 <div class="section-card">

@@ -95,6 +95,11 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'Akses ditolak'], 403);
         }
 
+        // Hanya izinkan penghapusan jika status sudah 'Dibatalkan'
+        if ($appointment->status !== 'Dibatalkan') {
+            return response()->json(['message' => 'Hapus hanya diperbolehkan jika status Dibatalkan'], 400);
+        }
+
         $appointment->delete();
 
         return response()->json(['message' => 'Janji berhasil dihapus']);

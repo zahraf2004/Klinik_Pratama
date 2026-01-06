@@ -88,9 +88,17 @@
                     <a href="#" class="btn btn-primary btn-sm btnEditJanji" data-id="{{ $a->id }}">
                       <i class="far fa-edit"></i>
                     </a>
-                    <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#editModal{{ $a->id }}">
-                      <i class="fas fa-trash"></i>
-                    </a>
+                    @if($a->status == 'Dibatalkan' && !empty($a->admin_notes))
+                      <form action="{{ url('/admin/appointments/'.$a->id) }}" method="POST" style="display:inline-block;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm btn-delete-admin" onclick="return confirm('Yakin ingin menghapus janji ini?')">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    @else
+                      {{-- no delete button when not canceled by admin --}}
+                    @endif
                   </td>
                 </tr>
                 @endforeach
