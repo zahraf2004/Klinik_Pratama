@@ -211,7 +211,7 @@ Route::middleware(['auth'])->group(function () {
 | Other Pages akses harus login
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', [ObatPublicController::class, 'index'])->name('obat.index');
+Route::get('/dashboard', [ObatPublicController::class, 'index'])->name('obat.public.index');
 
 Route::get('/obat-all', [ObatPublicController::class, 'all'])->name('obat.all');
 

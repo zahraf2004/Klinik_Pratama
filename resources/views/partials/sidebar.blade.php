@@ -27,7 +27,7 @@
       @else
         {{-- Menu untuk Pasien --}}
         <li class="menu-header">Dashboard</li>
-        <li><a class="nav-link" href="{{ route('obat.index') }}"><i class="fa-solid fa-house"></i> <span>Dashboard</span></a></li>
+        <li><a class="nav-link" href="{{ route('obat.public.index') }}"><i class="fa-solid fa-house"></i> <span>Dashboard</span></a></li>
         <li class="menu-header">Layanan</li>
         <li><a class="nav-link" href="{{ route('appointment.index') }}"><i class="fa-regular fa-calendar-days"></i> <span>Janji Berobat</span></a></li>
         <li><a class="nav-link" href="{{ route('konsultasi.index') }}"><i class="fa-solid fa-comments"></i> <span>Konsultasi</span></a></li>

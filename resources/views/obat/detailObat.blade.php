@@ -7,7 +7,7 @@
   <div class="obat-detail-header" >
     <h1 class="page-title" >Obat & Vitamin Kesehatan</h1>
     <nav class="breadcrumb">
-      <a href="{{ route('obat.index') }}">Dashboard</a> >
+      <a href="{{ route('obat.public.index') }}">Dashboard</a> >
       <a href="{{ route('obat.all') }}">Lihat Semua Obat</a> >
       <span>Detail Obat</span>
     </nav>
@@ -66,7 +66,7 @@
           <img src="{{ asset('storage/'.$item->foto) }}" alt="{{ $item->nama_obat }}">
           <p>{{ $item->nama_obat }}</p>
           <p class="unit">{{ $item->bentuk }}</p>
-          <a href="{{ route('obat.show', $item->id) }}" class="btn-rekomendasi">Lihat Obat</a>
+          <a href="{{ route('obat.detail', $item->id) }}" class="btn-rekomendasi">Lihat Obat</a>
         </div>
       @endforeach
     </div>

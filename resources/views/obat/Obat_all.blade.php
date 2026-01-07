@@ -6,7 +6,7 @@
   <div class="obat-detail-header1">
     <h1 class="page-title1">Obat & Vitamin Kesehatan</h1>
     <nav class="breadcrumb1">
-      <a href="{{ route('obat.index') }}">Dashboard</a> >
+      <a href="{{ route('obat.public.index') }}">Dashboard</a> >
       <span>Lihat Semua Obat</span>
     </nav>
   </div>
