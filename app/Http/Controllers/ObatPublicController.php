@@ -41,7 +41,7 @@ class ObatPublicController extends Controller
     }
 
     // Menampilkan detail obat + rekomendasi
-    public function show($id)
+    public function detail($id)
     {
         $obat = Obat::findOrFail($id);
 

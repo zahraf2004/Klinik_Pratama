@@ -34,7 +34,7 @@
         <img src="{{ asset('storage/'.$item->foto) }}" alt="{{ $item->nama_obat }}">
         <h3>{{ $item->nama_obat }}</h3>
         <p class="obat-unit">{{ $item->bentuk }}</p>
-        <a href="{{ route('obat.show', $item->id) }}">
+        <a href="{{ route('obat.detail', $item->id) }}">
           <button class="obat-btn">Lihat Informasi Obat</button>
         </a>
       </div>

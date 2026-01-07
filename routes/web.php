@@ -215,7 +215,7 @@ Route::get('/dashboard', [ObatPublicController::class, 'index'])->name('obat.ind
 
 Route::get('/obat-all', [ObatPublicController::class, 'all'])->name('obat.all');
 
-Route::get('/obat-details/{id}', [ObatPublicController::class, 'show'])->name('obat.show');
+Route::get('/obat-details/{id}', [ObatPublicController::class, 'detail'])->name('obat.detail');
 
 Route::get('/Janji-Berobat', function(){
     return view('layanan.appointment');
