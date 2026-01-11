@@ -16,6 +16,33 @@ $(document).ready(function () {
     $("#formJanji").submit(function (e) {
         e.preventDefault();
 
+        // --- Validasi tanggal & jam (tidak boleh di masa lalu) ---
+        let tanggal = $("input[name=tanggal]").val();
+        let jam = $("input[name=jam]").val();
+
+        if (!tanggal || !jam) {
+            Swal.fire({
+                icon: "error",
+                title: "Form belum lengkap",
+                text: "Tanggal dan jam harus diisi.",
+            });
+            return;
+        }
+
+        let now = new Date();
+        now.setSeconds(0, 0); // bandingkan pada level menit supaya konsisten dengan input time
+        // Membuat Date dari input YYYY-MM-DD dan HH:MM
+        let selected = new Date(tanggal + "T" + jam + ":00");
+
+        if (selected < now) {
+            Swal.fire({
+                icon: "error",
+                title: "Waktu tidak valid",
+                text: "Pilih tanggal atau jam yang masih akan datang.",
+            });
+            return;
+        }
+
         let id = $("#idJanji").val();
         let formData = new FormData(this);
 

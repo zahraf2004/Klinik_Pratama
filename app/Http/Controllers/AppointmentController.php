@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
@@ -36,6 +37,12 @@ class AppointmentController extends Controller
             'jam' => 'required',
             'keluhan' => 'required|string',
         ]);
+
+        // Validasi: gabungkan tanggal + jam harus tidak di masa lalu
+        $selected = Carbon::parse($request->tanggal . ' ' . $request->jam);
+        if ($selected->lt(Carbon::now())) {
+            return response()->json(['message' => 'Tanggal dan jam janji harus di masa depan'], 422);
+        }
 
         $appointment = Appointment::create([
             'user_id' => Auth::id(), // ✅ otomatis ambil ID user yang login
@@ -77,6 +84,20 @@ class AppointmentController extends Controller
         // hanya bisa ubah kalau masih menunggu
         if ($appointment->status !== 'Menunggu') {
             return response()->json(['message' => 'Janji tidak dapat diubah karena sudah divalidasi'], 400);
+        }
+
+        $request->validate([
+            'nama' => 'required|string|max:100',
+            'no_hp' => 'required|string|max:20',
+            'alamat' => 'required|string',
+            'tanggal' => 'required|date',
+            'jam' => 'required',
+            'keluhan' => 'required|string',
+        ]);
+
+        $selected = Carbon::parse($request->tanggal . ' ' . $request->jam);
+        if ($selected->lt(Carbon::now())) {
+            return response()->json(['message' => 'Tanggal dan jam janji harus di masa depan'], 422);
         }
 
         $appointment->update($request->only([

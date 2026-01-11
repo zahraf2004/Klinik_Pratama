@@ -154,6 +154,11 @@ class User extends Authenticatable
     // Method untuk cek apakah bisa chat (ada session aktif atau bisa buat baru)
     public function canChat(): bool
     {
+        // If user account is deactivated, they cannot chat
+        if (isset($this->is_active) && ! $this->is_active) {
+            return false;
+        }
+
         if ($this->hasActiveSubscription()) {
             return true;
         }
@@ -173,6 +178,11 @@ class User extends Authenticatable
     // Method untuk cek apakah bisa kirim pesan
     public function canSendMessage(): bool
     {
+        // Disallow sending messages if account inactive
+        if (isset($this->is_active) && ! $this->is_active) {
+            return false;
+        }
+
         return $this->canChat();
     }
 

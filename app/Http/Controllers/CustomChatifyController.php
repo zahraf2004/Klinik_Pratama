@@ -549,6 +549,8 @@ class CustomChatifyController extends Controller
     {
         $currentUser = Auth::user();
 
+        
+
         // If a doctor is checking permission for a patient (via AJAX from doctor UI),
         // use the target_user_id to return the patient's token/subscription status.
         $targetUserId = $request->input('target_user_id');
